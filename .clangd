@@ -1,0 +1,24 @@
+# https://clangd.llvm.org/config.html
+
+CompileFlags:
+    Compiler: clang
+    Add: [-xc++, -std=c++17, -Wall, -Wextra, -Wpedantic]
+---
+Index:
+    Background: Build
+    StandardLibrary: No
+---
+Diagnostics:
+    UnusedIncludes: Strict
+    # MissingIncludes: Strict
+---
+InlayHints:
+    Enabled: Yes
+    ParameterNames: Yes
+    DeducedTypes: Yes
+    Designators: Yes
+  # BlockEnd: Yes
+  # TypeNameLimit: 0
+---
+Hover:
+    ShowAKA: Yes
