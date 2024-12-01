@@ -1,6 +1,3 @@
-// Standard includes
-#include <cstdint>
-
 // External includes
 #include <sys/sysinfo.h>
 
@@ -9,93 +6,60 @@
 
 namespace syst {
 
-struct System::Impl {
-    struct sysinfo info {};
-    bool good = false;
-
-    static double load_to_double(unsigned long load) {
-        return static_cast<double>(load)
-          / static_cast<double>(1U << SI_LOAD_SHIFT);
-    }
-
-    static double ratio_to_perc(uint64_t numerator, uint64_t denominator) {
-        return (static_cast<double>(numerator)
-                 / static_cast<double>(denominator))
-          * static_cast<double>(1e2);
-    }
-
-    uint64_t mem_to_bytes(unsigned long mem) const {
-        return static_cast<uint64_t>(mem)
-          * static_cast<uint64_t>(this->info.mem_unit);
-    }
-
-    Impl() : good(sysinfo(&this->info) == 0) {
-    }
-};
-
-System::System() : inst_(std::make_unique<Impl>()) {
+template<typename integral_t>
+[[nodiscard]] double load_to_double(integral_t load) {
+    static_assert(std::is_integral_v<integral_t>);
+    return static_cast<double>(load) / static_cast<double>(1U << SI_LOAD_SHIFT);
 }
 
-System::~System() = default;
+template<typename integral_t>
+[[nodiscard]] double ratio_to_percent(
+  integral_t numerator, integral_t denominator) {
+    static_assert(std::is_integral_v<integral_t>);
+    if (denominator == 0) {
+        // Return 100% if the denominator is invalid.
+        return static_cast<double>(1e2);
+    }
+    return (static_cast<double>(numerator) / static_cast<double>(denominator))
+      * static_cast<double>(1e2);
+}
 
-std::optional<System> System::get() {
-    System sys{};
-    if (! sys.inst_->good) {
+template<typename integral_lhs_t, typename integral_rhs_t>
+[[nodiscard]] uint64_t mem_to_bytes(
+  integral_lhs_t mem, integral_rhs_t mem_unit) {
+    static_assert(std::is_integral_v<integral_lhs_t>);
+    static_assert(std::is_integral_v<integral_rhs_t>);
+    return static_cast<uint64_t>(mem) * static_cast<uint64_t>(mem_unit);
+}
+
+std::optional<system_info_t> system_info() {
+    struct sysinfo raw_info {};
+    if (sysinfo(&raw_info) != 0) {
         return std::nullopt;
     }
-    return sys;
-}
 
-uint64_t System::get_uptime() const {
-    return static_cast<uint64_t>(inst_->info.uptime);
-}
+    system_info_t system_info{};
 
-double System::get_load_1() const {
-    return Impl::load_to_double(inst_->info.loads[0]);
-}
+    system_info.uptime = ch::seconds(raw_info.uptime);
+    system_info.load_1 = load_to_double(raw_info.loads[0]);
+    system_info.load_5 = load_to_double(raw_info.loads[1]);
+    system_info.load_15 = load_to_double(raw_info.loads[2]);
+    system_info.ram_total = mem_to_bytes(raw_info.totalram, raw_info.mem_unit);
+    system_info.ram_free = mem_to_bytes(raw_info.freeram, raw_info.mem_unit);
+    system_info.ram_shared =
+      mem_to_bytes(raw_info.sharedram, raw_info.mem_unit);
+    system_info.ram_buffered =
+      mem_to_bytes(raw_info.bufferram, raw_info.mem_unit);
+    system_info.swap_total =
+      mem_to_bytes(raw_info.totalswap, raw_info.mem_unit);
+    system_info.swap_free = mem_to_bytes(raw_info.freeswap, raw_info.mem_unit);
+    system_info.procs = static_cast<uint64_t>(raw_info.procs);
+    system_info.ram_usage =
+      ratio_to_percent(raw_info.freeram, raw_info.totalram);
+    system_info.swap_usage =
+      ratio_to_percent(raw_info.freeswap, raw_info.totalswap);
 
-double System::get_load_5() const {
-    return Impl::load_to_double(inst_->info.loads[1]);
-}
-
-double System::get_load_15() const {
-    return Impl::load_to_double(inst_->info.loads[2]);
-}
-
-uint64_t System::get_ram_total() const {
-    return inst_->mem_to_bytes(inst_->info.totalram);
-}
-
-uint64_t System::get_ram_free() const {
-    return inst_->mem_to_bytes(inst_->info.freeram);
-}
-
-uint64_t System::get_ram_shared() const {
-    return inst_->mem_to_bytes(inst_->info.sharedram);
-}
-
-uint64_t System::get_ram_buffered() const {
-    return inst_->mem_to_bytes(inst_->info.bufferram);
-}
-
-uint64_t System::get_swap_total() const {
-    return inst_->mem_to_bytes(inst_->info.totalswap);
-}
-
-uint64_t System::get_swap_free() const {
-    return inst_->mem_to_bytes(inst_->info.freeswap);
-}
-
-unsigned short System::get_procs() const {
-    return inst_->info.procs;
-}
-
-double System::get_ram_perc() const {
-    return Impl::ratio_to_perc(inst_->info.freeram, inst_->info.totalram);
-}
-
-double System::get_swap_perc() const {
-    return Impl::ratio_to_perc(inst_->info.freeswap, inst_->info.totalswap);
+    return system_info;
 }
 
 } // namespace syst

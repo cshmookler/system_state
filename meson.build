@@ -11,6 +11,7 @@ root_dir = meson.project_source_root()
 build_dir = meson.project_build_root()
 include_dir = root_dir / 'system_state'
 src_dir = root_dir / 'src'
+tests_dir = root_dir / 'tests'
 
 # Insert the project version into the version header file
 conf_data = configuration_data()
@@ -23,13 +24,14 @@ configure_file(
 
 lib_system_state_headers = files(
     build_dir / 'version.hpp',
-    include_dir / 'core.hpp'
+    include_dir / 'core.hpp',
 )
 lib_system_state = library(
     'system_state',
     files(
         src_dir / 'version.cpp',
         src_dir / 'system.cpp',
+        src_dir / 'block.cpp',
     ),
     version : meson.project_version(),
     install : true,
@@ -46,12 +48,32 @@ if dep_gtest_main.found()
     test_version = executable(
         'version',
         files(
-            src_dir / 'version.test.cpp',
+            tests_dir / 'version.test.cpp',
             src_dir / 'version.cpp',
         ),
         dependencies : dep_gtest_main,
     )
     test('version', test_version)
+
+    test_system = executable(
+        'system',
+        files(
+            tests_dir / 'system.test.cpp',
+            src_dir / 'system.cpp',
+        ),
+        dependencies : dep_gtest_main,
+    )
+    test('system', test_system)
+
+    test_block = executable(
+        'block',
+        files(
+            tests_dir / 'block.test.cpp',
+            src_dir / 'block.cpp',
+        ),
+        dependencies : dep_gtest_main,
+    )
+    test('block', test_block)
 else
     warning('Skipping tests due to missing dependencies')
 endif

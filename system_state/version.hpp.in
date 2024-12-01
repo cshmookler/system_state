@@ -24,8 +24,8 @@
 /**
  * @file version.hpp
  * @author Caden Shmookler (cshmookler@gmail.com)
- * @brief Compile-time and run-time version.
- * @date 2024-09-26
+ * @brief Compiletime and runtime versions of this library.
+ * @date 2024-11-27
  */
 
 namespace syst {

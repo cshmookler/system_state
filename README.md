@@ -1,4 +1,4 @@
- **system_state**
+# **system_state**
 
 C++ library for modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
 
@@ -27,11 +27,19 @@ cd build
 ninja
 ```
 
+### 4.&nbsp; (Optional) Install this project globally.
+
+```
+meson install
+```
+
 ## **TODO**
 
 - [X] date and time
 - [X] uptime
-- [ ] disk space
+- [X] disks
+- [X] disk partitions
+- [X] disk space (and other related information)
 - [X] swap
 - [X] memory
 - [ ] cpu usage
