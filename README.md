@@ -40,9 +40,14 @@ meson install
 - [X] disks
 - [X] disk partitions
 - [X] disk space (and other related information)
+- [ ] disk partition schemes
+- [ ] partition filesystems
+- [ ] partition mount points
 - [X] swap
 - [X] memory
-- [X] cpu usage
+- [X] total cpu usage
+- [ ] individual cpu usage
+- [ ] process statistics
 - [ ] cpu temperature
 - [X] load averages (1 min, 5 min, 15 min)
 - [ ] battery status
