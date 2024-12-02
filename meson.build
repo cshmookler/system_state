@@ -34,6 +34,7 @@ lib_system_state = library(
         src_dir / 'system.cpp',
         src_dir / 'block.cpp',
         src_dir / 'cpu_usage.cpp',
+        src_dir / 'backlight.cpp',
     ),
     version : meson.project_version(),
     install : true,
@@ -89,6 +90,17 @@ if dep_gtest_main.found()
         dependencies : dep_gtest_main,
     )
     test('cpu_usage', test_cpu_usage)
+
+    test_backlight = executable(
+        'backlight',
+        files(
+            tests_dir / 'backlight.test.cpp',
+            src_dir / 'backlight.cpp',
+            src_dir / 'util.cpp',
+        ),
+        dependencies : dep_gtest_main,
+    )
+    test('backlight', test_backlight)
 else
     warning('Skipping tests due to missing dependencies')
 endif

@@ -29,11 +29,9 @@
  */
 
 // Standard includes
-#include <array>
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
-#include <numeric>
 #include <optional>
 #include <list>
 
@@ -168,12 +166,6 @@ class disk_t {
     friend part_t;
 
   public:
-    disk_t(const disk_t&) = delete;
-    disk_t(disk_t&&) noexcept = default;
-    disk_t& operator=(const disk_t&) = delete;
-    disk_t& operator=(disk_t&&) noexcept = default;
-    ~disk_t() = default;
-
     /**
      * @return all disk block devices on this system.
      */
@@ -252,12 +244,6 @@ class part_t {
     friend disk_t;
 
   public:
-    part_t(const part_t&) = delete;
-    part_t(part_t&&) noexcept = default;
-    part_t& operator=(const part_t&) = delete;
-    part_t& operator=(part_t&&) noexcept = default;
-    ~part_t() = default;
-
     /**
      * @return the path to this partition in /sys. This provides access to
      * various partition-specific information exposed by the kernel.
@@ -335,6 +321,33 @@ class cpu_usage_t {
      * occurred.
      */
     [[nodiscard]] std::optional<double> get() const;
+};
+
+class backlight_t {
+    fs::path sysfs_path_;
+
+    backlight_t(const fs::path& sysfs_path);
+
+  public:
+    /**
+     * @return all backlights on this system.
+     */
+    [[nodiscard]] static std::optional<std::list<backlight_t>> all();
+
+    /**
+     * @return the path to this backlight in /sys. This provides access to
+     * various backlight-specific information exposed by the kernel.
+     */
+    [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @brief Attempt to calculate the brightness percentage of this backlight.
+     * The percentage is calculated by dividing the current brightness by the
+     * maximum brightness and multiplying the result by 100.
+     *
+     * @return the brightness percentage or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<double> brightness() const;
 };
 
 } // namespace syst

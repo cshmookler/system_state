@@ -49,7 +49,7 @@ meson install
 - [ ] battery name
 - [ ] battery percentage
 - [ ] battery time remaining
-- [ ] backlight percentage
+- [X] backlight percentage
 - [ ] network status
 - [ ] network name
 - [ ] network SSID
