@@ -354,7 +354,6 @@ TEST(block_test, part_io_stat) {
         partition_found = true;
 
         for (const syst::part_t& part : parts.value()) {
-            std::cout << "part: " << part.sysfs_path();
             std::optional<syst::io_stat_t> io_stat = part.io_stat();
             ASSERT_TRUE(io_stat.has_value());
             // All I/O statistics can be any value.

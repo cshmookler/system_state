@@ -29,9 +29,11 @@
  */
 
 // Standard includes
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <numeric>
 #include <optional>
 #include <list>
 
@@ -159,7 +161,7 @@ class disk_t {
     fs::path sysfs_path_;
     fs::path devfs_path_;
 
-    disk_t(const fs::path& sysfs_path, const fs::path& devfs_path) noexcept;
+    disk_t(const fs::path& sysfs_path, const fs::path& devfs_path);
 
     // Some classes need to access the private constructor for this class, but
     // not all classes need access.
@@ -243,7 +245,7 @@ class part_t {
     part_t(const fs::path& sysfs_path,
       const fs::path& devfs_path,
       const fs::path& disk_sysfs_path,
-      const fs::path& disk_devfs_path) noexcept;
+      const fs::path& disk_devfs_path);
 
     // Some classes need to access the private constructor for this class, but
     // not all classes need access.
@@ -296,6 +298,43 @@ class part_t {
      * occurred.
      */
     [[nodiscard]] std::optional<io_stat_t> io_stat() const;
+};
+
+/**
+ * @brief Stores CPU usage information. The 'update' method must be called at
+ * least twice before calling the 'get' method.
+ */
+class cpu_usage_t {
+    struct impl;
+    std::unique_ptr<impl> impl_;
+
+  public:
+    cpu_usage_t();
+    cpu_usage_t(const cpu_usage_t&) = delete;
+    cpu_usage_t(cpu_usage_t&&) noexcept = default;
+    cpu_usage_t& operator=(const cpu_usage_t&) = delete;
+    cpu_usage_t& operator=(cpu_usage_t&&) noexcept = default;
+    // The destructor must be implemented where 'impl' is defined.
+    ~cpu_usage_t();
+
+    /**
+     * @brief Attempt to update the CPU usage statistics.
+     *
+     * @return true if the statistics were successfully updated and false
+     * otherwise.
+     */
+    [[nodiscard]] bool update() const;
+
+    /**
+     * @brief Attempt to calculate the total CPU usage percentage for this
+     * system. The percentage is calculated by dividing the time spent idle by
+     * the total time elapsed between the last two update calls and multiplying
+     * the result by 100.
+     *
+     * @return the total CPU usage percentage or std::nullopt if an error
+     * occurred.
+     */
+    [[nodiscard]] std::optional<double> get() const;
 };
 
 } // namespace syst

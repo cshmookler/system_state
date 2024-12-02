@@ -30,8 +30,10 @@ lib_system_state = library(
     'system_state',
     files(
         src_dir / 'version.cpp',
+        src_dir / 'util.cpp',
         src_dir / 'system.cpp',
         src_dir / 'block.cpp',
+        src_dir / 'cpu_usage.cpp',
     ),
     version : meson.project_version(),
     install : true,
@@ -60,6 +62,7 @@ if dep_gtest_main.found()
         files(
             tests_dir / 'system.test.cpp',
             src_dir / 'system.cpp',
+            src_dir / 'util.cpp',
         ),
         dependencies : dep_gtest_main,
     )
@@ -70,10 +73,22 @@ if dep_gtest_main.found()
         files(
             tests_dir / 'block.test.cpp',
             src_dir / 'block.cpp',
+            src_dir / 'util.cpp',
         ),
         dependencies : dep_gtest_main,
     )
     test('block', test_block)
+
+    test_cpu_usage = executable(
+        'cpu_usage',
+        files(
+            tests_dir / 'cpu_usage.test.cpp',
+            src_dir / 'cpu_usage.cpp',
+            src_dir / 'util.cpp',
+        ),
+        dependencies : dep_gtest_main,
+    )
+    test('cpu_usage', test_cpu_usage)
 else
     warning('Skipping tests due to missing dependencies')
 endif

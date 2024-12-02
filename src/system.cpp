@@ -3,6 +3,7 @@
 
 // Local includes
 #include "../system_state/core.hpp"
+#include "util.hpp"
 
 namespace syst {
 
@@ -10,18 +11,6 @@ template<typename integral_t>
 [[nodiscard]] double load_to_double(integral_t load) {
     static_assert(std::is_integral_v<integral_t>);
     return static_cast<double>(load) / static_cast<double>(1U << SI_LOAD_SHIFT);
-}
-
-template<typename integral_t>
-[[nodiscard]] double ratio_to_percent(
-  integral_t numerator, integral_t denominator) {
-    static_assert(std::is_integral_v<integral_t>);
-    if (denominator == 0) {
-        // Return 100% if the denominator is invalid.
-        return static_cast<double>(1e2);
-    }
-    return (static_cast<double>(numerator) / static_cast<double>(denominator))
-      * static_cast<double>(1e2);
 }
 
 template<typename integral_lhs_t, typename integral_rhs_t>

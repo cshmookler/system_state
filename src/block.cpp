@@ -152,7 +152,7 @@ namespace syst {
     return io_stat;
 }
 
-disk_t::disk_t(const fs::path& sysfs_path, const fs::path& devfs_path) noexcept
+disk_t::disk_t(const fs::path& sysfs_path, const fs::path& devfs_path)
 : sysfs_path_(sysfs_path), devfs_path_(devfs_path) {
 }
 
@@ -204,7 +204,7 @@ std::optional<std::list<part_t>> disk_t::parts() const {
             // Ignore this disk (it's a disk, not a partition).
             continue;
         }
-        if (part_name.string().rfind(disk_name, 0) != 0) {
+        if (! has_prefix(part_name.string(), disk_name.string())) {
             // Ignore block devices that are not associated with this disk.
             continue;
         }
@@ -278,7 +278,7 @@ std::optional<io_stat_t> disk_t::io_stat() const {
 part_t::part_t(const fs::path& sysfs_path,
   const fs::path& devfs_path,
   const fs::path& disk_sysfs_path,
-  const fs::path& disk_devfs_path) noexcept
+  const fs::path& disk_devfs_path)
 : sysfs_path_(sysfs_path)
 , devfs_path_(devfs_path)
 , disk_sysfs_path_(disk_sysfs_path)

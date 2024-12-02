@@ -42,7 +42,7 @@ meson install
 - [X] disk space (and other related information)
 - [X] swap
 - [X] memory
-- [ ] cpu usage
+- [X] cpu usage
 - [ ] cpu temperature
 - [X] load averages (1 min, 5 min, 15 min)
 - [ ] battery status
