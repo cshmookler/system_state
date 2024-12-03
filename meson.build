@@ -49,82 +49,29 @@ dep_gtest_main = dependency(
     method : 'auto',
 )
 
+tests = [
+    'version',
+    'system',
+    'block',
+    'cpu_usage',
+    'backlight',
+    'battery',
+    'network_interface',
+]
+
 if dep_gtest_main.found()
-    test_version = executable(
-        'version',
-        files(
-            tests_dir / 'version.test.cpp',
-            src_dir / 'version.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('version', test_version)
-
-    test_system = executable(
-        'system',
-        files(
-            tests_dir / 'system.test.cpp',
-            src_dir / 'system.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('system', test_system)
-
-    test_block = executable(
-        'block',
-        files(
-            tests_dir / 'block.test.cpp',
-            src_dir / 'block.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('block', test_block)
-
-    test_cpu_usage = executable(
-        'cpu_usage',
-        files(
-            tests_dir / 'cpu_usage.test.cpp',
-            src_dir / 'cpu_usage.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('cpu_usage', test_cpu_usage)
-
-    test_backlight = executable(
-        'backlight',
-        files(
-            tests_dir / 'backlight.test.cpp',
-            src_dir / 'backlight.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('backlight', test_backlight)
-
-    test_battery = executable(
-        'battery',
-        files(
-            tests_dir / 'battery.test.cpp',
-            src_dir / 'battery.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('battery', test_battery)
-
-    test_network_interface = executable(
-        'network_interface',
-        files(
-            tests_dir / 'network_interface.test.cpp',
-            src_dir / 'network_interface.cpp',
-            src_dir / 'util.cpp',
-        ),
-        dependencies : dep_gtest_main,
-    )
-    test('network_interface', test_network_interface)
+    foreach test_name : tests
+        test_exec = executable(
+            test_name,
+            files(
+                tests_dir / (test_name + '.test.cpp'),
+                src_dir / (test_name + '.cpp'),
+                src_dir / 'util.cpp',
+            ),
+            dependencies : dep_gtest_main,
+        )
+        test(test_name, test_exec)
+    endforeach
 else
     warning('Skipping tests due to missing dependencies')
 endif
