@@ -43,6 +43,5 @@ TEST(backlight_test, brightness) {
         // Backlight brightness must always be between 0 and 100.
         ASSERT_GE(brightness.value(), 0.F);
         ASSERT_LE(brightness.value(), 100.F);
-        std::cout << brightness.value() << std::endl;
     }
 }

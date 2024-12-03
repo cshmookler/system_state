@@ -1,6 +1,3 @@
-// Standard includes
-#include <thread>
-
 // External includes
 #include <gtest/gtest.h>
 

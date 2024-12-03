@@ -36,6 +36,7 @@ lib_system_state = library(
         src_dir / 'cpu_usage.cpp',
         src_dir / 'backlight.cpp',
         src_dir / 'battery.cpp',
+        src_dir / 'network_interface.cpp',
     ),
     version : meson.project_version(),
     install : true,
@@ -113,6 +114,17 @@ if dep_gtest_main.found()
         dependencies : dep_gtest_main,
     )
     test('battery', test_battery)
+
+    test_network_interface = executable(
+        'network_interface',
+        files(
+            tests_dir / 'network_interface.test.cpp',
+            src_dir / 'network_interface.cpp',
+            src_dir / 'util.cpp',
+        ),
+        dependencies : dep_gtest_main,
+    )
+    test('network_interface', test_network_interface)
 else
     warning('Skipping tests due to missing dependencies')
 endif

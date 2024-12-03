@@ -167,12 +167,14 @@ class disk_t {
 
   public:
     /**
-     * @return all disk block devices on this system.
+     * @return all disk block devices on this system or std::nullopt if an error
+     * occurred.
      */
     [[nodiscard]] static std::optional<std::list<disk_t>> all();
 
     /**
-     * @return all partitions associated with this disk block device.
+     * @return all partitions associated with this disk block device or
+     * std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<std::list<part_t>> parts() const;
 
@@ -330,7 +332,8 @@ class backlight_t {
 
   public:
     /**
-     * @return all backlights on this system.
+     * @return all backlights on this system or std::nullopt if an error
+     * occurred.
      */
     [[nodiscard]] static std::optional<std::list<backlight_t>> all();
 
@@ -350,22 +353,26 @@ class backlight_t {
     [[nodiscard]] std::optional<double> brightness() const;
 };
 
-enum class battery_status_t {
-    unknown,
-    charging,
-    discharging,
-    not_charging,
-    full,
-};
-
+/**
+ * @brief Represents a battery connected to this system.
+ */
 class battery_t {
     fs::path sysfs_path_;
 
     battery_t(const fs::path& sysfs_path);
 
   public:
+    enum class status_t {
+        unknown,
+        charging,
+        discharging,
+        not_charging,
+        full,
+    };
+
     /**
-     * @return all batteries on this system.
+     * @return all batteries on this system or std::nullopt if an error
+     * occurred.
      */
     [[nodiscard]] static std::optional<std::list<battery_t>> all();
 
@@ -376,9 +383,10 @@ class battery_t {
     [[nodiscard]] fs::path sysfs_path() const;
 
     /**
-     * @return the current status of this battery.
+     * @return the current status of this battery or std::nullopt if an error
+     * occurred.
      */
-    [[nodiscard]] std::optional<battery_status_t> status() const;
+    [[nodiscard]] std::optional<status_t> status() const;
 
     /**
      * @brief Attempt to calculate the current energy percentage of this
@@ -392,13 +400,63 @@ class battery_t {
 
     /**
      * @brief Attempt to calculate the percentage of energy still storable
-     * within this battery as when this battery was new. This percentage is
-     * calculated by dividing the current energy capacity by the original energy
-     * capacity given by the manufacturer and multiplying by 100.
+     * within this battery compared to when this battery was new. This
+     * percentage is calculated by dividing the current energy capacity by the
+     * original energy capacity given by the manufacturer and multiplying by
+     * 100.
      *
      * @return the capacity percentage or std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<double> capacity() const;
+};
+
+/**
+ * @brief Represents a network interface (either physical and virtual) on this
+ * system.
+ */
+class network_interface_t {
+    fs::path sysfs_path_;
+
+    network_interface_t(const fs::path& sysfs_path);
+
+  public:
+    enum class status_t {
+        unknown,
+        up,
+        dormant,
+        down,
+    };
+
+    /**
+     * @return all network interfaces on this system or std::nullopt if an error
+     * occurred.
+     */
+    [[nodiscard]] static std::optional<std::list<network_interface_t>> all();
+
+    /**
+     * @return the path to this network interface in /sys. This provides access
+     * to various interface-specific information exposed by the kernel.
+     */
+    [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return true if this network interface represents a physical device,
+     * false if it is virtual, and std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<bool> physical() const;
+
+    /**
+     * @return true if this network interface is a loopback device, false
+     * otherwise, and std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<bool> loopback() const;
+
+    /**
+     * @brief Attempt to get the current status of this network interface.
+     *
+     * @return the current status or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<status_t> status() const;
 };
 
 } // namespace syst

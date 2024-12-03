@@ -25,6 +25,10 @@ std::optional<std::list<battery_t>> battery_t::all() {
 
     for (const fs::directory_entry& battery :
       fs::directory_iterator(power_supply_path)) {
+        if (! fs::is_symlink(battery)) {
+            return std::nullopt;
+        }
+
         auto type = get_first_line(battery.path() / "type");
         if (! type.has_value()) {
             return std::nullopt;
@@ -44,7 +48,7 @@ fs::path battery_t::sysfs_path() const {
     return this->sysfs_path_;
 }
 
-std::optional<battery_status_t> battery_t::status() const {
+std::optional<battery_t::status_t> battery_t::status() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -55,19 +59,19 @@ std::optional<battery_status_t> battery_t::status() const {
     }
 
     if (status.value() == "Unknown") {
-        return battery_status_t::unknown;
+        return status_t::unknown;
     }
     if (status.value() == "Charging") {
-        return battery_status_t::charging;
+        return status_t::charging;
     }
     if (status.value() == "Discharging") {
-        return battery_status_t::discharging;
+        return status_t::discharging;
     }
     if (status.value() == "Not charging") {
-        return battery_status_t::not_charging;
+        return status_t::not_charging;
     }
     if (status.value() == "Full") {
-        return battery_status_t::full;
+        return status_t::full;
     }
 
     // The given status is invalid.

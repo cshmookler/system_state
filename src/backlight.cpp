@@ -24,6 +24,10 @@ std::optional<std::list<backlight_t>> backlight_t::all() {
 
     for (const fs::directory_entry& backlight :
       fs::directory_iterator(backlights_path)) {
+        if (! fs::is_symlink(backlight)) {
+            return std::nullopt;
+        }
+
         backlights.push_back(backlight_t{ backlight });
     }
 

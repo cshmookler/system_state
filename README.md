@@ -54,8 +54,7 @@ meson install
 - [X] battery percentage
 - [ ] battery time remaining
 - [X] backlight percentage
-- [ ] network status
-- [ ] network name
+- [X] network status
 - [ ] network SSID
 - [ ] network signal strength percentage
 - [ ] volume mute

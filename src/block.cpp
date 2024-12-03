@@ -156,6 +156,10 @@ std::optional<std::list<disk_t>> disk_t::all() {
     }
 
     for (const auto& block : fs::directory_iterator(blocks_path)) {
+        if (! fs::is_symlink(block)) {
+            return std::nullopt;
+        }
+
         const fs::path& sysfs_path = block.path();
 
         std::optional<fs::path> devfs_path = ::syst::devfs_path(sysfs_path);
@@ -189,6 +193,10 @@ std::optional<std::list<part_t>> disk_t::parts() const {
         if (! has_prefix(part_name.string(), disk_name.string())) {
             // Ignore block devices that are not associated with this disk.
             continue;
+        }
+
+        if (! fs::is_symlink(block)) {
+            return std::nullopt;
         }
 
         if (! fs::is_regular_file(block.path() / "partition")) {
