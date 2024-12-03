@@ -35,22 +35,12 @@ fs::path backlight_t::sysfs_path() const {
 }
 
 std::optional<double> backlight_t::brightness() const {
-    const std::string_view brightness_filename = "brightness";
-    fs::path brightness_path = this->sysfs_path_ / brightness_filename;
-    if (! fs::is_regular_file(brightness_path)) {
-        return std::nullopt;
-    }
-    std::optional<uint64_t> brightness = get_int(brightness_path);
+    auto brightness = get_int(this->sysfs_path_ / "brightness");
     if (! brightness.has_value()) {
         return std::nullopt;
     }
 
-    const std::string_view max_brightness_filename = "max_brightness";
-    fs::path max_brightness_path = this->sysfs_path_ / max_brightness_filename;
-    if (! fs::is_regular_file(max_brightness_path)) {
-        return std::nullopt;
-    }
-    std::optional<uint64_t> max_brightness = get_int(max_brightness_path);
+    auto max_brightness = get_int(this->sysfs_path_ / "max_brightness");
     if (! max_brightness.has_value()) {
         return std::nullopt;
     }

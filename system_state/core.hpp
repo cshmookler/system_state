@@ -350,4 +350,55 @@ class backlight_t {
     [[nodiscard]] std::optional<double> brightness() const;
 };
 
+enum class battery_status_t {
+    unknown,
+    charging,
+    discharging,
+    not_charging,
+    full,
+};
+
+class battery_t {
+    fs::path sysfs_path_;
+
+    battery_t(const fs::path& sysfs_path);
+
+  public:
+    /**
+     * @return all batteries on this system.
+     */
+    [[nodiscard]] static std::optional<std::list<battery_t>> all();
+
+    /**
+     * @return the path to this battery in /sys. This provides access to
+     * various battery-specific information exposed by the kernel.
+     */
+    [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return the current status of this battery.
+     */
+    [[nodiscard]] std::optional<battery_status_t> status() const;
+
+    /**
+     * @brief Attempt to calculate the current energy percentage of this
+     * battery. This is calculated by dividing the current energy level by the
+     * energy capacity and multiplying by 100.
+     *
+     * @return the current energy percentage or std::nullopt if an error
+     * occurred.
+     */
+    [[nodiscard]] std::optional<double> charge() const;
+
+    /**
+     * @brief Attempt to calculate the percentage of energy still storable
+     * within this battery as when this battery was new. This percentage is
+     * calculated by dividing the current energy capacity by the original energy
+     * capacity given by the manufacturer and multiplying by 100.
+     *
+     * @return the capacity percentage or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<double> capacity() const;
+};
+
 } // namespace syst

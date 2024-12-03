@@ -5,14 +5,12 @@
 #include "../system_state/core.hpp"
 
 TEST(backlight_test, all) {
-    std::optional<std::list<syst::backlight_t>> backlights =
-      syst::backlight_t::all();
+    auto backlights = syst::backlight_t::all();
     ASSERT_TRUE(backlights.has_value());
 }
 
 TEST(backlight_test, all_one_backlight) {
-    std::optional<std::list<syst::backlight_t>> backlights =
-      syst::backlight_t::all();
+    auto backlights = syst::backlight_t::all();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
@@ -20,8 +18,7 @@ TEST(backlight_test, all_one_backlight) {
 }
 
 TEST(backlight_test, sysfs_path) {
-    std::optional<std::list<syst::backlight_t>> backlights =
-      syst::backlight_t::all();
+    auto backlights = syst::backlight_t::all();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
@@ -34,8 +31,7 @@ TEST(backlight_test, sysfs_path) {
 }
 
 TEST(backlight_test, brightness) {
-    std::optional<std::list<syst::backlight_t>> backlights =
-      syst::backlight_t::all();
+    auto backlights = syst::backlight_t::all();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.

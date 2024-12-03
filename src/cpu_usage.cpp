@@ -36,16 +36,12 @@ bool cpu_usage_t::update() const {
     // documentation for /proc/stat
     //     https://www.kernel.org/doc/html/latest/filesystems/proc.html#miscellaneous-kernel-statistics-in-proc-stat
 
-    const std::string_view proc_stat_path = "/proc/stat";
-    std::optional<std::string> first_line = get_first_line(proc_stat_path);
+    auto first_line = get_first_line("/proc/stat");
     if (! first_line.has_value()) {
         return false;
     }
 
-    const std::string_view proc_stat_cpu_field = "cpu ";
-    std::string_view fields =
-      remove_prefix(first_line.value(), proc_stat_cpu_field);
-
+    std::string_view fields = remove_prefix(first_line.value(), "cpu ");
     if (fields == first_line.value()) {
         // The first line did not contain the target prefix.
         return false;

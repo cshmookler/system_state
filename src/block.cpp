@@ -9,22 +9,18 @@
 namespace syst {
 
 [[nodiscard]] std::optional<fs::path> devfs_path(const fs::path& sysfs_path) {
-    fs::path devfs_root_path = "/dev";
-    fs::path devfs_path = devfs_root_path / sysfs_path.filename();
+    fs::path devfs_path = "/dev" / sysfs_path.filename();
 
     if (! fs::is_block_file(devfs_path)) {
         // The path to the devfs device must exist.
         return std::nullopt;
     }
 
-    return std::make_optional<fs::path>(std::move(devfs_path));
+    return devfs_path;
 }
 
 [[nodiscard]] std::optional<uint64_t> size(const fs::path& sysfs_path) {
-    const std::string_view size_filename = "size";
-    fs::path size_path = sysfs_path / size_filename;
-
-    std::optional<uint64_t> size = get_int(size_path);
+    auto size = get_int(sysfs_path / "size");
 
     const uint64_t bytes_per_sector = 512; // UNIX sectors
     size.value() *= bytes_per_sector;
@@ -33,10 +29,7 @@ namespace syst {
 }
 
 [[nodiscard]] std::optional<bool> read_only(const fs::path& sysfs_path) {
-    const std::string_view read_only_filename = "ro";
-    fs::path read_only_path = sysfs_path / read_only_filename;
-
-    return get_bool(read_only_path);
+    return get_bool(sysfs_path / "ro");
 }
 
 [[nodiscard]] std::optional<inflight_stat_t> inflight_stat(
@@ -44,9 +37,7 @@ namespace syst {
     // documentation for /sys/block/<dev>/inflight
     //     https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-block
 
-    const std::string_view inflight_filename = "inflight";
-    fs::path inflight_path = sysfs_path / inflight_filename;
-
+    fs::path inflight_path = sysfs_path / "inflight";
     if (! fs::is_regular_file(inflight_path)) {
         // The in-flight statistics file must exist.
         return std::nullopt;
@@ -72,21 +63,13 @@ namespace syst {
     //     https://www.kernel.org/doc/html/latest/block/stat.html
     //     https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-block
 
-    const std::string_view queue_path = "queue";
-    const std::string_view io_stat_status_filename = "iostats";
-    fs::path io_stat_status_path =
-      disk_sysfs_path / queue_path / io_stat_status_filename;
-
-    std::optional<bool> io_stat_status = get_bool(io_stat_status_path);
-
+    auto io_stat_status = get_bool(disk_sysfs_path / "queue/iostats");
     if ((! io_stat_status.has_value()) || (! io_stat_status.value())) {
         // I/O statistics must be enabled.
         return std::nullopt;
     }
 
-    const std::string_view io_stat_filename = "stat";
-    fs::path io_stat_path = sysfs_path / io_stat_filename;
-
+    fs::path io_stat_path = sysfs_path / "stat";
     if (! fs::is_regular_file(io_stat_path)) {
         // The I/O statistics file must exist.
         return std::nullopt;
@@ -165,15 +148,15 @@ std::optional<std::list<disk_t>> disk_t::all() {
 
     std::list<disk_t> disks;
 
-    const std::string_view devices_path = "/sys/block";
+    const std::string_view blocks_path = "/sys/block";
 
-    if (! fs::is_directory(devices_path)) {
+    if (! fs::is_directory(blocks_path)) {
         // The path to the devices directory must exist.
         return std::nullopt;
     }
 
-    for (const auto& device : fs::directory_iterator(devices_path)) {
-        const fs::path& sysfs_path = device.path();
+    for (const auto& block : fs::directory_iterator(blocks_path)) {
+        const fs::path& sysfs_path = block.path();
 
         std::optional<fs::path> devfs_path = ::syst::devfs_path(sysfs_path);
         if (! devfs_path.has_value()) {
@@ -190,16 +173,15 @@ std::optional<std::list<disk_t>> disk_t::all() {
 std::optional<std::list<part_t>> disk_t::parts() const {
     std::list<part_t> parts;
 
-    const std::string_view devices_path = "/sys/class/block";
-
-    if (! fs::is_directory(devices_path)) {
+    const std::string_view blocks_path = "/sys/class/block";
+    if (! fs::is_directory(blocks_path)) {
         // The path to the devices directory must exist.
         return std::nullopt;
     }
 
-    for (const auto& device : fs::directory_iterator(devices_path)) {
+    for (const auto& block : fs::directory_iterator(blocks_path)) {
         const fs::path disk_name = this->sysfs_path_.filename();
-        const fs::path part_name = device.path().filename();
+        const fs::path part_name = block.path().filename();
         if (disk_name == part_name) {
             // Ignore this disk (it's a disk, not a partition).
             continue;
@@ -209,13 +191,12 @@ std::optional<std::list<part_t>> disk_t::parts() const {
             continue;
         }
 
-        const std::string_view device_partition_filename = "partition";
-        if (! fs::is_regular_file(device.path() / device_partition_filename)) {
+        if (! fs::is_regular_file(block.path() / "partition")) {
             // Ignore block devices that are not partitions.
             continue;
         }
 
-        const fs::path& sysfs_path = device.path();
+        const fs::path& sysfs_path = block.path();
 
         std::optional<fs::path> devfs_path = ::syst::devfs_path(sysfs_path);
         if (! devfs_path.has_value()) {
@@ -259,12 +240,7 @@ std::optional<bool> disk_t::rotational() const {
     // documentation for /sys/block/<dev>/stat
     //     https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-block
 
-    const std::string_view queue_path = "queue";
-    const std::string_view rotational_filename = "rotational";
-    fs::path rotational_path =
-      this->sysfs_path_ / queue_path / rotational_filename;
-
-    return get_bool(rotational_path);
+    return get_bool(this->sysfs_path_ / "queue/rotational");
 }
 
 std::optional<inflight_stat_t> disk_t::inflight_stat() const {

@@ -50,9 +50,8 @@ meson install
 - [ ] process statistics
 - [ ] cpu temperature
 - [X] load averages (1 min, 5 min, 15 min)
-- [ ] battery status
-- [ ] battery name
-- [ ] battery percentage
+- [X] battery status
+- [X] battery percentage
 - [ ] battery time remaining
 - [X] backlight percentage
 - [ ] network status
