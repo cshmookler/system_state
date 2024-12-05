@@ -60,7 +60,7 @@ std::optional<bool> network_interface_t::loopback() const {
 
 std::optional<network_interface_t::status_t> network_interface_t::status()
   const {
-    // documentation for /sys/class/net/:
+    // documentation for /sys/class/net/<dev>/operstate:
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/if.h
 
     auto status = get_first_line(this->sysfs_path_ / "operstate");
@@ -83,6 +83,42 @@ std::optional<network_interface_t::status_t> network_interface_t::status()
 
     // The given status is invalid.
     return std::nullopt;
+}
+
+std::optional<network_interface_t::stat_t> network_interface_t::stat() const {
+    fs::path stat_path = this->sysfs_path_ / "statistics";
+    if (! fs::is_directory(stat_path)) {
+        // The statistics directory must exist.
+        return std::nullopt;
+    }
+
+    stat_t stat{};
+
+    auto rx_bytes = get_int(stat_path / "rx_bytes");
+    if (! rx_bytes.has_value()) {
+        return std::nullopt;
+    }
+    stat.bytes_down = rx_bytes.value();
+
+    auto tx_bytes = get_int(stat_path / "tx_bytes");
+    if (! tx_bytes.has_value()) {
+        return std::nullopt;
+    }
+    stat.bytes_up = tx_bytes.value();
+
+    auto rx_packets = get_int(stat_path / "rx_packets");
+    if (! rx_packets.has_value()) {
+        return std::nullopt;
+    }
+    stat.packets_down = rx_packets.value();
+
+    auto tx_packets = get_int(stat_path / "tx_packets");
+    if (! tx_packets.has_value()) {
+        return std::nullopt;
+    }
+    stat.packets_up = tx_packets.value();
+
+    return stat;
 }
 
 } // namespace syst

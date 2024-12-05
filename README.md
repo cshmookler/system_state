@@ -56,6 +56,7 @@ meson install
 - [X] backlight percentage
 - [X] network status
 - [ ] network SSID
+- [X] network statistics
 - [ ] network signal strength percentage
 - [ ] volume mute
 - [ ] volume percentage

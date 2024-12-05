@@ -427,6 +427,13 @@ class network_interface_t {
         down,
     };
 
+    struct stat_t {
+        uint64_t bytes_down;
+        uint64_t bytes_up;
+        uint64_t packets_down;
+        uint64_t packets_up;
+    };
+
     /**
      * @return all network interfaces on this system or std::nullopt if an error
      * occurred.
@@ -457,6 +464,14 @@ class network_interface_t {
      * @return the current status or std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<status_t> status() const;
+
+    /**
+     * @brief Attempt to get the statistics for transmitted and received data
+     * for this network interface.
+     *
+     * @return the interface statistics or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<stat_t> stat() const;
 };
 
 } // namespace syst

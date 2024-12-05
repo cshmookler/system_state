@@ -79,3 +79,42 @@ TEST(network_interface_test, status) {
         // The status can be any value.
     }
 }
+
+TEST(network_interface_test, stat) {
+    auto interfaces = syst::network_interface_t::all();
+    ASSERT_TRUE(interfaces.has_value());
+
+    // For testing purposes, there must be at least one network interface.
+    ASSERT_GE(interfaces->size(), 1);
+
+    bool bytes_down_found = false;
+    bool bytes_up_found = false;
+    bool packets_down_found = false;
+    bool packets_up_found = false;
+
+    for (const syst::network_interface_t& interface : interfaces.value()) {
+        auto status = interface.stat();
+        ASSERT_TRUE(status.has_value());
+        // The status can be any value.
+
+        // For testing purposes, each field must be non-zero for at least one
+        // network interface.
+        if (status->bytes_down > 0) {
+            bytes_down_found = true;
+        }
+        if (status->bytes_up > 0) {
+            bytes_up_found = true;
+        }
+        if (status->packets_down > 0) {
+            packets_down_found = true;
+        }
+        if (status->packets_up > 0) {
+            packets_up_found = true;
+        }
+    }
+
+    ASSERT_TRUE(bytes_down_found);
+    ASSERT_TRUE(bytes_up_found);
+    ASSERT_TRUE(packets_down_found);
+    ASSERT_TRUE(packets_up_found);
+}
