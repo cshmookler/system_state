@@ -40,6 +40,10 @@ fs::path backlight_t::sysfs_path() const {
     return this->sysfs_path_;
 }
 
+std::string backlight_t::name() const {
+    return this->sysfs_path_.filename();
+}
+
 std::optional<double> backlight_t::brightness() const {
     const auto brightness = get_int(this->sysfs_path_ / "brightness");
     if (! brightness.has_value()) {

@@ -30,6 +30,19 @@ TEST(network_interface_test, sysfs_path) {
     }
 }
 
+TEST(network_interface_test, name) {
+    auto interfaces = syst::network_interface_t::all();
+    ASSERT_TRUE(interfaces.has_value());
+
+    // For testing purposes, there must be at least one network interface.
+    ASSERT_GE(interfaces->size(), 1);
+
+    for (const syst::network_interface_t& interface : interfaces.value()) {
+        std::string name = interface.name();
+        ASSERT_TRUE(name.size() > 0);
+    }
+}
+
 TEST(network_interface_test, physical) {
     auto interfaces = syst::network_interface_t::all();
     ASSERT_TRUE(interfaces.has_value());

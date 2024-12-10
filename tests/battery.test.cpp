@@ -30,6 +30,19 @@ TEST(battery_test, sysfs_path) {
     }
 }
 
+TEST(battery_test, name) {
+    auto batteries = syst::battery_t::all();
+    ASSERT_TRUE(batteries.has_value());
+
+    // For testing purposes, there must be at least one battery.
+    ASSERT_GE(batteries->size(), 1);
+
+    for (const syst::battery_t& battery : batteries.value()) {
+        std::string name = battery.name();
+        ASSERT_TRUE(name.size() > 0);
+    }
+}
+
 TEST(battery_test, status) {
     auto batteries = syst::battery_t::all();
     ASSERT_TRUE(batteries.has_value());

@@ -51,6 +51,10 @@ fs::path battery_t::sysfs_path() const {
     return this->sysfs_path_;
 }
 
+std::string battery_t::name() const {
+    return this->sysfs_path_.filename();
+}
+
 std::optional<battery_t::status_t> battery_t::status() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h

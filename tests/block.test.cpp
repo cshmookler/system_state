@@ -43,6 +43,19 @@ TEST(block_test, disk_devfs_path) {
     }
 }
 
+TEST(block_test, disk_name) {
+    auto disks = syst::disk_t::all();
+    ASSERT_TRUE(disks.has_value());
+
+    // For testing purposes, there must be at least one disk.
+    ASSERT_GE(disks->size(), 1);
+
+    for (const syst::disk_t& disk : disks.value()) {
+        std::string name = disk.name();
+        ASSERT_TRUE(name.size() > 0);
+    }
+}
+
 TEST(block_test, disk_size) {
     auto disks = syst::disk_t::all();
     ASSERT_TRUE(disks.has_value());
@@ -235,6 +248,35 @@ TEST(block_test, part_disk) {
               disk.sysfs_path().c_str(), part_disk.sysfs_path().c_str());
             ASSERT_STREQ(
               disk.devfs_path().c_str(), part_disk.devfs_path().c_str());
+        }
+    }
+
+    ASSERT_TRUE(partition_found);
+}
+
+TEST(block_test, part_name) {
+    auto disks = syst::disk_t::all();
+    ASSERT_TRUE(disks.has_value());
+
+    // For testing purposes, there must be at least one disk.
+    ASSERT_GE(disks->size(), 1);
+
+    bool partition_found = false;
+
+    for (const syst::disk_t& disk : disks.value()) {
+        auto parts = disk.parts();
+        ASSERT_TRUE(parts.has_value());
+
+        // For testing purposes, one of the identified disks must contain at
+        // least one partition.
+        if (parts->size() == 0) {
+            continue;
+        }
+        partition_found = true;
+
+        for (const syst::part_t& part : parts.value()) {
+            std::string part_name = part.name();
+            ASSERT_TRUE(part_name.size() > 0);
         }
     }
 

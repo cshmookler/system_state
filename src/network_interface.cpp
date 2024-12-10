@@ -37,6 +37,10 @@ fs::path network_interface_t::sysfs_path() const {
     return this->sysfs_path_;
 }
 
+std::string network_interface_t::name() const {
+    return this->sysfs_path_.filename();
+}
+
 std::optional<bool> network_interface_t::physical() const {
     fs::path real_path;
     try {

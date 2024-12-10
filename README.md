@@ -40,8 +40,10 @@ meson install
 - [X] uptime
 - [X] disks
 - [X] disk partitions
+- [X] disk name
 - [X] disk space (and other related information)
 - [ ] disk partition schemes
+- [X] partition name
 - [ ] partition filesystems
 - [ ] partition mount points
 - [X] swap
@@ -51,14 +53,17 @@ meson install
 - [ ] process statistics
 - [ ] cpu temperature
 - [X] load averages (1 min, 5 min, 15 min)
+- [X] battery name
 - [X] battery status
 - [X] battery percentage
 - [ ] battery time remaining
+- [X] backlight name
 - [X] backlight percentage
-- [X] network status
-- [ ] network SSID
-- [X] network statistics
-- [ ] network signal strength percentage
+- [X] network interface name
+- [X] network interface status
+- [ ] network interface SSID
+- [X] network interface statistics
+- [ ] network interface signal strength percentage
 - [ ] volume mute
 - [ ] volume percentage
 - [ ] capture mute

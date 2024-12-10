@@ -308,6 +308,10 @@ fs::path disk_t::devfs_path() const {
     return this->devfs_path_;
 }
 
+std::string disk_t::name() const {
+    return this->sysfs_path_.filename();
+}
+
 std::optional<uint64_t> disk_t::size() const {
     return syst::size(this->sysfs_path_); // size sets syst::error
 }
@@ -352,6 +356,10 @@ fs::path part_t::sysfs_path() const {
 
 fs::path part_t::devfs_path() const {
     return this->devfs_path_;
+}
+
+std::string part_t::name() const {
+    return this->sysfs_path_.filename();
 }
 
 disk_t part_t::disk() const {

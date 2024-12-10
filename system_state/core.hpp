@@ -34,6 +34,7 @@
 #include <filesystem>
 #include <optional>
 #include <list>
+#include <string>
 
 namespace syst {
 
@@ -84,6 +85,9 @@ struct system_info_t {
     double swap_usage;
 };
 
+/**
+ * @return system information from sysinfo or std::nullopt if an error occurred.
+ */
 [[nodiscard]] std::optional<system_info_t> system_info();
 
 struct inflight_stat_t {
@@ -191,6 +195,11 @@ class disk_t {
     [[nodiscard]] fs::path devfs_path() const;
 
     /**
+     * @return the name of this device.
+     */
+    [[nodiscard]] std::string name() const;
+
+    /**
      * @return the size of this device in bytes or std::nullopt if the size
      * could not be determined.
      */
@@ -257,6 +266,11 @@ class part_t {
      * partition itself.
      */
     [[nodiscard]] fs::path devfs_path() const;
+
+    /**
+     * @return the name of this partition.
+     */
+    [[nodiscard]] std::string name() const;
 
     /**
      * @return the disk corresponding to this partition.
@@ -344,6 +358,11 @@ class backlight_t {
     [[nodiscard]] fs::path sysfs_path() const;
 
     /**
+     * @return the name of this backlight.
+     */
+    [[nodiscard]] std::string name() const;
+
+    /**
      * @brief Attempt to calculate the brightness percentage of this backlight.
      * The percentage is calculated by dividing the current brightness by the
      * maximum brightness and multiplying the result by 100.
@@ -381,6 +400,11 @@ class battery_t {
      * various battery-specific information exposed by the kernel.
      */
     [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return the name of this battery.
+     */
+    [[nodiscard]] std::string name() const;
 
     /**
      * @return the current status of this battery or std::nullopt if an error
@@ -445,6 +469,11 @@ class network_interface_t {
      * to various interface-specific information exposed by the kernel.
      */
     [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return the name of this network interface.
+     */
+    [[nodiscard]] std::string name() const;
 
     /**
      * @return true if this network interface represents a physical device,
