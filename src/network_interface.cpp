@@ -1,7 +1,7 @@
 // Local includes
 #include "../system_state/core.hpp"
+#include "../system_state/error.hpp"
 #include "util.hpp"
-#include <filesystem>
 
 namespace syst {
 
@@ -10,9 +10,10 @@ network_interface_t::network_interface_t(const fs::path& sysfs_path)
 }
 
 std::optional<std::list<network_interface_t>> network_interface_t::all() {
-    const std::string_view net_path = "/sys/class/net";
+    const std::string net_path = "/sys/class/net";
 
     if (! fs::is_directory(net_path)) {
+        syst::error = "The path is not a directory.\npath: '" + net_path + "'";
         return std::nullopt;
     }
 
@@ -21,6 +22,8 @@ std::optional<std::list<network_interface_t>> network_interface_t::all() {
     for (const fs::directory_entry& interface :
       fs::directory_iterator(net_path)) {
         if (! fs::is_symlink(interface)) {
+            syst::error = "The path is not a symbolic link.\npath: '"
+              + interface.path().string() + "'";
             return std::nullopt;
         }
 
@@ -39,6 +42,9 @@ std::optional<bool> network_interface_t::physical() const {
     try {
         real_path = fs::read_symlink(this->sysfs_path_);
     } catch (const fs::filesystem_error&) {
+        syst::error = "Failed to read the symlink at a path corresponding to a "
+                      "sysfs device.\npath: '"
+          + this->sysfs_path_.string() + "'";
         return std::nullopt;
     }
 
@@ -49,8 +55,9 @@ std::optional<bool> network_interface_t::loopback() const {
     // documentation for /sys/class/net/<dev>/type
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/if_arp.h
 
-    auto type = get_int(this->sysfs_path_ / "type");
+    const auto type = get_int(this->sysfs_path_ / "type");
     if (! type.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
 
@@ -63,8 +70,10 @@ std::optional<network_interface_t::status_t> network_interface_t::status()
     // documentation for /sys/class/net/<dev>/operstate:
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/if.h
 
-    auto status = get_first_line(this->sysfs_path_ / "operstate");
+    const fs::path status_path = this->sysfs_path_ / "operstate";
+    const auto status = get_first_line(status_path);
     if (! status.has_value()) {
+        // get_first_line sets syst::error
         return std::nullopt;
     }
 
@@ -81,39 +90,46 @@ std::optional<network_interface_t::status_t> network_interface_t::status()
         return status_t::down;
     }
 
-    // The given status is invalid.
+    syst::error = "An invalid status was read from a network interface status "
+                  "file.\nstatus: '"
+      + status.value() + "'\nfile: '" + status_path.string() + "'";
     return std::nullopt;
 }
 
 std::optional<network_interface_t::stat_t> network_interface_t::stat() const {
-    fs::path stat_path = this->sysfs_path_ / "statistics";
+    const fs::path stat_path = this->sysfs_path_ / "statistics";
     if (! fs::is_directory(stat_path)) {
-        // The statistics directory must exist.
+        syst::error =
+          "The path is not a directory.\npath: '" + stat_path.string() + "'";
         return std::nullopt;
     }
 
     stat_t stat{};
 
-    auto rx_bytes = get_int(stat_path / "rx_bytes");
+    const auto rx_bytes = get_int(stat_path / "rx_bytes");
     if (! rx_bytes.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
     stat.bytes_down = rx_bytes.value();
 
-    auto tx_bytes = get_int(stat_path / "tx_bytes");
+    const auto tx_bytes = get_int(stat_path / "tx_bytes");
     if (! tx_bytes.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
     stat.bytes_up = tx_bytes.value();
 
-    auto rx_packets = get_int(stat_path / "rx_packets");
+    const auto rx_packets = get_int(stat_path / "rx_packets");
     if (! rx_packets.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
     stat.packets_down = rx_packets.value();
 
-    auto tx_packets = get_int(stat_path / "tx_packets");
+    const auto tx_packets = get_int(stat_path / "tx_packets");
     if (! tx_packets.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
     stat.packets_up = tx_packets.value();

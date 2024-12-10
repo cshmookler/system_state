@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <optional>
 #include <string>
-#include <string_view>
 
 namespace syst {
 
@@ -43,7 +42,7 @@ namespace syst {
  * @return true if the target string has the given prefix and false otherwise.
  */
 [[nodiscard]] bool has_prefix(
-  const std::string_view& target, const std::string_view& prefix);
+  const std::string& target, const std::string& prefix);
 
 /**
  * @brief Removes the given prefix from the target string or does nothing if the
@@ -53,8 +52,8 @@ namespace syst {
  * @param[in] prefix - The prefix to remove from the target string.
  * @return the target string with the given prefix removed.
  */
-[[nodiscard]] std::string_view remove_prefix(
-  const std::string_view& target, const std::string_view& prefix);
+[[nodiscard]] std::string remove_prefix(
+  const std::string& target, const std::string& prefix);
 
 /**
  * @brief Calculate a percent (0 - 100) from the given ratio. If the denominator
@@ -69,6 +68,7 @@ template<typename integral_t>
 [[nodiscard]] double ratio_to_percent(
   integral_t numerator, integral_t denominator) {
     static_assert(std::is_integral_v<integral_t>);
+
     if (denominator == 0) {
         // Return 100% if the denominator is invalid.
         return static_cast<double>(1e2);

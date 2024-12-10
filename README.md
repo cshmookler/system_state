@@ -35,6 +35,7 @@ meson install
 
 ## **TODO**
 
+- [X] error handling
 - [X] date and time
 - [X] uptime
 - [X] disks

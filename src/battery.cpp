@@ -1,8 +1,6 @@
-// Standard includes
-#include <string_view>
-
 // Local includes
 #include "../system_state/core.hpp"
+#include "../system_state/error.hpp"
 #include "util.hpp"
 
 namespace syst {
@@ -15,9 +13,11 @@ std::optional<std::list<battery_t>> battery_t::all() {
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    const std::string_view power_supply_path = "/sys/class/power_supply";
+    const std::string power_supply_path = "/sys/class/power_supply";
 
     if (! fs::is_directory(power_supply_path)) {
+        syst::error =
+          "The path is not a directory.\npath: '" + power_supply_path + "'";
         return std::nullopt;
     }
 
@@ -26,11 +26,14 @@ std::optional<std::list<battery_t>> battery_t::all() {
     for (const fs::directory_entry& battery :
       fs::directory_iterator(power_supply_path)) {
         if (! fs::is_symlink(battery)) {
+            syst::error = "The path is not a symbolic link.\npath: '"
+              + battery.path().string() + "'";
             return std::nullopt;
         }
 
-        auto type = get_first_line(battery.path() / "type");
+        const auto type = get_first_line(battery.path() / "type");
         if (! type.has_value()) {
+            // get_first_line sets syst::error
             return std::nullopt;
         }
         if (type.value() != "Battery") {
@@ -53,8 +56,10 @@ std::optional<battery_t::status_t> battery_t::status() const {
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto status = get_first_line(this->sysfs_path_ / "status");
+    const fs::path status_path = this->sysfs_path_ / "status";
+    const auto status = get_first_line(status_path);
     if (! status.has_value()) {
+        // get_first_line sets syst::error
         return std::nullopt;
     }
 
@@ -74,7 +79,9 @@ std::optional<battery_t::status_t> battery_t::status() const {
         return status_t::full;
     }
 
-    // The given status is invalid.
+    syst::error =
+      "An invalid status was read from a battery status file.\nstatus: '"
+      + status.value() + "'\nfile: '" + status_path.string() + "'";
     return std::nullopt;
 }
 
@@ -83,13 +90,15 @@ std::optional<double> battery_t::charge() const {
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto energy_now = get_int(this->sysfs_path_ / "energy_now");
+    const auto energy_now = get_int(this->sysfs_path_ / "energy_now");
     if (! energy_now.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
 
-    auto energy_full = get_int(this->sysfs_path_ / "energy_full");
+    const auto energy_full = get_int(this->sysfs_path_ / "energy_full");
     if (! energy_full.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
 
@@ -101,13 +110,16 @@ std::optional<double> battery_t::capacity() const {
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto energy_full = get_int(this->sysfs_path_ / "energy_full");
+    const auto energy_full = get_int(this->sysfs_path_ / "energy_full");
     if (! energy_full.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
 
-    auto energy_full_design = get_int(this->sysfs_path_ / "energy_full_design");
+    const auto energy_full_design =
+      get_int(this->sysfs_path_ / "energy_full_design");
     if (! energy_full_design.has_value()) {
+        // get_int sets syst::error
         return std::nullopt;
     }
 

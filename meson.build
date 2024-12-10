@@ -25,11 +25,13 @@ configure_file(
 lib_system_state_headers = files(
     build_dir / 'version.hpp',
     include_dir / 'core.hpp',
+    include_dir / 'error.hpp',
 )
 lib_system_state = library(
     'system_state',
     files(
         src_dir / 'version.cpp',
+        src_dir / 'error.cpp',
         src_dir / 'util.cpp',
         src_dir / 'system.cpp',
         src_dir / 'block.cpp',
@@ -66,6 +68,7 @@ if dep_gtest_main.found()
             files(
                 tests_dir / (test_name + '.test.cpp'),
                 src_dir / (test_name + '.cpp'),
+                src_dir / 'error.cpp',
                 src_dir / 'util.cpp',
             ),
             dependencies : dep_gtest_main,
