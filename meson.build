@@ -67,11 +67,9 @@ if dep_gtest_main.found()
             test_name,
             files(
                 tests_dir / (test_name + '.test.cpp'),
-                src_dir / (test_name + '.cpp'),
-                src_dir / 'error.cpp',
-                src_dir / 'util.cpp',
             ),
             dependencies : dep_gtest_main,
+            link_with : lib_system_state,
         )
         test(test_name, test_exec)
     endforeach
