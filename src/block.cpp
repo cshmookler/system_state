@@ -35,6 +35,19 @@ namespace syst {
     return size;
 }
 
+[[nodiscard]] std::optional<uint64_t> start(const fs::path& sysfs_path) {
+    auto start = get_int(sysfs_path / "start");
+    if (! start.has_value()) {
+        // get_int sets syst::error
+        return std::nullopt;
+    }
+
+    const uint64_t bytes_per_sector = 512; // UNIX sectors
+    start.value() *= bytes_per_sector;
+
+    return start;
+}
+
 [[nodiscard]] std::optional<bool> read_only(const fs::path& sysfs_path) {
     return get_bool(sysfs_path / "ro"); // get_bool sets syst:error
 }
@@ -368,6 +381,10 @@ disk_t part_t::disk() const {
 
 std::optional<uint64_t> part_t::size() const {
     return syst::size(this->sysfs_path_); // size sets syst::error
+}
+
+std::optional<uint64_t> part_t::start() const {
+    return syst::start(this->sysfs_path_); // start sets syst::error
 }
 
 std::optional<bool> part_t::read_only() const {

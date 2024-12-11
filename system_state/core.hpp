@@ -283,6 +283,12 @@ class part_t {
      */
     [[nodiscard]] std::optional<uint64_t> size() const;
 
+    /**
+     * @return the start position of this partition on the disk corresponding to
+     * this partition in bytes or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<uint64_t> start() const;
+
     /*
      * @return true if this partition is read-only, false if it is not, and
      * std::nullopt if the read-only status could not be determined.

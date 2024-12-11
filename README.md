@@ -44,6 +44,7 @@ meson install
 - [X] disk space (and other related information)
 - [ ] disk partition schemes
 - [X] partition name
+- [X] partition start position
 - [ ] partition filesystems
 - [ ] partition mount points
 - [X] swap

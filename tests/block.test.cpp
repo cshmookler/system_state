@@ -313,6 +313,36 @@ TEST(block_test, part_size) {
     ASSERT_TRUE(partition_found);
 }
 
+TEST(block_test, part_start) {
+    auto disks = syst::disk_t::all();
+    ASSERT_TRUE(disks.has_value());
+
+    // For testing purposes, there must be at least one disk.
+    ASSERT_GE(disks->size(), 1);
+
+    bool partition_found = false;
+
+    for (const syst::disk_t& disk : disks.value()) {
+        auto parts = disk.parts();
+        ASSERT_TRUE(parts.has_value());
+
+        // For testing purposes, one of the identified disks must contain at
+        // least one partition.
+        if (parts->size() == 0) {
+            continue;
+        }
+        partition_found = true;
+
+        for (const syst::part_t& part : parts.value()) {
+            auto start = part.start();
+            ASSERT_TRUE(start.has_value());
+            // Partition size can be any value.
+        }
+    }
+
+    ASSERT_TRUE(partition_found);
+}
+
 TEST(block_test, part_read_only) {
     auto disks = syst::disk_t::all();
     ASSERT_TRUE(disks.has_value());
