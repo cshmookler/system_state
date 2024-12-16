@@ -2,11 +2,28 @@
 #include <fstream>
 
 // Local includes
-#include "../system_state/core.hpp"
 #include "../system_state/error.hpp"
 #include "util.hpp"
 
 namespace syst {
+
+std::optional<std::vector<std::string>> get_all_lines(
+  const std::filesystem::path& path) {
+    if (! std::filesystem::is_regular_file(path)) {
+        syst::error =
+          "The path is not a regular file.\npath: '" + path.string() + "'";
+        return std::nullopt;
+    }
+
+    std::ifstream file{ path };
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(file, line).good()) {
+        lines.push_back(line);
+    }
+
+    return lines;
+}
 
 std::optional<std::string> get_first_line(const std::filesystem::path& path) {
     if (! std::filesystem::is_regular_file(path)) {
@@ -14,6 +31,7 @@ std::optional<std::string> get_first_line(const std::filesystem::path& path) {
           "The path is not a regular file.\npath: '" + path.string() + "'";
         return std::nullopt;
     }
+
     std::ifstream file{ path };
     std::string first_line;
     if (! std::getline(file, first_line).good()) {
@@ -21,6 +39,7 @@ std::optional<std::string> get_first_line(const std::filesystem::path& path) {
           + path.string() + "'";
         return std::nullopt;
     }
+
     return first_line;
 }
 

@@ -35,6 +35,7 @@
 #include <optional>
 #include <list>
 #include <string>
+#include <vector>
 
 namespace syst {
 
@@ -348,7 +349,18 @@ class cpu_usage_t {
      * @return the total CPU usage percentage or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<double> get() const;
+    [[nodiscard]] std::optional<double> get_total() const;
+
+    /**
+     * @brief Attempt to calculate the CPU usage percentage of each core for
+     * this system. The percentages are calculated by dividing the time spent
+     * idle by the total time elapsed between the last two update calls and
+     * multiplying the result by 100.
+     *
+     * @return a dynamic array of doubles with each double representing the CPU
+     * usage percentage of a specific core.
+     */
+    [[nodiscard]] std::optional<std::list<double>> get_per_core() const;
 };
 
 class backlight_t {

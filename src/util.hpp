@@ -5,8 +5,19 @@
 #include <filesystem>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace syst {
+
+/**
+ * @brief Extract all lines from the file at the given path.
+ *
+ * @param[in] path - The path to the file to extract all lines from.
+ * @return an dynamic array of strings with each string corresponding to one
+ * line or std::nullopt if an error occured.
+ */
+[[nodiscard]] std::optional<std::vector<std::string>> get_all_lines(
+  const std::filesystem::path& path);
 
 /**
  * @brief Extract the first line from the file at the given path.

@@ -50,7 +50,7 @@ meson install
 - [X] swap
 - [X] memory
 - [X] total cpu usage
-- [ ] individual cpu usage
+- [X] individual cpu usage
 - [ ] process statistics
 - [ ] cpu temperature
 - [X] load averages (1 min, 5 min, 15 min)
