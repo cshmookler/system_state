@@ -27,6 +27,25 @@ struct cpu_usage_t::impl {
     std::optional<std::vector<cpu_usage_stat_t>> new_stat;
 };
 
+[[nodiscard]] double get_usage_percentage(
+  const cpu_usage_stat_t& old_stat, const cpu_usage_stat_t& new_stat) {
+    const uint64_t idle = new_stat.idle - old_stat.idle;
+
+    uint64_t total = 0;
+    total += new_stat.user_mode - old_stat.user_mode;
+    total += new_stat.low_priority_user_mode - old_stat.low_priority_user_mode;
+    total += new_stat.system_mode - old_stat.system_mode;
+    total += idle;
+    total += new_stat.io_idle - old_stat.io_idle;
+    total += new_stat.interrupt - old_stat.interrupt;
+    total += new_stat.soft_interrupt - old_stat.soft_interrupt;
+    total += new_stat.stolen - old_stat.stolen;
+    total += new_stat.guest - old_stat.guest;
+    total += new_stat.niced_guest - old_stat.niced_guest;
+
+    return ratio_to_percent(total - idle, total);
+}
+
 cpu_usage_t::cpu_usage_t() : impl_(std::make_unique<impl>()) {
 }
 
@@ -183,21 +202,7 @@ std::optional<double> cpu_usage_t::get_total() const {
     const cpu_usage_stat_t& old_stat = this->impl_->old_stat->front();
     const cpu_usage_stat_t& new_stat = this->impl_->new_stat->front();
 
-    const uint64_t idle = new_stat.idle - old_stat.idle;
-
-    uint64_t total = 0;
-    total += new_stat.user_mode - old_stat.user_mode;
-    total += new_stat.low_priority_user_mode - old_stat.low_priority_user_mode;
-    total += new_stat.system_mode - old_stat.system_mode;
-    total += idle;
-    total += new_stat.io_idle - old_stat.io_idle;
-    total += new_stat.interrupt - old_stat.interrupt;
-    total += new_stat.soft_interrupt - old_stat.soft_interrupt;
-    total += new_stat.stolen - old_stat.stolen;
-    total += new_stat.guest - old_stat.guest;
-    total += new_stat.niced_guest - old_stat.niced_guest;
-
-    return ratio_to_percent(idle, total);
+    return get_usage_percentage(old_stat, new_stat);
 }
 
 std::optional<std::list<double>> cpu_usage_t::get_per_core() const {
@@ -223,32 +228,15 @@ std::optional<std::list<double>> cpu_usage_t::get_per_core() const {
 
     std::list<double> cores;
 
-    for (size_t i = 0; i < this->impl_->new_stat->size(); ++i) {
+    // The first values in old_stat and new_stat represent the total CPU usage
+    // across all cores. This method only returns the usage for individual cores
+    // so the first values are skipped (i = 1).
+    for (size_t i = 1; i < this->impl_->new_stat->size(); ++i) {
         const cpu_usage_stat_t& old_stat = this->impl_->old_stat->at(i);
         const cpu_usage_stat_t& new_stat = this->impl_->new_stat->at(i);
 
-        const uint64_t idle = new_stat.idle - old_stat.idle;
-
-        uint64_t total = 0;
-        total += new_stat.user_mode - old_stat.user_mode;
-        total +=
-          new_stat.low_priority_user_mode - old_stat.low_priority_user_mode;
-        total += new_stat.system_mode - old_stat.system_mode;
-        total += idle;
-        total += new_stat.io_idle - old_stat.io_idle;
-        total += new_stat.interrupt - old_stat.interrupt;
-        total += new_stat.soft_interrupt - old_stat.soft_interrupt;
-        total += new_stat.stolen - old_stat.stolen;
-        total += new_stat.guest - old_stat.guest;
-        total += new_stat.niced_guest - old_stat.niced_guest;
-
-        cores.push_back(ratio_to_percent(idle, total));
+        cores.push_back(get_usage_percentage(old_stat, new_stat));
     }
-
-    // The first value in this list represents the total CPU usage across all
-    // cores. This method only returns the usage for individual cores so the
-    // first value must be removed.
-    cores.pop_front();
 
     return cores;
 }

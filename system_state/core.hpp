@@ -35,7 +35,6 @@
 #include <optional>
 #include <list>
 #include <string>
-#include <vector>
 
 namespace syst {
 

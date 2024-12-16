@@ -49,7 +49,7 @@ TEST(cpu_usage_test, get_per_core_update_two) {
     ASSERT_TRUE(cpu_usage.update());
     auto cores = cpu_usage.get_per_core();
     ASSERT_TRUE(cores.has_value());
-    for (const auto& usage : cores.value()) {
+    for (auto usage : cores.value()) {
         ASSERT_GE(usage, 0.F);
         ASSERT_LE(usage, 100.F);
     }

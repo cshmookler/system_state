@@ -12,6 +12,7 @@ build_dir = meson.project_build_root()
 include_dir = root_dir / 'system_state'
 src_dir = root_dir / 'src'
 tests_dir = root_dir / 'tests'
+examples_dir = root_dir / 'examples'
 
 # Insert the project version into the version header file
 conf_data = configuration_data()
@@ -66,7 +67,7 @@ tests = [
 if dep_gtest_main.found()
     foreach test_name : tests
         test_exec = executable(
-            test_name,
+            'test_' + test_name,
             files(
                 tests_dir / (test_name + '.test.cpp'),
             ),
@@ -78,3 +79,17 @@ if dep_gtest_main.found()
 else
     warning('Skipping tests due to missing dependencies')
 endif
+
+examples = [
+    'cpu_usage',
+]
+
+foreach example_name : examples
+    executable(
+        'example_' + example_name,
+        files(
+            examples_dir / (example_name + '.cpp'),
+        ),
+        link_with : lib_system_state,
+    )
+endforeach
