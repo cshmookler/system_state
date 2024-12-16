@@ -52,7 +52,7 @@ std::optional<bool> network_interface_t::physical() const {
         return std::nullopt;
     }
 
-    return has_prefix(real_path.string(), "/sys/devices/virtual");
+    return ! has_prefix(real_path.string(), "../../devices/virtual");
 }
 
 std::optional<bool> network_interface_t::loopback() const {

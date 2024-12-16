@@ -4,8 +4,8 @@
 #include <thread>
 
 // External includes
-#include <system_state/core.hpp>
-#include <system_state/error.hpp>
+#include "../system_state/core.hpp"
+#include "../system_state/error.hpp"
 
 int main() {
     syst::cpu_usage_t usage;

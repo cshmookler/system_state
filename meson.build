@@ -81,7 +81,14 @@ else
 endif
 
 examples = [
+    'version',
+    'user',
+    'system',
+    'block',
     'cpu_usage',
+    'backlight',
+    'battery',
+    'network_interface',
 ]
 
 foreach example_name : examples

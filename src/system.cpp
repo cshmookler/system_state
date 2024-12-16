@@ -53,9 +53,9 @@ std::optional<system_info_t> system_info() {
     system_info.swap_free = mem_to_bytes(raw_info.freeswap, raw_info.mem_unit);
     system_info.procs = static_cast<uint64_t>(raw_info.procs);
     system_info.ram_usage =
-      ratio_to_percent(raw_info.freeram, raw_info.totalram);
-    system_info.swap_usage =
-      ratio_to_percent(raw_info.freeswap, raw_info.totalswap);
+      ratio_to_percent(raw_info.totalram - raw_info.freeram, raw_info.totalram);
+    system_info.swap_usage = ratio_to_percent(
+      raw_info.totalswap - raw_info.freeswap, raw_info.totalswap);
 
     return system_info;
 }
