@@ -526,4 +526,16 @@ class network_interface_t {
     [[nodiscard]] std::optional<stat_t> stat() const;
 };
 
+/**
+ * @return the release version of the currently running kernel or std::nullopt
+ * if an error occurred.
+ */
+[[nodiscard]] std::optional<std::string> get_running_kernel();
+
+/**
+ * @return the release versions of all installed kernels or std::nullopt if an
+ * error occurred.
+ */
+[[nodiscard]] std::optional<std::list<std::string>> get_installed_kernels();
+
 } // namespace syst

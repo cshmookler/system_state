@@ -73,4 +73,5 @@ meson install
 - [ ] microphone status
 - [ ] camera status
 - [X] user name
-- [ ] outdated kernel indicator
+- [X] running kernel version
+- [X] installed kernel version

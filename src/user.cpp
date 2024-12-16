@@ -14,9 +14,10 @@ std::optional<std::string> username() {
     struct passwd* passwd_info = getpwuid(uid);
 
     if (passwd_info == nullptr) {
+        int err = errno;
         syst::error =
           "Failed to get passwd information from 'getpwuid'.\nreason: '"
-          + std::string{ strerror(errno) } + "'";
+          + std::string{ strerror(err) } + "'";
         return std::nullopt;
     }
 

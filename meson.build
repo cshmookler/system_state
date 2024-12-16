@@ -41,6 +41,7 @@ lib_system_state = library(
         src_dir / 'backlight.cpp',
         src_dir / 'battery.cpp',
         src_dir / 'network_interface.cpp',
+        src_dir / 'kernel.cpp',
     ),
     version : meson.project_version(),
     install : true,
@@ -62,6 +63,7 @@ tests = [
     'backlight',
     'battery',
     'network_interface',
+    'kernel',
 ]
 
 if dep_gtest_main.found()
@@ -89,6 +91,7 @@ examples = [
     'backlight',
     'battery',
     'network_interface',
+    'kernel',
 ]
 
 foreach example_name : examples

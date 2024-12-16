@@ -30,9 +30,10 @@ template<typename integral_lhs_t, typename integral_rhs_t>
 std::optional<system_info_t> system_info() {
     struct sysinfo raw_info {};
     if (sysinfo(&raw_info) != 0) {
+        int err = errno;
         syst::error =
           "Failed to get system information from 'sysinfo'.\nreason: '"
-          + std::string{ strerror(errno) } + "'";
+          + std::string{ strerror(err) } + "'";
         return std::nullopt;
     }
 
