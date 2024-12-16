@@ -33,6 +33,7 @@ lib_system_state = library(
         src_dir / 'version.cpp',
         src_dir / 'error.cpp',
         src_dir / 'util.cpp',
+        src_dir / 'user.cpp',
         src_dir / 'system.cpp',
         src_dir / 'block.cpp',
         src_dir / 'cpu_usage.cpp',
@@ -53,6 +54,7 @@ dep_gtest_main = dependency(
 
 tests = [
     'version',
+    'user',
     'system',
     'block',
     'cpu_usage',

@@ -71,5 +71,5 @@ meson install
 - [ ] capture percentage
 - [ ] microphone status
 - [ ] camera status
-- [ ] user name
+- [X] user name
 - [ ] outdated kernel indicator

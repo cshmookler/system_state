@@ -41,6 +41,12 @@ namespace syst {
 namespace fs = std::filesystem;
 namespace ch = std::chrono;
 
+/**
+ * @return the username of the owner of this process or std::nullopt if an error
+ * occurred.
+ */
+std::optional<std::string> username();
+
 struct system_info_t {
     // The number of seconds since the system booted.
     ch::seconds uptime;
