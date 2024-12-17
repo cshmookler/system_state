@@ -74,4 +74,4 @@ meson install
 - [ ] camera status
 - [X] user name
 - [X] running kernel version
-- [X] installed kernel version
+- [X] installed kernel versions
