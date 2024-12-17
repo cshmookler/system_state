@@ -341,9 +341,9 @@ class cpu_usage_t {
 
     /**
      * @brief Attempt to calculate the total CPU usage percentage for this
-     * system. The percentage is calculated by dividing the time spent idle by
-     * the total time elapsed between the last two update calls and multiplying
-     * the result by 100.
+     * system. The percentage is calculated by dividing the time not spent idle
+     * by the total time elapsed between the last two update calls and
+     * multiplying the result by 100.
      *
      * @return the total CPU usage percentage or std::nullopt if an error
      * occurred.
@@ -352,12 +352,12 @@ class cpu_usage_t {
 
     /**
      * @brief Attempt to calculate the CPU usage percentage of each core for
-     * this system. The percentages are calculated by dividing the time spent
-     * idle by the total time elapsed between the last two update calls and
-     * multiplying the result by 100.
+     * this system. The percentages for each core are calculated by dividing the
+     * time not spent idle by the total time elapsed between the last two update
+     * calls and multiplying the result by 100.
      *
      * @return a dynamic array of doubles with each double representing the CPU
-     * usage percentage of a specific core.
+     * usage percentage of a specific core or std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<std::list<double>> get_per_core() const;
 };
@@ -438,7 +438,7 @@ class battery_t {
     /**
      * @brief Attempt to calculate the current energy percentage of this
      * battery. This is calculated by dividing the current energy level by the
-     * energy capacity and multiplying by 100.
+     * available energy capacity and multiplying by 100.
      *
      * @return the current energy percentage or std::nullopt if an error
      * occurred.
