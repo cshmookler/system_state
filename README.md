@@ -1,6 +1,6 @@
 # **system_state**
 
-C++ library for modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
+C++ library for fetching and modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
 
 ## Build from Source
 
