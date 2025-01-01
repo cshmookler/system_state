@@ -23,6 +23,12 @@ configure_file(
     output : 'version.hpp',
 )
 
+dep_alsa_main = dependency(
+    'alsa',
+    required : true,
+    method : 'auto',
+)
+
 lib_system_state_headers = files(
     build_dir / 'version.hpp',
     include_dir / 'core.hpp',
@@ -41,9 +47,11 @@ lib_system_state = library(
         src_dir / 'backlight.cpp',
         src_dir / 'battery.cpp',
         src_dir / 'network_interface.cpp',
+        src_dir / 'sound.cpp',
         src_dir / 'kernel.cpp',
     ),
     version : meson.project_version(),
+    dependencies : [dep_alsa_main],
     install : true,
 )
 install_headers(lib_system_state_headers, subdir : 'system_state')
@@ -63,6 +71,7 @@ tests = [
     'backlight',
     'battery',
     'network_interface',
+    'sound',
     'kernel',
 ]
 
@@ -91,6 +100,7 @@ examples = [
     'backlight',
     'battery',
     'network_interface',
+    'sound',
     'kernel',
 ]
 

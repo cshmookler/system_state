@@ -28,8 +28,8 @@ namespace syst {
         return std::nullopt;
     }
 
-    return ratio_to_percent(energy_now.value() - energy_empty.value(),
-      energy_full.value() - energy_empty.value());
+    return value_to_percent(
+      energy_empty.value(), energy_full.value(), energy_now.value());
 }
 
 [[nodiscard]] std::optional<double> charge(const fs::path& sysfs_path) {
@@ -55,8 +55,8 @@ namespace syst {
         return std::nullopt;
     }
 
-    return ratio_to_percent(charge_now.value() - charge_empty.value(),
-      charge_full.value() - charge_empty.value());
+    return value_to_percent(
+      charge_empty.value(), charge_full.value(), charge_now.value());
 }
 
 [[nodiscard]] std::optional<double> energy_capacity(
@@ -89,7 +89,7 @@ namespace syst {
         return std::nullopt;
     }
 
-    return ratio_to_percent(energy_full.value() - energy_empty.value(),
+    return ratio_to_percent(energy_full_design.value() - energy_empty.value(),
       energy_full_design.value() - energy_empty_design.value());
 }
 

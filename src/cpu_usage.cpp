@@ -22,7 +22,7 @@ struct cpu_usage_stat_t {
     uint64_t niced_guest;
 };
 
-struct cpu_usage_t::impl {
+struct cpu_usage_t::impl_t {
     std::optional<std::vector<cpu_usage_stat_t>> old_stat;
     std::optional<std::vector<cpu_usage_stat_t>> new_stat;
 };
@@ -46,7 +46,7 @@ struct cpu_usage_t::impl {
     return ratio_to_percent(total - idle, total);
 }
 
-cpu_usage_t::cpu_usage_t() : impl_(std::make_unique<impl>()) {
+cpu_usage_t::cpu_usage_t() : impl_(std::make_unique<impl_t>()) {
 }
 
 cpu_usage_t::~cpu_usage_t() = default;

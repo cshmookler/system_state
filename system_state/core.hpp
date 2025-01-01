@@ -319,8 +319,8 @@ class part_t {
  * least twice before calling the 'get' method.
  */
 class cpu_usage_t {
-    struct impl;
-    std::unique_ptr<impl> impl_;
+    struct impl_t;
+    std::unique_ptr<impl_t> impl_;
 
   public:
     cpu_usage_t();
@@ -524,6 +524,162 @@ class network_interface_t {
      * @return the interface statistics or std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<stat_t> stat() const;
+};
+
+class sound_control_t;
+
+/**
+ * @brief Represents a sound mixer device, which is used to access sound control
+ * elements.
+ */
+class sound_mixer_t {
+    struct impl_t;
+    std::unique_ptr<impl_t> impl_;
+
+    sound_mixer_t(const impl_t& impl);
+
+  public:
+    sound_mixer_t(const sound_mixer_t&) = delete;
+    // Classes with custom destructors must also have custom move constructors.
+    sound_mixer_t(sound_mixer_t&& sound_mixer) noexcept;
+    sound_mixer_t& operator=(const sound_mixer_t&) = delete;
+    sound_mixer_t& operator=(sound_mixer_t&&) noexcept = default;
+    // The destructor must be implemented where 'impl' is defined.
+    ~sound_mixer_t();
+
+    /**
+     * @return a new sound mixer object or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] static std::optional<sound_mixer_t> get();
+
+    /**
+     * @return all active sound control elements.
+     */
+    [[nodiscard]] std::list<sound_control_t> all_controls() const;
+};
+
+/**
+ * @brief Represents a sound control element, which manages the volume and
+ * status of an individual playback/capture device.
+ */
+class sound_control_t {
+    struct impl_t;
+    std::unique_ptr<impl_t> impl_;
+
+    sound_control_t(const impl_t& impl);
+
+    // Some classes need to access the private constructor for this class, but
+    // not all classes need access.
+    friend sound_mixer_t;
+
+    template<typename type_t>
+    struct state_t {
+        type_t front_left;
+        type_t front_right;
+        type_t rear_left;
+        type_t rear_right;
+        type_t front_center;
+        type_t woofer;
+        type_t side_left;
+        type_t side_right;
+        type_t rear_center;
+    };
+
+  public:
+    using status_t = state_t<std::optional<bool>>;
+    using volume_t = state_t<std::optional<double>>;
+
+    sound_control_t(const sound_control_t&) = delete;
+    sound_control_t(sound_control_t&&) noexcept = default;
+    sound_control_t& operator=(const sound_control_t&) = delete;
+    sound_control_t& operator=(sound_control_t&&) noexcept = default;
+    // The destructor must be implemented where 'impl' is defined.
+    ~sound_control_t();
+
+    /**
+     * @return the name of this sound control element.
+     */
+    [[nodiscard]] std::string name() const;
+
+    /**
+     * @return true if this control has a playback status and false otherwise.
+     */
+    [[nodiscard]] bool has_playback_status() const;
+
+    /**
+     * @return true if this control has a playback volume and false
+     * otherwise.
+     */
+    [[nodiscard]] bool has_playback_volume() const;
+
+    /**
+     * @return true if this control has a capture status and false otherwise.
+     */
+    [[nodiscard]] bool has_capture_status() const;
+
+    /**
+     * @return true if this control has a capture volume and false
+     * otherwise.
+     */
+    [[nodiscard]] bool has_capture_volume() const;
+
+    /**
+     * @return the current playback status or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<status_t> get_playback_status() const;
+
+    /**
+     * @return the current playback volume as a percentage or std::nullopt if an
+     * error occurred.
+     */
+    [[nodiscard]] std::optional<volume_t> get_playback_volume() const;
+
+    /**
+     * @return the current capture status or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<status_t> get_capture_status() const;
+
+    /**
+     * @return the current capture volume as a percentage or std::nullopt if an
+     * error occurred.
+     */
+    [[nodiscard]] std::optional<volume_t> get_capture_volume() const;
+
+    /**
+     * @brief Attempt to set the playback status.
+     *
+     * @param[in] status - The new playback status.
+     * @return true if the playback status was successfully changed and false
+     * otherwise.
+     */
+    bool set_playback_status(const status_t& status) const;
+
+    /**
+     * @brief Attempt to set the playback volume.
+     *
+     * @param[in] volume - The new playback volume.
+     * @return true if the playback volume was successfully changed and false
+     * otherwise.
+     */
+    bool set_playback_volume(const volume_t& volume) const;
+
+    /**
+     * @brief Attempt to set the capture status.
+     *
+     * @param[in] status - The new capture status.
+     * @return true if the capture status was successfully changed and false
+     * otherwise.
+     */
+    bool set_capture_status(const status_t& status) const;
+
+    /**
+     * @brief Attempt to set the capture volume.
+     *
+     * @param[in] volume - The new capture volume in percents.
+     * @return true if the capture volume was successfully changed and false
+     * otherwise.
+     */
+    bool set_capture_volume(const volume_t& volume) const;
 };
 
 /**

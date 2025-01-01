@@ -57,7 +57,8 @@ std::optional<double> backlight_t::brightness() const {
         return std::nullopt;
     }
 
-    return ratio_to_percent(brightness.value(), max_brightness.value());
+    return value_to_percent(
+      static_cast<uint64_t>(0), max_brightness.value(), brightness.value());
 }
 
 } // namespace syst

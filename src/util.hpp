@@ -67,13 +67,12 @@ namespace syst {
   const std::string& target, const std::string& prefix);
 
 /**
- * @brief Calculate a percent (0 - 100) from the given ratio. If the denominator
- * is zero, then 100 is returned.
+ * @brief Calculate a percentage (0 - 100) based on the given ratio. If the
+ * denominator is zero, then 100 is returned.
  *
- * @tparam integral_t - Any integral type that is convertable to a double.
- * @param[in] numerator - The numerator of the given ratio.
- * @param[in] denominator - The denominator of the given ratio.
- * @return the ratio represented as a percent ranging from 0 to 100.
+ * @param[in] numerator - The numerator (top) of the ratio.
+ * @param[in] denominator - The denominator (bottom) of the ratio.
+ * @return the given ratio represented as a percentage (0 to 100).
  */
 template<typename integral_t>
 [[nodiscard]] double ratio_to_percent(
@@ -84,8 +83,48 @@ template<typename integral_t>
         // Return 100% if the denominator is invalid.
         return static_cast<double>(1e2);
     }
+
     return (static_cast<double>(numerator) / static_cast<double>(denominator))
       * static_cast<double>(1e2);
+}
+
+/**
+ * @brief Calculate a percentage (0 - 100) based on where a given value falls on
+ * the given range (min - max).
+ *
+ * @tparam integral_t - Any integral type that is convertable to a double.
+ * @param[in] min - The minimum possible value.
+ * @param[in] max - The maximum possible value.
+ * @param[in] value - The value to compute the percentage for.
+ * @return the value on the given range (min - max) represented as a percentage
+ * (0 to 100).
+ */
+template<typename integral_t>
+[[nodiscard]] double value_to_percent(
+  integral_t min, integral_t max, integral_t value) {
+    static_assert(std::is_integral_v<integral_t>);
+
+    return ratio_to_percent(value - min, max - min);
+}
+
+/**
+ * @brief Calculate a value falling on the given range (min - max) based on a
+ * given percentage (0 - 100).
+ *
+ * @tparam integral_t - Any integral type that is convertable to a double.
+ * @param[in] min - The minimum possible value.
+ * @param[in] max - The maximum possible value.
+ * @param[in] percent - The percentage to compute the value for.
+ * @return the percentage represented as a value on the given range (min - max).
+ */
+template<typename integral_t>
+[[nodiscard]] integral_t percent_to_value(
+  integral_t min, integral_t max, double percent) {
+    static_assert(std::is_integral_v<integral_t>);
+
+    return static_cast<integral_t>((percent / static_cast<double>(1e2))
+             * static_cast<double>(max - min))
+      + min;
 }
 
 } // namespace syst
