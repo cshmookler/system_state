@@ -3,7 +3,6 @@
 
 // Local includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 TEST(sound_test, sound_mixer_get) {
     auto mixer = syst::sound_mixer_t::get();
@@ -17,6 +16,21 @@ TEST(sound_test, sound_mixer_all_controls) {
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
+}
+
+TEST(sound_test, sound_control_name) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    for (auto& control : controls) {
+        std::string name = control.name();
+        // All sound control element names must be at least one character long.
+        ASSERT_NE(name.size(), 0);
+    }
 }
 
 TEST(sound_test, sound_control_get_playback_status) {
