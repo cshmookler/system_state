@@ -1,3 +1,6 @@
+// Standard includes
+#include <thread>
+
 // External includes
 #include <gtest/gtest.h>
 
@@ -238,6 +241,11 @@ TEST(sound_test, sound_control_set_playback_status) {
         // Status can be any value.
 
         ASSERT_TRUE(control.set_playback_status(new_status));
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         ASSERT_TRUE(control.set_playback_status(old_status.value()));
     }
 
@@ -252,16 +260,49 @@ TEST(sound_test, sound_control_set_playback_volume) {
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
 
-    syst::sound_control_t::volume_t new_volume;
-    new_volume.front_left = 0;
-    new_volume.front_right = 0;
-    new_volume.rear_left = 0;
-    new_volume.rear_right = 0;
-    new_volume.front_center = 0;
-    new_volume.woofer = 0;
-    new_volume.side_left = 0;
-    new_volume.side_right = 0;
-    new_volume.rear_center = 0;
+    syst::sound_control_t::volume_t too_low_volume;
+    too_low_volume.front_left = -1;
+    too_low_volume.front_right = -1;
+    too_low_volume.rear_left = -1;
+    too_low_volume.rear_right = -1;
+    too_low_volume.front_center = -1;
+    too_low_volume.woofer = -1;
+    too_low_volume.side_left = -1;
+    too_low_volume.side_right = -1;
+    too_low_volume.rear_center = -1;
+
+    syst::sound_control_t::volume_t low_volume;
+    low_volume.front_left = 0;
+    low_volume.front_right = 0;
+    low_volume.rear_left = 0;
+    low_volume.rear_right = 0;
+    low_volume.front_center = 0;
+    low_volume.woofer = 0;
+    low_volume.side_left = 0;
+    low_volume.side_right = 0;
+    low_volume.rear_center = 0;
+
+    syst::sound_control_t::volume_t high_volume;
+    high_volume.front_left = 100;
+    high_volume.front_right = 100;
+    high_volume.rear_left = 100;
+    high_volume.rear_right = 100;
+    high_volume.front_center = 100;
+    high_volume.woofer = 100;
+    high_volume.side_left = 100;
+    high_volume.side_right = 100;
+    high_volume.rear_center = 100;
+
+    syst::sound_control_t::volume_t too_high_volume;
+    too_high_volume.front_left = 101;
+    too_high_volume.front_right = 101;
+    too_high_volume.rear_left = 101;
+    too_high_volume.rear_right = 101;
+    too_high_volume.front_center = 101;
+    too_high_volume.woofer = 101;
+    too_high_volume.side_left = 101;
+    too_high_volume.side_right = 101;
+    too_high_volume.rear_center = 101;
 
     bool has_playback_volume = false;
 
@@ -276,7 +317,15 @@ TEST(sound_test, sound_control_set_playback_volume) {
         ASSERT_TRUE(old_volume.has_value());
         // Status can be any value.
 
-        ASSERT_TRUE(control.set_playback_volume(new_volume));
+        EXPECT_FALSE(control.set_playback_volume(too_low_volume));
+        EXPECT_TRUE(control.set_playback_volume(low_volume));
+        EXPECT_TRUE(control.set_playback_volume(high_volume));
+        EXPECT_FALSE(control.set_playback_volume(too_high_volume));
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         ASSERT_TRUE(control.set_playback_volume(old_volume.value()));
     }
 
@@ -316,6 +365,11 @@ TEST(sound_test, sound_control_set_capture_status) {
         // Status can be any value.
 
         ASSERT_TRUE(control.set_capture_status(new_status));
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         ASSERT_TRUE(control.set_capture_status(old_status.value()));
     }
 
@@ -330,16 +384,49 @@ TEST(sound_test, sound_control_set_capture_volume) {
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
 
-    syst::sound_control_t::volume_t new_volume;
-    new_volume.front_left = 0;
-    new_volume.front_right = 0;
-    new_volume.rear_left = 0;
-    new_volume.rear_right = 0;
-    new_volume.front_center = 0;
-    new_volume.woofer = 0;
-    new_volume.side_left = 0;
-    new_volume.side_right = 0;
-    new_volume.rear_center = 0;
+    syst::sound_control_t::volume_t too_low_volume;
+    too_low_volume.front_left = -1;
+    too_low_volume.front_right = -1;
+    too_low_volume.rear_left = -1;
+    too_low_volume.rear_right = -1;
+    too_low_volume.front_center = -1;
+    too_low_volume.woofer = -1;
+    too_low_volume.side_left = -1;
+    too_low_volume.side_right = -1;
+    too_low_volume.rear_center = -1;
+
+    syst::sound_control_t::volume_t low_volume;
+    low_volume.front_left = 0;
+    low_volume.front_right = 0;
+    low_volume.rear_left = 0;
+    low_volume.rear_right = 0;
+    low_volume.front_center = 0;
+    low_volume.woofer = 0;
+    low_volume.side_left = 0;
+    low_volume.side_right = 0;
+    low_volume.rear_center = 0;
+
+    syst::sound_control_t::volume_t high_volume;
+    high_volume.front_left = 100;
+    high_volume.front_right = 100;
+    high_volume.rear_left = 100;
+    high_volume.rear_right = 100;
+    high_volume.front_center = 100;
+    high_volume.woofer = 100;
+    high_volume.side_left = 100;
+    high_volume.side_right = 100;
+    high_volume.rear_center = 100;
+
+    syst::sound_control_t::volume_t too_high_volume;
+    too_high_volume.front_left = 101;
+    too_high_volume.front_right = 101;
+    too_high_volume.rear_left = 101;
+    too_high_volume.rear_right = 101;
+    too_high_volume.front_center = 101;
+    too_high_volume.woofer = 101;
+    too_high_volume.side_left = 101;
+    too_high_volume.side_right = 101;
+    too_high_volume.rear_center = 101;
 
     bool has_capture_volume = false;
 
@@ -354,7 +441,15 @@ TEST(sound_test, sound_control_set_capture_volume) {
         ASSERT_TRUE(old_volume.has_value());
         // Status can be any value.
 
-        ASSERT_TRUE(control.set_capture_volume(new_volume));
+        EXPECT_FALSE(control.set_capture_volume(too_low_volume));
+        EXPECT_TRUE(control.set_capture_volume(low_volume));
+        EXPECT_TRUE(control.set_capture_volume(high_volume));
+        EXPECT_FALSE(control.set_capture_volume(too_high_volume));
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         ASSERT_TRUE(control.set_capture_volume(old_volume.value()));
     }
 

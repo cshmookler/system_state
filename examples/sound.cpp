@@ -1,5 +1,6 @@
 // Standard includes
 #include <iostream>
+#include <thread>
 
 // External includes
 #include "../system_state/core.hpp"
@@ -260,6 +261,11 @@ int set_sound() {
                 std::cout << syst::error << std::endl;
                 return 1;
             }
+
+            // For some reason, resetting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
             if (! control.set_playback_status(old_playback_status.value())) {
                 std::cout << syst::error << std::endl;
                 return 1;
@@ -276,6 +282,11 @@ int set_sound() {
                 std::cout << syst::error << std::endl;
                 return 1;
             }
+
+            // For some reason, resetting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
             if (! control.set_playback_volume(old_playback_volume.value())) {
                 std::cout << syst::error << std::endl;
                 return 1;
@@ -292,6 +303,11 @@ int set_sound() {
                 std::cout << syst::error << std::endl;
                 return 1;
             }
+
+            // For some reason, resetting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
             if (! control.set_capture_status(old_capture_status.value())) {
                 std::cout << syst::error << std::endl;
                 return 1;
@@ -308,6 +324,11 @@ int set_sound() {
                 std::cout << syst::error << std::endl;
                 return 1;
             }
+
+            // For some reason, resetting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
             if (! control.set_capture_volume(old_capture_volume.value())) {
                 std::cout << syst::error << std::endl;
                 return 1;

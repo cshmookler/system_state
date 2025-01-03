@@ -575,6 +575,14 @@ bool set_channel_playback_volume(snd_mixer_elem_t* control,
         return true;
     }
 
+    if (status.value() < static_cast<double>(0)
+      || status.value() > static_cast<double>(100)) {
+        syst::error = "The new status given for the playback volume is out of "
+                      "bounds.\nstatus: '"
+          + std::to_string(status.value()) + "'";
+        return false;
+    }
+
     long value = percent_to_value(min_value, max_value, status.value());
     int snd_errno =
       snd_mixer_selem_set_playback_volume(control, channel, value);
@@ -746,6 +754,14 @@ bool set_channel_capture_volume(snd_mixer_elem_t* control,
 
     if (snd_mixer_selem_has_capture_channel(control, channel) == 0) {
         return true;
+    }
+
+    if (status.value() < static_cast<double>(0)
+      || status.value() > static_cast<double>(100)) {
+        syst::error = "The new status given for the capture volume is out of "
+                      "bounds.\nstatus: '"
+          + std::to_string(status.value()) + "'";
+        return false;
     }
 
     long value = percent_to_value(min_value, max_value, status.value());
