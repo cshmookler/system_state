@@ -46,6 +46,16 @@ namespace syst {
 [[nodiscard]] std::optional<bool> get_bool(const std::filesystem::path& path);
 
 /**
+ * @brief Write an integer to the file at the given path.
+ *
+ * @param[in] path - The path to the file to write to.
+ * @param[in] integer - The integer to write to the given file.
+ * @return true if the given integer was successfully written to the given file
+ * and false otherwise.
+ */
+bool write_int(const std::filesystem::path& path, uint64_t integer);
+
+/**
  * @brief Check whether a target string has the given prefix.
  *
  * @param[in] target - The string that may contain the prefix.

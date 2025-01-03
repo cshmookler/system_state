@@ -362,6 +362,85 @@ class cpu_usage_t {
     [[nodiscard]] std::optional<std::list<double>> get_per_core() const;
 };
 
+/**
+ * @brief Represents a device with thermal information, such as a temperature
+ * sensor.
+ */
+class thermal_zone_t {
+    fs::path sysfs_path_;
+
+    thermal_zone_t(const fs::path& sysfs_path);
+
+  public:
+    /**
+     * @return all thermal zones on this system or std::nullopt if an error
+     * occurred.
+     */
+    [[nodiscard]] static std::optional<std::list<thermal_zone_t>> all();
+
+    /**
+     * @return the path to this thermal zone in /sys. This provides access to
+     * various zone-specific information exposed by the kernel.
+     */
+    [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return the type of this thermal zone represented as a string or
+     * std::nullopt if the type could not be determined.
+     */
+    [[nodiscard]] std::optional<std::string> type() const;
+
+    /**
+     * @return the temperature at this thermal zone in degrees Celsius or
+     * std::nullopt if the temperature could not be determined.
+     */
+    [[nodiscard]] std::optional<double> temperature() const;
+};
+
+/**
+ * @brief Represents a thermal management device, such as a fan.
+ */
+class cooling_device_t {
+    fs::path sysfs_path_;
+
+    cooling_device_t(const fs::path& sysfs_path);
+
+  public:
+    /**
+     * @return all cooling devices on this system or std::nullopt if an error
+     * occurred.
+     */
+    [[nodiscard]] static std::optional<std::list<cooling_device_t>> all();
+
+    /**
+     * @return the path to this cooling device in /sys. This provides access to
+     * various zone-specific information exposed by the kernel.
+     */
+    [[nodiscard]] fs::path sysfs_path() const;
+
+    /**
+     * @return the type of this cooling device represented as a string or
+     * std::nullopt if the type could not be determined.
+     */
+    [[nodiscard]] std::optional<std::string> type() const;
+
+    /**
+     * @return get the current state of this cooling device as a percentage (0 -
+     * 100) or std::nullopt if the current state could not be determined.
+     */
+    [[nodiscard]] std::optional<double> get_state() const;
+
+    /**
+     * @brief Attempt to set the state of this cooling device.
+     *
+     * This function requires root privileges.
+     *
+     * @param[in] state - The new state in percents (0 - 100).
+     * @return true if the state was successfully changed and false otherwise.
+     */
+    bool set_state(double state) const;
+};
+
 class backlight_t {
     fs::path sysfs_path_;
 

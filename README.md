@@ -53,7 +53,8 @@ meson install
 - [X] total cpu usage
 - [X] individual cpu usage
 - [ ] process statistics
-- [ ] cpu temperature
+- [X] thermal sensors
+- [X] cooling devices
 - [X] load averages (1 min, 5 min, 15 min)
 - [X] battery name
 - [X] battery status

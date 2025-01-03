@@ -88,6 +88,23 @@ std::optional<bool> get_bool(const std::filesystem::path& path) {
     return integer.value() == 1UL;
 }
 
+bool write_int(const std::filesystem::path& path, uint64_t integer) {
+    if (! std::filesystem::is_regular_file(path)) {
+        syst::error =
+          "The path is not a regular file.\npath: '" + path.string() + "'";
+        return false;
+    }
+
+    std::ofstream file{ path };
+    if ((file << integer).fail()) {
+        syst::error = "Failed to write an integer to a file.\npath: '"
+          + path.string() + "'\ninteger: '" + std::to_string(integer) + "'";
+        return false;
+    }
+
+    return true;
+}
+
 bool has_prefix(const std::string& target, const std::string& prefix) {
     return target.rfind(prefix, 0) == 0;
 }
