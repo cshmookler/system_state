@@ -2,6 +2,8 @@
 
 C++ library for fetching and modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
 
+> NOTE: Error handling features in <system_state/error.hpp> are not thread safe!
+
 ## Build from Source
 
 ### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), and ALSA libraries.
@@ -27,6 +29,14 @@ cd build
 ninja
 ```
 
+### 4.&nbsp; (Optional) Run all tests.
+
+```
+sudo ninja test
+```
+
+> NOTE: Some tests require root privileges to succeed.
+
 ### 4.&nbsp; (Optional) Install this project globally.
 
 ```
@@ -37,7 +47,6 @@ meson install
 
 - [X] error handling
 - [X] examples
-- [X] date and time
 - [X] uptime
 - [X] disks
 - [X] disk partitions
@@ -58,8 +67,10 @@ meson install
 - [X] load averages (1 min, 5 min, 15 min)
 - [X] battery name
 - [X] battery status
+- [X] battery current
+- [X] battery power
 - [X] battery percentage
-- [ ] battery time remaining
+- [X] battery time remaining
 - [X] backlight name
 - [X] backlight percentage
 - [X] network interface name

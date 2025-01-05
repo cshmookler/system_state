@@ -515,6 +515,18 @@ class battery_t {
     [[nodiscard]] std::optional<status_t> status() const;
 
     /**
+     * @return the amount of current (in amperes) being drawn from this battery
+     * or std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<double> current() const;
+
+    /**
+     * @return the amount of power (in watts) being drawn from this battery or
+     * std::nullopt if an error occurred.
+     */
+    [[nodiscard]] std::optional<double> power() const;
+
+    /**
      * @brief Attempt to calculate the current energy percentage of this
      * battery. This is calculated by dividing the current energy level by the
      * available energy capacity and multiplying by 100.
@@ -534,6 +546,17 @@ class battery_t {
      * @return the capacity percentage or std::nullopt if an error occurred.
      */
     [[nodiscard]] std::optional<double> capacity() const;
+
+    /**
+     * @brief If this battery is discharging, attempt to calculate the number of
+     * seconds until this battery is empty. If this battery is charging, attempt
+     * to calculate the number of seconds until this battery is full.
+     *
+     * @return the number of seconds until this battery is empty or full
+     * (depending on charge status) or std::nullopt if the time remaining could
+     * not be determined.
+     */
+    [[nodiscard]] std::optional<ch::seconds> time_remaining() const;
 };
 
 /**
