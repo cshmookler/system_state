@@ -273,6 +273,16 @@ int set_sound() {
                 return 1;
             }
 
+            // For some reason, setting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_playback_status_all(false);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
             // For some reason, resetting the status too quickly fails but does
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -334,6 +344,16 @@ int set_sound() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             result = control.toggle_capture_status();
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
+            // For some reason, setting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_capture_status_all(false);
             if (result.failure()) {
                 std::cerr << result.error() << std::endl;
                 return 1;

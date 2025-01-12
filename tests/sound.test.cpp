@@ -252,6 +252,39 @@ TEST(sound_test, sound_control_set_playback_status) {
     ASSERT_TRUE(has_playback_status);
 }
 
+TEST(sound_test, sound_control_set_playback_status_all) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_playback_status = false;
+
+    for (auto& control : controls) {
+        if (! control.has_playback_status()) {
+            continue;
+        }
+
+        has_playback_status = true;
+
+        auto old_status = control.get_playback_status();
+        ASSERT_TRUE(old_status.has_value());
+        // Status can be any value.
+
+        ASSERT_TRUE(control.set_playback_status_all(0).success());
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_playback_status(old_status.value()).success());
+    }
+
+    ASSERT_TRUE(has_playback_status);
+}
+
 TEST(sound_test, sound_control_toggle_playback_status) {
     auto mixer = syst::sound_mixer_t::get();
     ASSERT_TRUE(mixer.has_value());
@@ -577,6 +610,39 @@ TEST(sound_test, sound_control_set_capture_status) {
         // Status can be any value.
 
         ASSERT_TRUE(control.set_capture_status(new_status).success());
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_capture_status(old_status.value()).success());
+    }
+
+    ASSERT_TRUE(has_capture_status);
+}
+
+TEST(sound_test, sound_control_set_capture_status_all) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_capture_status = false;
+
+    for (auto& control : controls) {
+        if (! control.has_capture_status()) {
+            continue;
+        }
+
+        has_capture_status = true;
+
+        auto old_status = control.get_capture_status();
+        ASSERT_TRUE(old_status.has_value());
+        // Status can be any value.
+
+        ASSERT_TRUE(control.set_capture_status_all(0).success());
 
         // For some reason, resetting the status too quickly fails but does
         // not provide a reason why.

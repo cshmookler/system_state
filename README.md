@@ -45,6 +45,8 @@ meson install
 
 ## **TODO**
 
+- [ ] Remove duplicate code in sound.cpp
+- [ ] Prefix all methods that fetch with "get_" and all methods that set with "set_"
 - [X] error handling
 - [X] make (partially) thread safe
 - [X] add traces to error messages
@@ -80,12 +82,18 @@ meson install
 - [ ] network interface SSID
 - [X] network interface statistics
 - [ ] network interface signal strength percentage
-- [X] playback mute
-- [X] playback toggle
-- [X] playback volume percentage
-- [X] capture mute
-- [X] capture toggle
-- [X] capture volume percentage
+- [X] playback mute get
+- [X] playback mute set
+- [X] playback mute toggle
+- [X] playback volume get
+- [X] playback volume set
+- [X] playback volume set all
+- [X] capture mute get
+- [X] capture mute set
+- [X] capture mute toggle
+- [X] capture volume get
+- [X] capture volume set
+- [X] capture volume set all
 - [ ] microphone status
 - [ ] camera status
 - [X] user name

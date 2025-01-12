@@ -760,6 +760,15 @@ class sound_control_t {
     result_t set_playback_status(const status_t& status);
 
     /**
+     * @brief Attempt to set the playback status for all channels.
+     *
+     * @param[in] status - The new playback status.
+     * @return true if the playback status was successfully changed and false
+     * otherwise.
+     */
+    result_t set_playback_status_all(bool status);
+
+    /**
      * @brief Attempt to toggle the playback status of each individual channel.
      *
      * @return true if the playback status was successfully toggled and false
@@ -793,6 +802,15 @@ class sound_control_t {
      * otherwise.
      */
     result_t set_capture_status(const status_t& status);
+
+    /**
+     * @brief Attempt to set the capture status for all channels.
+     *
+     * @param[in] status - The new capture status.
+     * @return true if the capture status was successfully changed and false
+     * otherwise.
+     */
+    result_t set_capture_status_all(bool status);
 
     /**
      * @brief Attempt to toggle the capture status of each individual channel.

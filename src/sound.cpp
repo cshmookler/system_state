@@ -634,6 +634,23 @@ result_t sound_control_t::set_playback_status(const status_t& status) {
     return syst::success;
 }
 
+result_t sound_control_t::set_playback_status_all(bool status) {
+    int value = 0;
+    if (status) {
+        value = 1;
+    }
+
+    int snd_errno =
+      snd_mixer_selem_set_playback_switch_all(this->impl_->elem, value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{ "ALSA error: snd_mixer_selem_set_playback_switch_all: " }
+          + snd_strerror(snd_errno));
+    }
+
+    return syst::success;
+}
+
 [[nodiscard]] sound_control_t::status_t toggle_status(
   const sound_control_t::status_t& status) {
     sound_control_t::status_t new_status;
@@ -932,6 +949,23 @@ result_t sound_control_t::set_capture_status(const status_t& status) {
       this->impl_->elem, SND_MIXER_SCHN_REAR_CENTER, status.rear_center);
     if (result.failure()) {
         return SYST_TRACE(result.error());
+    }
+
+    return syst::success;
+}
+
+result_t sound_control_t::set_capture_status_all(bool status) {
+    int value = 0;
+    if (status) {
+        value = 1;
+    }
+
+    int snd_errno =
+      snd_mixer_selem_set_capture_switch_all(this->impl_->elem, value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{ "ALSA error: snd_mixer_selem_set_capture_switch_all: " }
+          + snd_strerror(snd_errno));
     }
 
     return syst::success;
