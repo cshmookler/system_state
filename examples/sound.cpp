@@ -316,6 +316,16 @@ int set_sound() {
                 return 1;
             }
 
+            // For some reason, setting the volume too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_playback_volume_all_relative(20);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
             // For some reason, resetting the volume too quickly fails but does
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -387,6 +397,16 @@ int set_sound() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             result = control.set_capture_volume_all(0);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
+            // For some reason, setting the volume too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_capture_volume_all_relative(20);
             if (result.failure()) {
                 std::cerr << result.error() << std::endl;
                 return 1;

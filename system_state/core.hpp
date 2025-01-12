@@ -796,6 +796,16 @@ class sound_control_t {
     result_t set_playback_volume_all(double volume);
 
     /**
+     * @brief Attempt to increment the playback volume for all channels by a
+     * given percentage. A negative value decrements the playback volume.
+     * Absolute volume percentages are clamped to between 0% and 100%.
+     *
+     * @param[in] volume - The percentage to increment the playback volume by.
+     * @return a result indicating success or failure.
+     */
+    result_t set_playback_volume_all_relative(double volume);
+
+    /**
      * @brief Attempt to set the capture status.
      *
      * @param[in] status - The new capture status.
@@ -833,6 +843,16 @@ class sound_control_t {
      * @return a result indicating success or failure.
      */
     result_t set_capture_volume_all(double volume);
+
+    /**
+     * @brief Attempt to increment the capture volume for all channels by a
+     * given percentage. A negative value decrements the capture volume.
+     * Absolute volume percentages are clamped to between 0% and 100%.
+     *
+     * @param[in] volume - The percentage to increment the capture volume by.
+     * @return a result indicating success or failure.
+     */
+    result_t set_capture_volume_all_relative(double volume);
 };
 
 /**

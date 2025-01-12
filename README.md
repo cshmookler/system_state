@@ -90,12 +90,14 @@ meson install
 - [X] playback volume get
 - [X] playback volume set
 - [X] playback volume set all
+- [X] playback volume set all relative
 - [X] capture mute get
 - [X] capture mute set
 - [X] capture mute toggle
 - [X] capture volume get
 - [X] capture volume set
 - [X] capture volume set all
+- [X] capture volume set all relative
 - [ ] microphone status
 - [ ] camera status
 - [X] user name

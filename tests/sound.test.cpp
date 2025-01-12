@@ -307,6 +307,10 @@ TEST(sound_test, sound_control_toggle_playback_status) {
 
         ASSERT_TRUE(control.toggle_playback_status().success());
 
+        // For some reason, setting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         // All channels of the current status should be different from those of
         // the original status after toggling once.
         auto current_status = control.get_playback_status();
@@ -376,6 +380,10 @@ TEST(sound_test, sound_control_toggle_playback_status) {
         }
 
         ASSERT_TRUE(control.toggle_playback_status().success());
+
+        // For some reason, setting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // All channels of the current status should match the those of the
         // original status after toggling twice.
@@ -577,6 +585,44 @@ TEST(sound_test, sound_control_set_playback_volume_all) {
     ASSERT_TRUE(has_playback_volume);
 }
 
+TEST(sound_test, sound_control_set_playback_volume_all_relative) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_playback_volume = false;
+
+    for (auto& control : controls) {
+        if (! control.has_playback_volume()) {
+            continue;
+        }
+
+        has_playback_volume = true;
+
+        auto old_volume = control.get_playback_volume();
+        ASSERT_TRUE(old_volume.has_value());
+        // Status can be any value.
+
+        EXPECT_TRUE(control.set_playback_volume_all(0).success());
+        EXPECT_TRUE(control.set_playback_volume_all_relative(-5).success());
+        EXPECT_TRUE(control.set_playback_volume_all_relative(+5).success());
+        EXPECT_TRUE(control.set_playback_volume_all(100).success());
+        EXPECT_TRUE(control.set_playback_volume_all_relative(+5).success());
+        EXPECT_TRUE(control.set_playback_volume_all_relative(-5).success());
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_playback_volume(old_volume.value()).success());
+    }
+
+    ASSERT_TRUE(has_playback_volume);
+}
+
 TEST(sound_test, sound_control_set_capture_status) {
     auto mixer = syst::sound_mixer_t::get();
     ASSERT_TRUE(mixer.has_value());
@@ -676,6 +722,10 @@ TEST(sound_test, sound_control_toggle_capture_status) {
 
         ASSERT_TRUE(control.toggle_capture_status().success());
 
+        // For some reason, setting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         // All channels of the current status should be different from those of
         // the original status after toggling once.
         auto current_status = control.get_capture_status();
@@ -745,6 +795,10 @@ TEST(sound_test, sound_control_toggle_capture_status) {
         }
 
         ASSERT_TRUE(control.toggle_capture_status().success());
+
+        // For some reason, setting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // All channels of the current status should match the those of the
         // original status after toggling twice.
@@ -934,6 +988,44 @@ TEST(sound_test, sound_control_set_capture_volume_all) {
         EXPECT_TRUE(control.set_capture_volume_all(low_volume).success());
         EXPECT_TRUE(control.set_capture_volume_all(high_volume).success());
         EXPECT_FALSE(control.set_capture_volume_all(too_high_volume).success());
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_capture_volume(old_volume.value()).success());
+    }
+
+    ASSERT_TRUE(has_capture_volume);
+}
+
+TEST(sound_test, sound_control_set_capture_volume_all_relative) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_capture_volume = false;
+
+    for (auto& control : controls) {
+        if (! control.has_capture_volume()) {
+            continue;
+        }
+
+        has_capture_volume = true;
+
+        auto old_volume = control.get_capture_volume();
+        ASSERT_TRUE(old_volume.has_value());
+        // Status can be any value.
+
+        EXPECT_TRUE(control.set_capture_volume_all(0).success());
+        EXPECT_TRUE(control.set_capture_volume_all_relative(-5).success());
+        EXPECT_TRUE(control.set_capture_volume_all_relative(+5).success());
+        EXPECT_TRUE(control.set_capture_volume_all(100).success());
+        EXPECT_TRUE(control.set_capture_volume_all_relative(+5).success());
+        EXPECT_TRUE(control.set_capture_volume_all_relative(-5).success());
 
         // For some reason, resetting the volume too quickly fails but does
         // not provide a reason why.
