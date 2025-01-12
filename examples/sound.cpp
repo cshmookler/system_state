@@ -4,14 +4,13 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int get_sound() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     auto mixer = syst::sound_mixer_t::get();
-    if (! mixer.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (mixer.has_error()) {
+        std::cerr << mixer.error() << std::endl;
         return 1;
     }
 
@@ -63,7 +62,7 @@ int get_sound() {
                 }
                 std::cout << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << playback_status.error() << std::endl;
             }
         }
 
@@ -112,7 +111,7 @@ int get_sound() {
                 }
                 std::cout << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << playback_volume.error() << std::endl;
             }
         }
 
@@ -158,7 +157,7 @@ int get_sound() {
                 }
                 std::cout << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << capture_status.error() << std::endl;
             }
         }
 
@@ -207,7 +206,7 @@ int get_sound() {
                 }
                 std::cout << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << capture_volume.error() << std::endl;
             }
         }
 
@@ -221,8 +220,8 @@ int set_sound() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     auto mixer = syst::sound_mixer_t::get();
-    if (! mixer.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (mixer.has_error()) {
+        std::cerr << mixer.error() << std::endl;
         return 1;
     }
 
@@ -253,12 +252,14 @@ int set_sound() {
     for (auto& control : controls) {
         if (control.has_playback_status()) {
             auto old_playback_status = control.get_playback_status();
-            if (! old_playback_status.has_value()) {
-                std::cout << syst::error << std::endl;
+            if (old_playback_status.has_error()) {
+                std::cerr << old_playback_status.error() << std::endl;
                 return 1;
             }
-            if (! control.set_playback_status(new_status)) {
-                std::cout << syst::error << std::endl;
+
+            auto result = control.set_playback_status(new_status);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
 
@@ -266,20 +267,22 @@ int set_sound() {
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-            if (! control.set_playback_status(old_playback_status.value())) {
-                std::cout << syst::error << std::endl;
+            result = control.set_playback_status(old_playback_status.value());
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
         }
 
         if (control.has_playback_volume()) {
             auto old_playback_volume = control.get_playback_volume();
-            if (! old_playback_volume.has_value()) {
-                std::cout << syst::error << std::endl;
+            if (old_playback_volume.has_error()) {
+                std::cerr << old_playback_volume.error() << std::endl;
                 return 1;
             }
-            if (! control.set_playback_volume(new_volume)) {
-                std::cout << syst::error << std::endl;
+            auto result = control.set_playback_volume(new_volume);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
 
@@ -287,20 +290,22 @@ int set_sound() {
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-            if (! control.set_playback_volume(old_playback_volume.value())) {
-                std::cout << syst::error << std::endl;
+            result = control.set_playback_volume(old_playback_volume.value());
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
         }
 
         if (control.has_capture_status()) {
             auto old_capture_status = control.get_capture_status();
-            if (! old_capture_status.has_value()) {
-                std::cout << syst::error << std::endl;
+            if (old_capture_status.has_error()) {
+                std::cerr << old_capture_status.error() << std::endl;
                 return 1;
             }
-            if (! control.set_capture_status(new_status)) {
-                std::cout << syst::error << std::endl;
+            auto result = control.set_capture_status(new_status);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
 
@@ -308,20 +313,22 @@ int set_sound() {
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-            if (! control.set_capture_status(old_capture_status.value())) {
-                std::cout << syst::error << std::endl;
+            result = control.set_capture_status(old_capture_status.value());
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
         }
 
         if (control.has_capture_volume()) {
             auto old_capture_volume = control.get_capture_volume();
-            if (! old_capture_volume.has_value()) {
-                std::cout << syst::error << std::endl;
+            if (old_capture_volume.has_error()) {
+                std::cerr << old_capture_volume.error() << std::endl;
                 return 1;
             }
-            if (! control.set_capture_volume(new_volume)) {
-                std::cout << syst::error << std::endl;
+            auto result = control.set_capture_volume(new_volume);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
 
@@ -329,8 +336,9 @@ int set_sound() {
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-            if (! control.set_capture_volume(old_capture_volume.value())) {
-                std::cout << syst::error << std::endl;
+            result = control.set_capture_volume(old_capture_volume.value());
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
                 return 1;
             }
         }

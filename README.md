@@ -2,7 +2,7 @@
 
 C++ library for fetching and modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
 
-> NOTE: Error handling features in <system_state/error.hpp> are not thread safe!
+> NOTE: Features are not guaranteed to be thread safe!
 
 ## Build from Source
 
@@ -46,6 +46,8 @@ meson install
 ## **TODO**
 
 - [X] error handling
+- [X] make (partially) thread safe
+- [X] add traces to error messages
 - [X] examples
 - [X] uptime
 - [X] disks

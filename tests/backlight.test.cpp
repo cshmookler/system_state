@@ -38,7 +38,7 @@ TEST(backlight_test, brightness) {
     ASSERT_GE(backlights->size(), 1);
 
     for (const syst::backlight_t& backlight : backlights.value()) {
-        std::optional<double> brightness = backlight.brightness();
+        auto brightness = backlight.brightness();
         ASSERT_TRUE(brightness.has_value());
         // Backlight brightness must always be between 0 and 100.
         ASSERT_GE(brightness.value(), 0.F);

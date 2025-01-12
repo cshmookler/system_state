@@ -3,12 +3,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto backlights = syst::backlight_t::all();
-    if (! backlights.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (backlights.has_error()) {
+        std::cerr << backlights.error() << std::endl;
         return 1;
     }
 
@@ -21,7 +20,7 @@ int main() {
             std::cout << "Brightness: " << brightness.value() << "%"
                       << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << brightness.error() << std::endl;
         }
 
         std::cout << std::endl;

@@ -2,17 +2,15 @@
 #include <fstream>
 
 // Local includes
-#include "../system_state/error.hpp"
 #include "util.hpp"
 
 namespace syst {
 
-std::optional<std::vector<std::string>> get_all_lines(
+syst::optional_t<std::vector<std::string>> get_all_lines(
   const std::filesystem::path& path) {
     if (! std::filesystem::is_regular_file(path)) {
-        syst::error =
-          "The path is not a regular file.\npath: '" + path.string() + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "The path is not a regular file.\n\tpath: '" + path.string() + "'");
     }
 
     std::ifstream file{ path };
@@ -25,84 +23,85 @@ std::optional<std::vector<std::string>> get_all_lines(
     return lines;
 }
 
-std::optional<std::string> get_first_line(const std::filesystem::path& path) {
+syst::optional_t<std::string> get_first_line(
+  const std::filesystem::path& path) {
     if (! std::filesystem::is_regular_file(path)) {
-        syst::error =
-          "The path is not a regular file.\npath: '" + path.string() + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "The path is not a regular file.\n\tpath: '" + path.string() + "'");
     }
 
     std::ifstream file{ path };
     std::string first_line;
     if (! std::getline(file, first_line).good()) {
-        syst::error = "Failed to read the first line of a file.\nfile: '"
-          + path.string() + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "Failed to read the first line of a file.\n\tfile: '" + path.string()
+          + "'");
     }
 
     return first_line;
 }
 
-std::optional<uint64_t> get_int(const std::filesystem::path& path) {
-    std::optional<std::string> value_str = get_first_line(path);
-    if (! value_str.has_value()) {
-        // get_first_line sets syst::error
-        return std::nullopt;
+syst::optional_t<uint64_t> get_int(const std::filesystem::path& path) {
+    syst::optional_t<std::string> value_str = syst::get_first_line(path);
+    if (value_str.has_error()) {
+        return SYST_ERROR(value_str.error(),
+          "Failed to read an integer from a file.\n\tfile: '" + path.string()
+            + "'");
     }
 
     unsigned long value = 0;
     try {
         value = std::stoul(value_str.value());
     } catch (const std::invalid_argument& exception) {
-        syst::error = "Encountered a std::invalid_argument exception while "
-                      "attempting to convert a value to an integer which was "
-                      "read from a file.\nvalue: '"
-          + value_str.value() + "'\nfile: '" + path.string() + "'";
-        return std::nullopt;
-    } catch (const std::out_of_range&) {
-        syst::error = "Encountered a std::out_of_range exception while "
-                      "attempting to convert a value to an integer which was "
-                      "read from a file.\nvalue: '"
-          + value_str.value() + "'\nfile: '" + path.string() + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "Encountered a std::invalid_argument exception while "
+          "attempting to convert a value to an integer which was "
+          "read from a file.\n\tvalue: '"
+          + value_str.value() + "'\n\tfile: '" + path.string()
+          + "'\n\texception: '" + exception.what() + "'");
+    } catch (const std::out_of_range& exception) {
+        return SYST_NEW_ERROR(
+          "Encountered a std::out_of_range exception while "
+          "attempting to convert a value to an integer which was "
+          "read from a file.\n\tvalue: '"
+          + value_str.value() + "'\n\tfile: '" + path.string()
+          + "'\n\texception: '" + exception.what() + "'");
     }
 
     return value;
 }
 
-std::optional<bool> get_bool(const std::filesystem::path& path) {
-    std::optional<uint64_t> integer = get_int(path);
-    if (! integer.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+syst::optional_t<bool> get_bool(const std::filesystem::path& path) {
+    syst::optional_t<uint64_t> integer = syst::get_int(path);
+    if (integer.has_error()) {
+        return SYST_ERROR(integer.error(),
+          "Failed to read a boolean from a file.\n\tpath: '" + path.string()
+            + "'");
     }
 
     if (integer.value() != 0 && integer.value() != 1) {
-        syst::error =
-          "Expected a boolean value (either 0 or 1) from a file.\nvalue: '"
-          + std::to_string(integer.value()) + "'\nfile: '" + path.string()
-          + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "Expected a boolean value (either 0 or 1) from a file.\n\tvalue: '"
+          + std::to_string(integer.value()) + "'\n\tfile: '" + path.string()
+          + "'");
     }
 
     return integer.value() == 1UL;
 }
 
-bool write_int(const std::filesystem::path& path, uint64_t integer) {
+result_t write_int(const std::filesystem::path& path, uint64_t integer) {
     if (! std::filesystem::is_regular_file(path)) {
-        syst::error =
-          "The path is not a regular file.\npath: '" + path.string() + "'";
-        return false;
+        return SYST_NEW_ERROR(
+          "The path is not a regular file.\n\tpath: '" + path.string() + "'");
     }
 
     std::ofstream file{ path };
     if ((file << integer).fail()) {
-        syst::error = "Failed to write an integer to a file.\npath: '"
-          + path.string() + "'\ninteger: '" + std::to_string(integer) + "'";
-        return false;
+        return SYST_NEW_ERROR("Failed to write an integer to a file.\n\tpath: '"
+          + path.string() + "'\n\tinteger: '" + std::to_string(integer) + "'");
     }
 
-    return true;
+    return syst::success;
 }
 
 bool has_prefix(const std::string& target, const std::string& prefix) {
@@ -111,7 +110,7 @@ bool has_prefix(const std::string& target, const std::string& prefix) {
 
 std::string remove_prefix(
   const std::string& target, const std::string& prefix) {
-    if (! has_prefix(target, prefix)) {
+    if (! syst::has_prefix(target, prefix)) {
         return target;
     }
 

@@ -15,15 +15,15 @@ TEST(cpu_usage_test, get_total_update_zero) {
 
 TEST(cpu_usage_test, get_total_usage_update_one) {
     syst::cpu_usage_t cpu_usage;
-    ASSERT_TRUE(cpu_usage.update());
+    ASSERT_TRUE(cpu_usage.update().success());
     auto usage = cpu_usage.get_total();
     ASSERT_FALSE(usage.has_value());
 }
 
 TEST(cpu_usage_test, get_total_usage_update_two) {
     syst::cpu_usage_t cpu_usage;
-    ASSERT_TRUE(cpu_usage.update());
-    ASSERT_TRUE(cpu_usage.update());
+    ASSERT_TRUE(cpu_usage.update().success());
+    ASSERT_TRUE(cpu_usage.update().success());
     auto usage = cpu_usage.get_total();
     ASSERT_TRUE(usage.has_value());
     ASSERT_GE(usage.value(), 0.F);
@@ -38,15 +38,15 @@ TEST(cpu_usage_test, get_per_core_update_zero) {
 
 TEST(cpu_usage_test, get_per_core_update_one) {
     syst::cpu_usage_t cpu_usage;
-    ASSERT_TRUE(cpu_usage.update());
+    ASSERT_TRUE(cpu_usage.update().success());
     auto cores = cpu_usage.get_per_core();
     ASSERT_FALSE(cores.has_value());
 }
 
 TEST(cpu_usage_test, get_per_core_update_two) {
     syst::cpu_usage_t cpu_usage;
-    ASSERT_TRUE(cpu_usage.update());
-    ASSERT_TRUE(cpu_usage.update());
+    ASSERT_TRUE(cpu_usage.update().success());
+    ASSERT_TRUE(cpu_usage.update().success());
     auto cores = cpu_usage.get_per_core();
     ASSERT_TRUE(cores.has_value());
     for (auto usage : cores.value()) {

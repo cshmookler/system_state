@@ -1,136 +1,129 @@
 // Local includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 #include "util.hpp"
 
 namespace syst {
 
-[[nodiscard]] std::optional<double> energy(const fs::path& sysfs_path) {
+[[nodiscard]] syst::optional_t<double> energy(const fs::path& sysfs_path) {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto energy_now = get_int(sysfs_path / "energy_now");
-    if (! energy_now.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto energy_now = syst::get_int(sysfs_path / "energy_now");
+    if (energy_now.has_error()) {
+        return SYST_TRACE(energy_now.error());
     }
 
-    auto energy_empty = get_int(sysfs_path / "energy_empty");
-    if (! energy_empty.has_value()) {
+    auto energy_empty = syst::get_int(sysfs_path / "energy_empty");
+    if (energy_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         energy_empty = 0;
     }
 
-    auto energy_full = get_int(sysfs_path / "energy_full");
-    if (! energy_full.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto energy_full = syst::get_int(sysfs_path / "energy_full");
+    if (energy_full.has_error()) {
+        return SYST_TRACE(energy_full.error());
     }
 
-    return value_to_percent(
+    return syst::value_to_percent(
       energy_empty.value(), energy_full.value(), energy_now.value());
 }
 
-[[nodiscard]] std::optional<double> charge(const fs::path& sysfs_path) {
+[[nodiscard]] syst::optional_t<double> charge(const fs::path& sysfs_path) {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto charge_now = get_int(sysfs_path / "charge_now");
-    if (! charge_now.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto charge_now = syst::get_int(sysfs_path / "charge_now");
+    if (charge_now.has_error()) {
+        return SYST_TRACE(charge_now.error());
     }
 
-    auto charge_empty = get_int(sysfs_path / "charge_empty");
-    if (! charge_empty.has_value()) {
+    auto charge_empty = syst::get_int(sysfs_path / "charge_empty");
+    if (charge_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         charge_empty = 0;
     }
 
-    auto charge_full = get_int(sysfs_path / "charge_full");
-    if (! charge_full.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto charge_full = syst::get_int(sysfs_path / "charge_full");
+    if (charge_full.has_error()) {
+        return SYST_TRACE(charge_full.error());
     }
 
-    return value_to_percent(
+    return syst::value_to_percent(
       charge_empty.value(), charge_full.value(), charge_now.value());
 }
 
-[[nodiscard]] std::optional<double> energy_capacity(
+[[nodiscard]] syst::optional_t<double> energy_capacity(
   const fs::path& sysfs_path) {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto energy_empty = get_int(sysfs_path / "energy_empty");
-    if (! energy_empty.has_value()) {
+    auto energy_empty = syst::get_int(sysfs_path / "energy_empty");
+    if (energy_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         energy_empty = 0;
     }
 
-    auto energy_full = get_int(sysfs_path / "energy_full");
-    if (! energy_full.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto energy_full = syst::get_int(sysfs_path / "energy_full");
+    if (energy_full.has_error()) {
+        return SYST_TRACE(energy_full.error());
     }
 
-    auto energy_empty_design = get_int(sysfs_path / "energy_empty_design");
-    if (! energy_empty_design.has_value()) {
+    auto energy_empty_design =
+      syst::get_int(sysfs_path / "energy_empty_design");
+    if (energy_empty_design.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         energy_empty_design = 0;
     }
 
-    auto energy_full_design = get_int(sysfs_path / "energy_full_design");
-    if (! energy_full_design.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto energy_full_design = syst::get_int(sysfs_path / "energy_full_design");
+    if (energy_full_design.has_error()) {
+        return SYST_TRACE(energy_full_design.error());
     }
 
-    return ratio_to_percent(energy_full.value() - energy_empty.value(),
+    return syst::ratio_to_percent(energy_full.value() - energy_empty.value(),
       energy_full_design.value() - energy_empty_design.value());
 }
 
-[[nodiscard]] std::optional<double> charge_capacity(
+[[nodiscard]] syst::optional_t<double> charge_capacity(
   const fs::path& sysfs_path) {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    auto charge_empty = get_int(sysfs_path / "charge_empty");
-    if (! charge_empty.has_value()) {
+    auto charge_empty = syst::get_int(sysfs_path / "charge_empty");
+    if (charge_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         charge_empty = 0;
     }
 
-    auto charge_full = get_int(sysfs_path / "charge_full");
-    if (! charge_full.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto charge_full = syst::get_int(sysfs_path / "charge_full");
+    if (charge_full.has_error()) {
+        return SYST_TRACE(charge_full.error());
     }
 
-    auto charge_empty_design = get_int(sysfs_path / "charge_empty_design");
-    if (! charge_empty_design.has_value()) {
+    auto charge_empty_design =
+      syst::get_int(sysfs_path / "charge_empty_design");
+    if (charge_empty_design.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         charge_empty_design = 0;
     }
 
-    auto charge_full_design = get_int(sysfs_path / "charge_full_design");
-    if (! charge_full_design.has_value()) {
-        // get_int sets syst::error
-        return std::nullopt;
+    auto charge_full_design = syst::get_int(sysfs_path / "charge_full_design");
+    if (charge_full_design.has_error()) {
+        return SYST_TRACE(charge_full_design.error());
     }
 
-    return ratio_to_percent(charge_full.value() - charge_empty.value(),
+    return syst::ratio_to_percent(charge_full.value() - charge_empty.value(),
       charge_full_design.value() - charge_empty_design.value());
 }
 
 battery_t::battery_t(const fs::path& sysfs_path) : sysfs_path_(sysfs_path) {
 }
 
-std::optional<std::list<battery_t>> battery_t::all() {
+syst::optional_t<std::list<battery_t>> battery_t::all() {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -138,25 +131,26 @@ std::optional<std::list<battery_t>> battery_t::all() {
     const std::string power_supply_path = "/sys/class/power_supply";
 
     if (! fs::is_directory(power_supply_path)) {
-        syst::error =
-          "The path is not a directory.\npath: '" + power_supply_path + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "The path is not a directory.\n\tpath: '" + power_supply_path + "'");
     }
 
     std::list<battery_t> batteries;
 
     for (const fs::directory_entry& battery :
       fs::directory_iterator(power_supply_path)) {
+        if (! fs::is_directory(battery)) {
+            // Ignore paths that are not directories.
+            continue;
+        }
         if (! fs::is_symlink(battery)) {
-            syst::error = "The path is not a symbolic link.\npath: '"
-              + battery.path().string() + "'";
-            return std::nullopt;
+            // Ignore paths that are not symbolic links.
+            continue;
         }
 
-        auto type = get_first_line(battery.path() / "type");
-        if (! type.has_value()) {
-            // get_first_line sets syst::error
-            return std::nullopt;
+        auto type = syst::get_first_line(battery.path() / "type");
+        if (type.has_error()) {
+            return SYST_TRACE(type.error());
         }
         if (type.value() != "Battery") {
             // Ignore power supply devices that are not batteries.
@@ -177,16 +171,15 @@ std::string battery_t::name() const {
     return this->sysfs_path_.filename();
 }
 
-std::optional<battery_t::status_t> battery_t::status() const {
+syst::optional_t<battery_t::status_t> battery_t::status() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
     const fs::path status_path = this->sysfs_path_ / "status";
-    const auto status = get_first_line(status_path);
-    if (! status.has_value()) {
-        // get_first_line sets syst::error
-        return std::nullopt;
+    auto status = syst::get_first_line(status_path);
+    if (status.has_error()) {
+        return SYST_TRACE(status.error());
     }
 
     if (status.value() == "Unknown") {
@@ -205,42 +198,35 @@ std::optional<battery_t::status_t> battery_t::status() const {
         return status_t::full;
     }
 
-    syst::error =
-      "An invalid status was read from a battery status file.\nstatus: '"
-      + status.value() + "'\nfile: '" + status_path.string() + "'";
-    return std::nullopt;
+    return SYST_NEW_ERROR(
+      "An invalid status was read from a battery status file.\n\tstatus: '"
+      + status.value() + "'\n\tfile: '" + status_path.string() + "'");
 }
 
-std::optional<double> battery_t::current() const {
+syst::optional_t<double> battery_t::current() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    std::string error;
-
-    const auto current_now = get_int(this->sysfs_path_ / "current_now");
+    auto current_now = syst::get_int(this->sysfs_path_ / "current_now");
     if (current_now.has_value()) {
         const double microamperes_per_ampere = static_cast<double>(1e6);
         return static_cast<double>(current_now.value())
           / microamperes_per_ampere;
     }
-    error = syst::error;
+    error_t error = SYST_TRACE(current_now.error());
 
     // If the current_now file is missing, dividing power_now by voltage_now
     // produces the approximate current draw from the battery in amperes.
 
-    const auto power_now = get_int(this->sysfs_path_ / "power_now");
-    if (! power_now.has_value()) {
-        error += "\n" + syst::error;
-        syst::error = error;
-        return std::nullopt;
+    auto power_now = syst::get_int(this->sysfs_path_ / "power_now");
+    if (power_now.has_error()) {
+        return SYST_TRACE(error.get() + power_now.error());
     }
 
-    const auto voltage_now = get_int(this->sysfs_path_ / "voltage_now");
-    if (! voltage_now.has_value()) {
-        error += "\n" + syst::error;
-        syst::error = error;
-        return std::nullopt;
+    auto voltage_now = syst::get_int(this->sysfs_path_ / "voltage_now");
+    if (voltage_now.has_error()) {
+        return SYST_TRACE(error.get() + voltage_now.error());
     }
 
     const double approx_current_now = static_cast<double>(power_now.value())
@@ -249,35 +235,29 @@ std::optional<double> battery_t::current() const {
     return approx_current_now;
 }
 
-std::optional<double> battery_t::power() const {
+syst::optional_t<double> battery_t::power() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
 
-    std::string error;
-
-    const auto power_now = get_int(this->sysfs_path_ / "power_now");
+    auto power_now = syst::get_int(this->sysfs_path_ / "power_now");
     if (power_now.has_value()) {
         const double microwatts_per_watt = static_cast<double>(1e6);
         return static_cast<double>(power_now.value()) / microwatts_per_watt;
     }
-    error = syst::error;
+    error_t error = SYST_TRACE(power_now.error());
 
     // If the power_now file is missing, multiplying current_now by voltage_now
     // produces the approximate power in picowatts.
 
-    auto current_now = get_int(this->sysfs_path_ / "current_now");
-    if (! current_now.has_value()) {
-        error += "\n" + syst::error;
-        syst::error = error;
-        return std::nullopt;
+    auto current_now = syst::get_int(this->sysfs_path_ / "current_now");
+    if (current_now.has_error()) {
+        return SYST_TRACE(error.get() + current_now.error());
     }
 
-    auto voltage_now = get_int(this->sysfs_path_ / "voltage_now");
-    if (! voltage_now.has_value()) {
-        error += "\n" + syst::error;
-        syst::error = error;
-        return std::nullopt;
+    auto voltage_now = syst::get_int(this->sysfs_path_ / "voltage_now");
+    if (voltage_now.has_error()) {
+        return SYST_TRACE(error.get() + voltage_now.error());
     }
 
     double approx_power_now_pico = static_cast<double>(current_now.value())
@@ -289,7 +269,7 @@ std::optional<double> battery_t::power() const {
     return approx_power_now;
 }
 
-std::optional<double> battery_t::charge() const {
+syst::optional_t<double> battery_t::charge() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -297,34 +277,31 @@ std::optional<double> battery_t::charge() const {
     // Attempt to calculate the current charge level of this device with energy,
     // then charge, and finally with capacity if all else fails.
 
-    std::string error;
-
     auto energy = syst::energy(this->sysfs_path_);
     if (energy.has_value()) {
         return energy.value();
     }
-    error += syst::error;
+    error_t error = SYST_TRACE(energy.error());
 
     auto charge = syst::charge(this->sysfs_path_);
     if (charge.has_value()) {
         return charge.value();
     }
-    error += syst::error;
+    error = SYST_TRACE(error.get() + charge.error());
 
     // NOTE: This value is the just the current charge level of this device.
     // This is not the same as returned by the 'capacity' method!
     // https://www.kernel.org/doc/html/latest/power/power_supply_class.html#attributes-properties-detailed
-    auto capacity = get_int(this->sysfs_path_ / "capacity");
+    auto capacity = syst::get_int(this->sysfs_path_ / "capacity");
     if (capacity.has_value()) {
-        return capacity.value();
+        return static_cast<double>(capacity.value());
     }
-    error += syst::error;
+    error = SYST_TRACE(error.get() + capacity.error());
 
-    syst::error = error;
-    return std::nullopt;
+    return error;
 }
 
-std::optional<double> battery_t::capacity() const {
+syst::optional_t<double> battery_t::capacity() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -332,34 +309,31 @@ std::optional<double> battery_t::capacity() const {
     // Attempt to calculate the capacity of this device (compared to original
     // capacity at manufacture) with energy and then charge if all else fails.
 
-    std::string error;
-
     auto energy_capacity = syst::energy_capacity(this->sysfs_path_);
     if (energy_capacity.has_value()) {
         return energy_capacity.value();
     }
-    error = syst::error;
+    error_t error = SYST_TRACE(energy_capacity.error());
 
     auto charge_capacity = syst::charge_capacity(this->sysfs_path_);
     if (charge_capacity.has_value()) {
         return charge_capacity.value();
     }
-    error += "\n" + syst::error;
+    error = SYST_TRACE(error.get() + charge_capacity.error());
 
-    syst::error = error;
-    return std::nullopt;
+    return error;
 }
 
-std::optional<double> energy_stored(const fs::path& sysfs_path) {
-    auto energy_empty = get_int(sysfs_path / "energy_empty");
-    if (! energy_empty.has_value()) {
+syst::optional_t<double> energy_stored(const fs::path& sysfs_path) {
+    auto energy_empty = syst::get_int(sysfs_path / "energy_empty");
+    if (energy_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         energy_empty = 0;
     }
 
-    auto energy_now = get_int(sysfs_path / "energy_now");
-    if (! energy_now.has_value()) {
-        return std::nullopt;
+    auto energy_now = syst::get_int(sysfs_path / "energy_now");
+    if (energy_now.has_error()) {
+        return SYST_TRACE(energy_now.error());
     }
 
     double energy_microwatt_hours =
@@ -372,15 +346,15 @@ std::optional<double> energy_stored(const fs::path& sysfs_path) {
     return energy_watt_hours;
 }
 
-std::optional<double> energy_missing(const fs::path& sysfs_path) {
-    auto energy_now = get_int(sysfs_path / "energy_now");
-    if (! energy_now.has_value()) {
-        return std::nullopt;
+syst::optional_t<double> energy_missing(const fs::path& sysfs_path) {
+    auto energy_now = syst::get_int(sysfs_path / "energy_now");
+    if (energy_now.has_error()) {
+        return SYST_TRACE(energy_now.error());
     }
 
-    auto energy_full = get_int(sysfs_path / "energy_full");
-    if (! energy_full.has_value()) {
-        return std::nullopt;
+    auto energy_full = syst::get_int(sysfs_path / "energy_full");
+    if (energy_full.has_error()) {
+        return SYST_TRACE(energy_full.error());
     }
 
     double energy_microwatt_hours =
@@ -393,16 +367,16 @@ std::optional<double> energy_missing(const fs::path& sysfs_path) {
     return energy_watt_hours;
 }
 
-std::optional<double> charge_stored(const fs::path& sysfs_path) {
-    auto charge_empty = get_int(sysfs_path / "charge_empty");
-    if (! charge_empty.has_value()) {
+syst::optional_t<double> charge_stored(const fs::path& sysfs_path) {
+    auto charge_empty = syst::get_int(sysfs_path / "charge_empty");
+    if (charge_empty.has_error()) {
         // If this file doesn't exist, assume its value is zero.
         charge_empty = 0;
     }
 
-    auto charge_now = get_int(sysfs_path / "charge_now");
-    if (! charge_now.has_value()) {
-        return std::nullopt;
+    auto charge_now = syst::get_int(sysfs_path / "charge_now");
+    if (charge_now.has_error()) {
+        return SYST_TRACE(charge_now.error());
     }
 
     double charge_microamperes =
@@ -414,15 +388,15 @@ std::optional<double> charge_stored(const fs::path& sysfs_path) {
     return charge_amperes;
 }
 
-std::optional<double> charge_missing(const fs::path& sysfs_path) {
-    auto charge_now = get_int(sysfs_path / "charge_now");
-    if (! charge_now.has_value()) {
-        return std::nullopt;
+syst::optional_t<double> charge_missing(const fs::path& sysfs_path) {
+    auto charge_now = syst::get_int(sysfs_path / "charge_now");
+    if (charge_now.has_error()) {
+        return SYST_TRACE(charge_now.error());
     }
 
-    auto charge_full = get_int(sysfs_path / "charge_full");
-    if (! charge_full.has_value()) {
-        return std::nullopt;
+    auto charge_full = syst::get_int(sysfs_path / "charge_full");
+    if (charge_full.has_error()) {
+        return SYST_TRACE(charge_full.error());
     }
 
     double charge_microamperes =
@@ -444,7 +418,7 @@ ch::seconds hours_to_seconds(double hours) {
     return ch::seconds{ seconds };
 }
 
-std::optional<ch::seconds> battery_t::time_remaining() const {
+syst::optional_t<ch::seconds> battery_t::time_remaining() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -492,81 +466,76 @@ std::optional<ch::seconds> battery_t::time_remaining() const {
     // two can be used to calculate the missing one (P = I * V).
 
     auto status = this->status();
-    if (! status.has_value()) {
-        // status sets syst::error
-        return std::nullopt;
+    if (status.has_error()) {
+        return SYST_TRACE(status.error());
     }
-
-    std::string error;
 
     if (status.value() == status_t::discharging) {
         // Method #1 for discharging
-        auto time_to_empty = get_int(this->sysfs_path_ / "time_to_empty");
+        auto time_to_empty = syst::get_int(this->sysfs_path_ / "time_to_empty");
         if (time_to_empty.has_value()) {
             return ch::seconds{ time_to_empty.value() };
         }
-        error = syst::error;
+        error_t error = SYST_TRACE(time_to_empty.error());
 
         // Method #2 for discharging
-        auto energy = energy_stored(this->sysfs_path_);
+        auto energy = syst::energy_stored(this->sysfs_path_);
         if (energy.has_value()) {
             auto power = this->power();
             if (power.has_value()) {
-                return hours_to_seconds(energy.value() / power.value());
+                return syst::hours_to_seconds(energy.value() / power.value());
             }
         }
-        error += "\n" + syst::error;
+        error = SYST_TRACE(error.get() + energy.error());
 
         // Method #3 for discharging
-        auto charge = charge_stored(this->sysfs_path_);
+        auto charge = syst::charge_stored(this->sysfs_path_);
         if (charge.has_value()) {
             auto current = this->current();
             if (current.has_value()) {
-                return hours_to_seconds(charge.value() / current.value());
+                return syst::hours_to_seconds(charge.value() / current.value());
             }
         }
-        error += "\n" + syst::error;
+        error = SYST_TRACE(error.get() + charge.error());
 
-        syst::error = error;
-        return std::nullopt;
+        return error;
     }
 
     if (status.value() == status_t::charging) {
         // Method #1 for charging
-        auto time_to_full = get_int(this->sysfs_path_ / "time_to_full");
+        auto time_to_full = syst::get_int(this->sysfs_path_ / "time_to_full");
         if (time_to_full.has_value()) {
             return ch::seconds{ time_to_full.value() };
         }
-        error = syst::error;
+        error_t error = SYST_TRACE(time_to_full.error());
 
         // Method #2 for charging
-        auto energy = energy_missing(this->sysfs_path_);
+        auto energy = syst::energy_missing(this->sysfs_path_);
         if (energy.has_value()) {
             auto power = this->power();
             if (power.has_value()) {
-                return hours_to_seconds(energy.value() / power.value());
+                return syst::hours_to_seconds(energy.value() / power.value());
             }
         }
-        error += "\n" + syst::error;
+        error = SYST_TRACE(error.get() + energy.error());
 
         // Method #3 for charging
-        auto charge = charge_missing(this->sysfs_path_);
+        auto charge = syst::charge_missing(this->sysfs_path_);
         if (charge.has_value()) {
             auto current = this->current();
             if (current.has_value()) {
-                return hours_to_seconds(charge.value() / current.value());
+                return syst::hours_to_seconds(charge.value() / current.value());
             }
         }
-        error += "\n" + syst::error;
+        error = SYST_TRACE(error.get() + charge.error());
 
-        syst::error = error;
-        return std::nullopt;
+        return error;
     }
 
-    syst::error = "Cannot calculate the time remaining for a battery that "
-                  "is neither charging nor discharging.\nsysfs path: '"
-      + this->sysfs_path_.string() + "'";
-    return std::nullopt;
+    return SYST_NEW_ERROR(
+      "Cannot calculate the time remaining for a battery that "
+      "is neither charging nor discharging.\n\tsysfs path: '"
+      + this->sysfs_path_.string() + "'");
 }
 
 } // namespace syst

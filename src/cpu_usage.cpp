@@ -4,7 +4,6 @@
 
 // Local includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 #include "util.hpp"
 
 namespace syst {
@@ -51,22 +50,21 @@ cpu_usage_t::cpu_usage_t() : impl_(std::make_unique<impl_t>()) {
 
 cpu_usage_t::~cpu_usage_t() = default;
 
-bool cpu_usage_t::update() const {
+result_t cpu_usage_t::update() const {
     // documentation for /proc/stat
     //     https://www.kernel.org/doc/html/latest/filesystems/proc.html#miscellaneous-kernel-statistics-in-proc-stat
 
     const fs::path proc_stat_path = "/proc/stat";
-    const auto lines = get_all_lines(proc_stat_path);
-    if (! lines.has_value()) {
-        // get_all_lines sets syst::error
-        return false;
+    auto lines = syst::get_all_lines(proc_stat_path);
+    if (lines.has_error()) {
+        return SYST_TRACE(lines.error());
     }
     if (lines->size() < 2) {
-        syst::error = "The process statistics file must contain at least two "
-                      "lines.\nlines: '"
-          + std::to_string(lines->size()) + "'\nfile: '"
-          + proc_stat_path.string() + "'";
-        return false;
+        return SYST_NEW_ERROR(
+          "The process statistics file must contain at least two "
+          "lines.\n\tlines: '"
+          + std::to_string(lines->size()) + "'\n\tfile: '"
+          + proc_stat_path.string() + "'");
     }
 
     std::vector<cpu_usage_stat_t> temp_stats;
@@ -75,99 +73,97 @@ bool cpu_usage_t::update() const {
         // All lines with CPU statistics are at the beginning of the file
         // and start with a specific prefix.
         const std::string fields_prefix = "cpu";
-        if (! has_prefix(line, fields_prefix)) {
+        if (! syst::has_prefix(line, fields_prefix)) {
             break;
         }
 
         std::stringstream stream;
 
         if ((stream << line).fail()) {
-            syst::error = "Failed to load process statistics into a "
-                          "std::stringstream object.\nstats: '"
-              + line + "'";
-            return false;
+            return SYST_NEW_ERROR("Failed to load process statistics into a "
+                                  "std::stringstream object.\n\tstats: '"
+              + line + "'");
         }
 
         std::string cpu_name; // Currently unused
         if ((stream >> cpu_name).fail()) {
-            syst::error = "Failed to read the 'user_mode' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR("Failed to read the cpu name from the "
+                                  "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
 
         cpu_usage_stat_t temp{};
 
         if ((stream >> temp.user_mode).fail()) {
-            syst::error = "Failed to read the 'user_mode' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'user_mode' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.low_priority_user_mode).fail()) {
-            syst::error = "Failed to read the 'low_priority_user_mode' "
-                          "statistic from the process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'low_priority_user_mode' "
+              "statistic from the process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.system_mode).fail()) {
-            syst::error = "Failed to read the 'system_mode' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'system_mode' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.idle).fail()) {
-            syst::error = "Failed to read the 'idle' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'idle' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.io_idle).fail()) {
-            syst::error = "Failed to read the 'io_idle' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'io_idle' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.interrupt).fail()) {
-            syst::error = "Failed to read the 'interrupt' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'interrupt' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.soft_interrupt).fail()) {
-            syst::error = "Failed to read the 'soft_interrupt' statistic from "
-                          "the process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'soft_interrupt' statistic from "
+              "the process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.stolen).fail()) {
-            syst::error = "Failed to read the 'stolen' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'stolen' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.guest).fail()) {
-            syst::error = "Failed to read the 'guest' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'guest' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
         if ((stream >> temp.niced_guest).fail()) {
-            syst::error = "Failed to read the 'niced_guest' statistic from the "
-                          "process statistics file.\nfile: '"
-              + proc_stat_path.string() + "'";
-            return false;
+            return SYST_NEW_ERROR(
+              "Failed to read the 'niced_guest' statistic from the "
+              "process statistics file.\n\tfile: '"
+              + proc_stat_path.string() + "'");
         }
 
         temp_stats.push_back(temp);
     }
 
     if (temp_stats.size() < 2) {
-        syst::error = "Failed to process at least two lines extracted from the "
-                      "process statistics file\nlines processed: '"
-          + std::to_string(temp_stats.size()) + "'\nfile: '"
-          + proc_stat_path.string() + "'";
-        return false;
+        return SYST_NEW_ERROR(
+          "Failed to process at least two lines extracted from the "
+          "process statistics file\n\tlines processed: '"
+          + std::to_string(temp_stats.size()) + "'\n\tfile: '"
+          + proc_stat_path.string() + "'");
     }
 
     // Do not modify the internal state of this class unless all operations
@@ -181,20 +177,19 @@ bool cpu_usage_t::update() const {
 
     this->impl_->new_stat = temp_stats;
 
-    return true;
+    return syst::success;
 }
 
-std::optional<double> cpu_usage_t::get_total() const {
+syst::optional_t<double> cpu_usage_t::get_total() const {
     if (! this->impl_->new_stat.has_value()) {
-        syst::error = "No statistics samples are stored. Call the 'update' "
-                      "method twice before calling the 'get_total' method.";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "No statistics samples are stored. Call the 'update' "
+          "method twice before calling the 'get_total' method.");
     }
     if (! this->impl_->old_stat.has_value()) {
-        syst::error =
+        return SYST_NEW_ERROR(
           "Only one statistics sample is stored. Call the 'update' method one "
-          "more time before calling the 'get_total' method.";
-        return std::nullopt;
+          "more time before calling the 'get_total' method.");
     }
 
     // The first values represent the total CPU statistics.
@@ -202,28 +197,27 @@ std::optional<double> cpu_usage_t::get_total() const {
     const cpu_usage_stat_t& old_stat = this->impl_->old_stat->front();
     const cpu_usage_stat_t& new_stat = this->impl_->new_stat->front();
 
-    return get_usage_percentage(old_stat, new_stat);
+    return syst::get_usage_percentage(old_stat, new_stat);
 }
 
-std::optional<std::list<double>> cpu_usage_t::get_per_core() const {
+syst::optional_t<std::list<double>> cpu_usage_t::get_per_core() const {
     if (! this->impl_->new_stat.has_value()) {
-        syst::error = "No statistics samples are stored. Call the 'update' "
-                      "method twice before calling the 'get_per_core' method.";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "No statistics samples are stored. Call the 'update' "
+          "method twice before calling the 'get_per_core' method.");
     }
     if (! this->impl_->old_stat.has_value()) {
-        syst::error =
+        return SYST_NEW_ERROR(
           "Only one statistics sample is stored. Call the 'update' method one "
-          "more time before calling the 'get_per_core' method.";
-        return std::nullopt;
+          "more time before calling the 'get_per_core' method.");
     }
 
     if (this->impl_->new_stat->size() != this->impl_->old_stat->size()) {
-        syst::error = "The number of new statistics does not match the number "
-                      "of old statistics.\nnew: '"
-          + std::to_string(this->impl_->new_stat->size()) + "'\nold: '"
-          + std::to_string(this->impl_->old_stat->size()) + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR(
+          "The number of new statistics does not match the number "
+          "of old statistics.\n\tnew: '"
+          + std::to_string(this->impl_->new_stat->size()) + "'\n\told: '"
+          + std::to_string(this->impl_->old_stat->size()) + "'");
     }
 
     std::list<double> cores;
@@ -235,7 +229,7 @@ std::optional<std::list<double>> cpu_usage_t::get_per_core() const {
         const cpu_usage_stat_t& old_stat = this->impl_->old_stat->at(i);
         const cpu_usage_stat_t& new_stat = this->impl_->new_stat->at(i);
 
-        cores.push_back(get_usage_percentage(old_stat, new_stat));
+        cores.push_back(syst::get_usage_percentage(old_stat, new_stat));
     }
 
     return cores;

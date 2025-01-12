@@ -3,12 +3,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int get_thermal() {
     auto thermal_zones = syst::thermal_zone_t::all();
-    if (! thermal_zones.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (thermal_zones.has_error()) {
+        std::cerr << thermal_zones.error() << std::endl;
         return 1;
     }
 
@@ -20,23 +19,23 @@ int get_thermal() {
         if (type.has_value()) {
             std::cout << "\tType: " << type.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << type.error() << std::endl;
         }
 
         auto temperature = zone.temperature();
-        if (type.has_value()) {
+        if (temperature.has_value()) {
             std::cout << "\tTemperature: " << temperature.value() << "°C"
                       << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << temperature.error() << std::endl;
         }
     }
 
     std::cout << std::endl;
 
     auto cooling_devices = syst::cooling_device_t::all();
-    if (! cooling_devices.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (cooling_devices.has_error()) {
+        std::cerr << cooling_devices.error() << std::endl;
         return 1;
     }
 
@@ -48,14 +47,14 @@ int get_thermal() {
         if (type.has_value()) {
             std::cout << "\tType: " << type.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << type.error() << std::endl;
         }
 
         auto state = device.get_state();
-        if (type.has_value()) {
+        if (state.has_value()) {
             std::cout << "\tState: " << state.value() << "%" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << state.error() << std::endl;
         }
     }
 
@@ -64,8 +63,8 @@ int get_thermal() {
 
 int set_thermal() {
     auto cooling_devices = syst::cooling_device_t::all();
-    if (! cooling_devices.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (cooling_devices.has_error()) {
+        std::cerr << cooling_devices.error() << std::endl;
         return 1;
     }
 
@@ -73,18 +72,20 @@ int set_thermal() {
 
     for (auto& device : cooling_devices.value()) {
         auto old_state = device.get_state();
-        if (! old_state.has_value()) {
-            std::cout << syst::error << std::endl;
+        if (old_state.has_error()) {
+            std::cerr << old_state.error() << std::endl;
             return 1;
         }
 
-        if (! device.set_state(new_state)) {
-            std::cout << syst::error << std::endl;
+        auto result = device.set_state(new_state);
+        if (result.failure()) {
+            std::cerr << result.error() << std::endl;
             return 1;
         }
 
-        if (! device.set_state(old_state.value())) {
-            std::cout << syst::error << std::endl;
+        result = device.set_state(old_state.value());
+        if (result.failure()) {
+            std::cerr << result.error() << std::endl;
             return 1;
         }
     }

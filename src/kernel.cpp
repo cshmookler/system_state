@@ -6,30 +6,27 @@
 
 // Local includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 namespace syst {
 
-std::optional<std::string> get_running_kernel() {
+syst::optional_t<std::string> get_running_kernel() {
     utsname utsname_info{};
 
     if (uname(&utsname_info) != 0) {
         int err = errno;
-        syst::error = std::string{ "uname(): " } + std::strerror(err) + '\n';
-        return std::nullopt;
+        return SYST_NEW_ERROR(std::string{ "uname(): " } + std::strerror(err));
     }
 
-    return utsname_info.release;
+    return std::string{ static_cast<char*>(utsname_info.release) };
 }
 
-std::optional<std::list<std::string>> get_installed_kernels() {
+syst::optional_t<std::list<std::string>> get_installed_kernels() {
     std::list<std::string> installed_kernels;
 
     const fs::path modules_path = "/usr/lib/modules";
     if (! fs::is_directory(modules_path)) {
-        syst::error =
-          "The path is not a directory.\npath: '" + modules_path.string() + "'";
-        return std::nullopt;
+        return SYST_NEW_ERROR("The path is not a directory.\n\tpath: '"
+          + modules_path.string() + "'");
     }
 
     for (const fs::directory_entry& release :

@@ -4,12 +4,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto batteries = syst::battery_t::all();
-    if (! batteries.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (batteries.has_error()) {
+        std::cerr << batteries.error() << std::endl;
         return 1;
     }
 
@@ -39,35 +38,35 @@ int main() {
             }
             std::cout << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << status.error() << std::endl;
         }
 
         auto current = device.current();
         if (current.has_value()) {
             std::cout << "Current: " << current.value() << " A" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << current.error() << std::endl;
         }
 
         auto power = device.power();
         if (power.has_value()) {
             std::cout << "Power: " << power.value() << " W" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << power.error() << std::endl;
         }
 
         auto charge = device.charge();
         if (charge.has_value()) {
             std::cout << "Charge: " << charge.value() << "%" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << charge.error() << std::endl;
         }
 
         auto capacity = device.capacity();
         if (capacity.has_value()) {
             std::cout << "Capacity: " << capacity.value() << "%" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << capacity.error() << std::endl;
         }
 
         auto time_remaining = device.time_remaining();
@@ -82,7 +81,7 @@ int main() {
                       << seconds << std::endl;
             std::cout << std::setfill(' ');
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << time_remaining.error() << std::endl;
         }
 
         std::cout << std::endl;

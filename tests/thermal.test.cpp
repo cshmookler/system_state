@@ -130,11 +130,11 @@ TEST(thermal_test, cooling_device_set_state) {
         auto old_state = device.get_state();
         ASSERT_TRUE(old_state.has_value());
 
-        EXPECT_FALSE(device.set_state(-1));
-        EXPECT_TRUE(device.set_state(0));
-        EXPECT_TRUE(device.set_state(100));
-        EXPECT_FALSE(device.set_state(101));
+        EXPECT_FALSE(device.set_state(-1).success());
+        EXPECT_TRUE(device.set_state(0).success());
+        EXPECT_TRUE(device.set_state(100).success());
+        EXPECT_FALSE(device.set_state(101).success());
 
-        ASSERT_TRUE(device.set_state(old_state.value()));
+        ASSERT_TRUE(device.set_state(old_state.value()).success());
     }
 }

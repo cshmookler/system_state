@@ -32,9 +32,12 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
-#include <optional>
 #include <list>
 #include <string>
+#include <optional>
+
+// Local includes
+#include "optional.hpp"
 
 namespace syst {
 
@@ -45,7 +48,7 @@ namespace ch = std::chrono;
  * @return the username of the owner of this process or std::nullopt if an error
  * occurred.
  */
-std::optional<std::string> username();
+syst::optional_t<std::string> username();
 
 struct system_info_t {
     // The number of seconds since the system booted.
@@ -94,7 +97,7 @@ struct system_info_t {
 /**
  * @return system information from sysinfo or std::nullopt if an error occurred.
  */
-[[nodiscard]] std::optional<system_info_t> system_info();
+[[nodiscard]] syst::optional_t<system_info_t> system_info();
 
 struct inflight_stat_t {
     // The number of in-flight read requests for this device.
@@ -180,13 +183,13 @@ class disk_t {
      * @return all disk block devices on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<disk_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<disk_t>> all();
 
     /**
      * @return all partitions associated with this disk block device or
      * std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<std::list<part_t>> parts() const;
+    [[nodiscard]] syst::optional_t<std::list<part_t>> parts() const;
 
     /**
      * @return the path to this device in /sys. This provides access to various
@@ -209,37 +212,37 @@ class disk_t {
      * @return the size of this device in bytes or std::nullopt if the size
      * could not be determined.
      */
-    [[nodiscard]] std::optional<uint64_t> size() const;
+    [[nodiscard]] syst::optional_t<uint64_t> size() const;
 
     /**
      * @return true if this device is removable, false if it is not, and
      * std::nullopt if the removable status could not be determined.
      */
-    [[nodiscard]] std::optional<bool> removable() const;
+    [[nodiscard]] syst::optional_t<bool> removable() const;
 
     /**
      * @return true if this device is read-only, false if it is not, and
      * std::nullopt if the read-only status could not be determined.
      */
-    [[nodiscard]] std::optional<bool> read_only() const;
+    [[nodiscard]] syst::optional_t<bool> read_only() const;
 
     /**
      * @return true if this device is rotational (HDD), false if it is not
      * (SSD), and std::nullopt if the rotational type could not be determined.
      */
-    [[nodiscard]] std::optional<bool> rotational() const;
+    [[nodiscard]] syst::optional_t<bool> rotational() const;
 
     /**
      * @return in-flight statistics for this device or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] std::optional<inflight_stat_t> inflight_stat() const;
+    [[nodiscard]] syst::optional_t<inflight_stat_t> inflight_stat() const;
 
     /**
      * @return I/O statistics for this device or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<io_stat_t> io_stat() const;
+    [[nodiscard]] syst::optional_t<io_stat_t> io_stat() const;
 };
 
 /**
@@ -287,31 +290,31 @@ class part_t {
      * @return the size of this partition in bytes or std::nullopt if the size
      * could not be determined.
      */
-    [[nodiscard]] std::optional<uint64_t> size() const;
+    [[nodiscard]] syst::optional_t<uint64_t> size() const;
 
     /**
      * @return the start position of this partition on the disk corresponding to
      * this partition in bytes or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<uint64_t> start() const;
+    [[nodiscard]] syst::optional_t<uint64_t> start() const;
 
     /*
      * @return true if this partition is read-only, false if it is not, and
      * std::nullopt if the read-only status could not be determined.
      */
-    [[nodiscard]] std::optional<bool> read_only() const;
+    [[nodiscard]] syst::optional_t<bool> read_only() const;
 
     /**
      * @return in-flight statistics for this device or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] std::optional<inflight_stat_t> inflight_stat() const;
+    [[nodiscard]] syst::optional_t<inflight_stat_t> inflight_stat() const;
 
     /**
      * @return I/O statistics for this partition or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<io_stat_t> io_stat() const;
+    [[nodiscard]] syst::optional_t<io_stat_t> io_stat() const;
 };
 
 /**
@@ -337,7 +340,7 @@ class cpu_usage_t {
      * @return true if the statistics were successfully updated and false
      * otherwise.
      */
-    [[nodiscard]] bool update() const;
+    [[nodiscard]] result_t update() const;
 
     /**
      * @brief Attempt to calculate the total CPU usage percentage for this
@@ -348,7 +351,7 @@ class cpu_usage_t {
      * @return the total CPU usage percentage or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<double> get_total() const;
+    [[nodiscard]] syst::optional_t<double> get_total() const;
 
     /**
      * @brief Attempt to calculate the CPU usage percentage of each core for
@@ -359,7 +362,7 @@ class cpu_usage_t {
      * @return a dynamic array of doubles with each double representing the CPU
      * usage percentage of a specific core or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<std::list<double>> get_per_core() const;
+    [[nodiscard]] syst::optional_t<std::list<double>> get_per_core() const;
 };
 
 /**
@@ -376,7 +379,7 @@ class thermal_zone_t {
      * @return all thermal zones on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<thermal_zone_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<thermal_zone_t>> all();
 
     /**
      * @return the path to this thermal zone in /sys. This provides access to
@@ -388,13 +391,13 @@ class thermal_zone_t {
      * @return the type of this thermal zone represented as a string or
      * std::nullopt if the type could not be determined.
      */
-    [[nodiscard]] std::optional<std::string> type() const;
+    [[nodiscard]] syst::optional_t<std::string> type() const;
 
     /**
      * @return the temperature at this thermal zone in degrees Celsius or
      * std::nullopt if the temperature could not be determined.
      */
-    [[nodiscard]] std::optional<double> temperature() const;
+    [[nodiscard]] syst::optional_t<double> temperature() const;
 };
 
 /**
@@ -410,7 +413,7 @@ class cooling_device_t {
      * @return all cooling devices on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<cooling_device_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<cooling_device_t>> all();
 
     /**
      * @return the path to this cooling device in /sys. This provides access to
@@ -422,13 +425,13 @@ class cooling_device_t {
      * @return the type of this cooling device represented as a string or
      * std::nullopt if the type could not be determined.
      */
-    [[nodiscard]] std::optional<std::string> type() const;
+    [[nodiscard]] syst::optional_t<std::string> type() const;
 
     /**
      * @return get the current state of this cooling device as a percentage (0 -
      * 100) or std::nullopt if the current state could not be determined.
      */
-    [[nodiscard]] std::optional<double> get_state() const;
+    [[nodiscard]] syst::optional_t<double> get_state() const;
 
     /**
      * @brief Attempt to set the state of this cooling device.
@@ -438,7 +441,7 @@ class cooling_device_t {
      * @param[in] state - The new state in percents (0 - 100).
      * @return true if the state was successfully changed and false otherwise.
      */
-    bool set_state(double state) const;
+    result_t set_state(double state) const;
 };
 
 class backlight_t {
@@ -451,7 +454,7 @@ class backlight_t {
      * @return all backlights on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<backlight_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<backlight_t>> all();
 
     /**
      * @return the path to this backlight in /sys. This provides access to
@@ -471,7 +474,7 @@ class backlight_t {
      *
      * @return the brightness percentage or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<double> brightness() const;
+    [[nodiscard]] syst::optional_t<double> brightness() const;
 };
 
 /**
@@ -495,7 +498,7 @@ class battery_t {
      * @return all batteries on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<battery_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<battery_t>> all();
 
     /**
      * @return the path to this battery in /sys. This provides access to
@@ -512,19 +515,19 @@ class battery_t {
      * @return the current status of this battery or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<status_t> status() const;
+    [[nodiscard]] syst::optional_t<status_t> status() const;
 
     /**
      * @return the amount of current (in amperes) being drawn from this battery
      * or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<double> current() const;
+    [[nodiscard]] syst::optional_t<double> current() const;
 
     /**
      * @return the amount of power (in watts) being drawn from this battery or
      * std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<double> power() const;
+    [[nodiscard]] syst::optional_t<double> power() const;
 
     /**
      * @brief Attempt to calculate the current energy percentage of this
@@ -534,7 +537,7 @@ class battery_t {
      * @return the current energy percentage or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] std::optional<double> charge() const;
+    [[nodiscard]] syst::optional_t<double> charge() const;
 
     /**
      * @brief Attempt to calculate the percentage of energy still storable
@@ -545,7 +548,7 @@ class battery_t {
      *
      * @return the capacity percentage or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<double> capacity() const;
+    [[nodiscard]] syst::optional_t<double> capacity() const;
 
     /**
      * @brief If this battery is discharging, attempt to calculate the number of
@@ -556,7 +559,7 @@ class battery_t {
      * (depending on charge status) or std::nullopt if the time remaining could
      * not be determined.
      */
-    [[nodiscard]] std::optional<ch::seconds> time_remaining() const;
+    [[nodiscard]] syst::optional_t<ch::seconds> time_remaining() const;
 };
 
 /**
@@ -587,7 +590,7 @@ class network_interface_t {
      * @return all network interfaces on this system or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] static std::optional<std::list<network_interface_t>> all();
+    [[nodiscard]] static syst::optional_t<std::list<network_interface_t>> all();
 
     /**
      * @return the path to this network interface in /sys. This provides access
@@ -604,20 +607,20 @@ class network_interface_t {
      * @return true if this network interface represents a physical device,
      * false if it is virtual, and std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<bool> physical() const;
+    [[nodiscard]] syst::optional_t<bool> physical() const;
 
     /**
      * @return true if this network interface is a loopback device, false
      * otherwise, and std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<bool> loopback() const;
+    [[nodiscard]] syst::optional_t<bool> loopback() const;
 
     /**
      * @brief Attempt to get the current status of this network interface.
      *
      * @return the current status or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<status_t> status() const;
+    [[nodiscard]] syst::optional_t<status_t> status() const;
 
     /**
      * @brief Attempt to get the statistics for transmitted and received data
@@ -625,7 +628,7 @@ class network_interface_t {
      *
      * @return the interface statistics or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<stat_t> stat() const;
+    [[nodiscard]] syst::optional_t<stat_t> stat() const;
 };
 
 class sound_control_t;
@@ -652,7 +655,7 @@ class sound_mixer_t {
     /**
      * @return a new sound mixer object or std::nullopt if an error occurred.
      */
-    [[nodiscard]] static std::optional<sound_mixer_t> get();
+    [[nodiscard]] static syst::optional_t<sound_mixer_t> get();
 
     /**
      * @return all active sound control elements.
@@ -728,24 +731,24 @@ class sound_control_t {
     /**
      * @return the current playback status or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<status_t> get_playback_status() const;
+    [[nodiscard]] syst::optional_t<status_t> get_playback_status() const;
 
     /**
      * @return the current playback volume as a percentage or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] std::optional<volume_t> get_playback_volume() const;
+    [[nodiscard]] syst::optional_t<volume_t> get_playback_volume() const;
 
     /**
      * @return the current capture status or std::nullopt if an error occurred.
      */
-    [[nodiscard]] std::optional<status_t> get_capture_status() const;
+    [[nodiscard]] syst::optional_t<status_t> get_capture_status() const;
 
     /**
      * @return the current capture volume as a percentage or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] std::optional<volume_t> get_capture_volume() const;
+    [[nodiscard]] syst::optional_t<volume_t> get_capture_volume() const;
 
     /**
      * @brief Attempt to set the playback status.
@@ -754,7 +757,7 @@ class sound_control_t {
      * @return true if the playback status was successfully changed and false
      * otherwise.
      */
-    bool set_playback_status(const status_t& status) const;
+    result_t set_playback_status(const status_t& status) const;
 
     /**
      * @brief Attempt to set the playback volume.
@@ -763,7 +766,7 @@ class sound_control_t {
      * @return true if the playback volume was successfully changed and false
      * otherwise.
      */
-    bool set_playback_volume(const volume_t& volume) const;
+    result_t set_playback_volume(const volume_t& volume) const;
 
     /**
      * @brief Attempt to set the capture status.
@@ -772,7 +775,7 @@ class sound_control_t {
      * @return true if the capture status was successfully changed and false
      * otherwise.
      */
-    bool set_capture_status(const status_t& status) const;
+    result_t set_capture_status(const status_t& status) const;
 
     /**
      * @brief Attempt to set the capture volume.
@@ -781,19 +784,19 @@ class sound_control_t {
      * @return true if the capture volume was successfully changed and false
      * otherwise.
      */
-    bool set_capture_volume(const volume_t& volume) const;
+    result_t set_capture_volume(const volume_t& volume) const;
 };
 
 /**
  * @return the release version of the currently running kernel or std::nullopt
  * if an error occurred.
  */
-[[nodiscard]] std::optional<std::string> get_running_kernel();
+[[nodiscard]] syst::optional_t<std::string> get_running_kernel();
 
 /**
  * @return the release versions of all installed kernels or std::nullopt if an
  * error occurred.
  */
-[[nodiscard]] std::optional<std::list<std::string>> get_installed_kernels();
+[[nodiscard]] syst::optional_t<std::list<std::string>> get_installed_kernels();
 
 } // namespace syst

@@ -3,9 +3,11 @@
 // Standard includes
 #include <cstdint>
 #include <filesystem>
-#include <optional>
 #include <string>
 #include <vector>
+
+// Local includes
+#include "../system_state/optional.hpp"
 
 namespace syst {
 
@@ -16,7 +18,7 @@ namespace syst {
  * @return an dynamic array of strings with each string corresponding to one
  * line or std::nullopt if an error occured.
  */
-[[nodiscard]] std::optional<std::vector<std::string>> get_all_lines(
+[[nodiscard]] syst::optional_t<std::vector<std::string>> get_all_lines(
   const std::filesystem::path& path);
 
 /**
@@ -25,7 +27,7 @@ namespace syst {
  * @param[in] path - The path to the file to extract the first line from.
  * @return a string or std::nullopt if an error occured.
  */
-[[nodiscard]] std::optional<std::string> get_first_line(
+[[nodiscard]] syst::optional_t<std::string> get_first_line(
   const std::filesystem::path& path);
 
 /**
@@ -34,7 +36,7 @@ namespace syst {
  * @param[in] path - The path to the file to extract an integer from.
  * @return an integer or std::nullopt if an error occurred.
  */
-[[nodiscard]] std::optional<uint64_t> get_int(
+[[nodiscard]] syst::optional_t<uint64_t> get_int(
   const std::filesystem::path& path);
 
 /**
@@ -43,17 +45,18 @@ namespace syst {
  * @param[in] path - The path to the file to extract a boolean from.
  * @return a boolean or std::nullopt if an error occurred.
  */
-[[nodiscard]] std::optional<bool> get_bool(const std::filesystem::path& path);
+[[nodiscard]] syst::optional_t<bool> get_bool(
+  const std::filesystem::path& path);
 
 /**
  * @brief Write an integer to the file at the given path.
  *
  * @param[in] path - The path to the file to write to.
  * @param[in] integer - The integer to write to the given file.
- * @return true if the given integer was successfully written to the given file
- * and false otherwise.
+ * @return success if the given integer was successfully written to the given
+ * file and failure otherwise.
  */
-bool write_int(const std::filesystem::path& path, uint64_t integer);
+result_t write_int(const std::filesystem::path& path, uint64_t integer);
 
 /**
  * @brief Check whether a target string has the given prefix.
@@ -114,7 +117,7 @@ template<typename integral_t>
   integral_t min, integral_t max, integral_t value) {
     static_assert(std::is_integral_v<integral_t>);
 
-    return ratio_to_percent(value - min, max - min);
+    return syst::ratio_to_percent(value - min, max - min);
 }
 
 /**

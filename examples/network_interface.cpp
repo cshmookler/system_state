@@ -3,12 +3,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto network_interfaces = syst::network_interface_t::all();
-    if (! network_interfaces.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (network_interfaces.has_error()) {
+        std::cerr << network_interfaces.error() << std::endl;
         return 1;
     }
 
@@ -22,14 +21,14 @@ int main() {
         if (physical.has_value()) {
             std::cout << "Physical: " << physical.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << physical.error() << std::endl;
         }
 
         auto loopback = interface.loopback();
         if (loopback.has_value()) {
             std::cout << "Loopback: " << loopback.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << loopback.error() << std::endl;
         }
 
         auto status = interface.status();
@@ -51,7 +50,7 @@ int main() {
             }
             std::cout << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << status.error() << std::endl;
         }
 
         auto stat = interface.stat();
@@ -61,7 +60,7 @@ int main() {
             std::cout << "Up: " << stat->bytes_up << " bytes ("
                       << stat->packets_up << " packets)" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << stat.error() << std::endl;
         }
 
         std::cout << std::endl;

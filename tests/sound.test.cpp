@@ -240,13 +240,13 @@ TEST(sound_test, sound_control_set_playback_status) {
         ASSERT_TRUE(old_status.has_value());
         // Status can be any value.
 
-        ASSERT_TRUE(control.set_playback_status(new_status));
+        ASSERT_TRUE(control.set_playback_status(new_status).success());
 
         // For some reason, resetting the status too quickly fails but does
         // not provide a reason why.
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        ASSERT_TRUE(control.set_playback_status(old_status.value()));
+        ASSERT_TRUE(control.set_playback_status(old_status.value()).success());
     }
 
     ASSERT_TRUE(has_playback_status);
@@ -317,16 +317,16 @@ TEST(sound_test, sound_control_set_playback_volume) {
         ASSERT_TRUE(old_volume.has_value());
         // Status can be any value.
 
-        EXPECT_FALSE(control.set_playback_volume(too_low_volume));
-        EXPECT_TRUE(control.set_playback_volume(low_volume));
-        EXPECT_TRUE(control.set_playback_volume(high_volume));
-        EXPECT_FALSE(control.set_playback_volume(too_high_volume));
+        EXPECT_FALSE(control.set_playback_volume(too_low_volume).success());
+        EXPECT_TRUE(control.set_playback_volume(low_volume).success());
+        EXPECT_TRUE(control.set_playback_volume(high_volume).success());
+        EXPECT_FALSE(control.set_playback_volume(too_high_volume).success());
 
         // For some reason, resetting the volume too quickly fails but does
         // not provide a reason why.
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        ASSERT_TRUE(control.set_playback_volume(old_volume.value()));
+        ASSERT_TRUE(control.set_playback_volume(old_volume.value()).success());
     }
 
     ASSERT_TRUE(has_playback_volume);
@@ -364,13 +364,13 @@ TEST(sound_test, sound_control_set_capture_status) {
         ASSERT_TRUE(old_status.has_value());
         // Status can be any value.
 
-        ASSERT_TRUE(control.set_capture_status(new_status));
+        ASSERT_TRUE(control.set_capture_status(new_status).success());
 
         // For some reason, resetting the status too quickly fails but does
         // not provide a reason why.
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        ASSERT_TRUE(control.set_capture_status(old_status.value()));
+        ASSERT_TRUE(control.set_capture_status(old_status.value()).success());
     }
 
     ASSERT_TRUE(has_capture_status);
@@ -441,16 +441,16 @@ TEST(sound_test, sound_control_set_capture_volume) {
         ASSERT_TRUE(old_volume.has_value());
         // Status can be any value.
 
-        EXPECT_FALSE(control.set_capture_volume(too_low_volume));
-        EXPECT_TRUE(control.set_capture_volume(low_volume));
-        EXPECT_TRUE(control.set_capture_volume(high_volume));
-        EXPECT_FALSE(control.set_capture_volume(too_high_volume));
+        EXPECT_FALSE(control.set_capture_volume(too_low_volume).success());
+        EXPECT_TRUE(control.set_capture_volume(low_volume).success());
+        EXPECT_TRUE(control.set_capture_volume(high_volume).success());
+        EXPECT_FALSE(control.set_capture_volume(too_high_volume).success());
 
         // For some reason, resetting the volume too quickly fails but does
         // not provide a reason why.
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        ASSERT_TRUE(control.set_capture_volume(old_volume.value()));
+        ASSERT_TRUE(control.set_capture_volume(old_volume.value()).success());
     }
 
     ASSERT_TRUE(has_capture_volume);

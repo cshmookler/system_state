@@ -4,12 +4,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto disks = syst::disk_t::all();
-    if (! disks.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (disks.has_error()) {
+        std::cerr << disks.error() << std::endl;
         return 1;
     }
 
@@ -24,28 +23,28 @@ int main() {
         if (size.has_value()) {
             std::cout << "Size: " << size.value() << " bytes" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << size.error() << std::endl;
         }
 
         auto removable = disk.removable();
         if (removable.has_value()) {
             std::cout << "Removable: " << removable.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << removable.error() << std::endl;
         }
 
         auto read_only = disk.read_only();
         if (read_only.has_value()) {
             std::cout << "Read-only: " << read_only.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << read_only.error() << std::endl;
         }
 
         auto rotational = disk.rotational();
         if (rotational.has_value()) {
             std::cout << "Rotational: " << rotational.value() << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << rotational.error() << std::endl;
         }
 
         auto inflight_stat = disk.inflight_stat();
@@ -55,7 +54,7 @@ int main() {
             std::cout << "In-Flight Writes: " << inflight_stat->writes
                       << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << inflight_stat.error() << std::endl;
         }
 
         auto io_stat = disk.io_stat();
@@ -91,14 +90,14 @@ int main() {
             std::cout << "Time by Discards: "
                       << io_stat->time_by_discards.count() << "ms" << std::endl;
         } else {
-            std::cout << syst::error << std::endl;
+            std::cerr << io_stat.error() << std::endl;
         }
 
         std::cout << std::endl;
 
         auto parts = disk.parts();
-        if (! parts.has_value()) {
-            std::cout << syst::error << std::endl;
+        if (parts.has_error()) {
+            std::cerr << parts.error() << std::endl;
             continue;
         }
 
@@ -113,7 +112,7 @@ int main() {
                 std::cout << "Size: " << part_size.value() << " bytes"
                           << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << part_size.error() << std::endl;
             }
 
             auto part_start = part.start();
@@ -121,7 +120,7 @@ int main() {
                 std::cout << "Start: " << part_start.value() << " bytes"
                           << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << part_start.error() << std::endl;
             }
 
             auto part_read_only = part.read_only();
@@ -129,7 +128,7 @@ int main() {
                 std::cout << "Read-only: " << part_read_only.value()
                           << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << part_read_only.error() << std::endl;
             }
 
             auto part_inflight_stat = part.inflight_stat();
@@ -139,7 +138,7 @@ int main() {
                 std::cout << "In-Flight Writes: " << part_inflight_stat->writes
                           << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << part_inflight_stat.error() << std::endl;
             }
 
             auto part_io_stat = disk.io_stat();
@@ -180,7 +179,7 @@ int main() {
                           << part_io_stat->time_by_discards.count() << "ms"
                           << std::endl;
             } else {
-                std::cout << syst::error << std::endl;
+                std::cerr << part_io_stat.error() << std::endl;
             }
 
             std::cout << std::endl;

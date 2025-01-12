@@ -3,12 +3,11 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto system_info = syst::system_info();
-    if (! system_info.has_value()) {
-        std::cout << syst::error << std::endl;
+    if (system_info.has_error()) {
+        std::cerr << system_info.error() << std::endl;
         return 1;
     }
 

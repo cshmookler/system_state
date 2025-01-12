@@ -3,7 +3,6 @@
 
 // External includes
 #include "../system_state/core.hpp"
-#include "../system_state/error.hpp"
 
 int main() {
     auto running_version = syst::get_running_kernel();
@@ -11,7 +10,7 @@ int main() {
         std::cout << "Running Version: " << running_version.value()
                   << std::endl;
     } else {
-        std::cout << syst::error << std::endl;
+        std::cerr << running_version.error() << std::endl;
     }
 
     auto installed_versions = syst::get_installed_kernels();
@@ -21,6 +20,6 @@ int main() {
             std::cout << "\t" << version << std::endl;
         }
     } else {
-        std::cout << syst::error << std::endl;
+        std::cerr << installed_versions.error() << std::endl;
     }
 }
