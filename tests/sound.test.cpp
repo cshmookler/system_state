@@ -252,6 +252,176 @@ TEST(sound_test, sound_control_set_playback_status) {
     ASSERT_TRUE(has_playback_status);
 }
 
+TEST(sound_test, sound_control_toggle_playback_status) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_playback_status = false;
+
+    for (auto& control : controls) {
+        if (! control.has_playback_status()) {
+            continue;
+        }
+
+        has_playback_status = true;
+
+        auto old_status = control.get_playback_status();
+        ASSERT_TRUE(old_status.has_value());
+
+        ASSERT_TRUE(control.toggle_playback_status().success());
+
+        // All channels of the current status should be different from those of
+        // the original status after toggling once.
+        auto current_status = control.get_playback_status();
+        ASSERT_TRUE(current_status.has_value());
+
+        ASSERT_EQ(old_status->front_left.has_value(),
+          current_status->front_left.has_value());
+        if (current_status->front_left.has_value()) {
+            EXPECT_NE(old_status->front_left.value(),
+              current_status->front_left.value());
+        }
+
+        ASSERT_EQ(old_status->front_right.has_value(),
+          current_status->front_right.has_value());
+        if (current_status->front_right.has_value()) {
+            EXPECT_NE(old_status->front_right.value(),
+              current_status->front_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_left.has_value(),
+          current_status->rear_left.has_value());
+        if (current_status->rear_left.has_value()) {
+            EXPECT_NE(
+              old_status->rear_left.value(), current_status->rear_left.value());
+        }
+
+        ASSERT_EQ(old_status->rear_right.has_value(),
+          current_status->rear_right.has_value());
+        if (current_status->rear_right.has_value()) {
+            EXPECT_NE(old_status->rear_right.value(),
+              current_status->rear_right.value());
+        }
+
+        ASSERT_EQ(old_status->front_center.has_value(),
+          current_status->front_center.has_value());
+        if (current_status->front_center.has_value()) {
+            EXPECT_NE(old_status->front_center.value(),
+              current_status->front_center.value());
+        }
+
+        ASSERT_EQ(
+          old_status->woofer.has_value(), current_status->woofer.has_value());
+        if (current_status->woofer.has_value()) {
+            EXPECT_NE(
+              old_status->woofer.value(), current_status->woofer.value());
+        }
+
+        ASSERT_EQ(old_status->side_left.has_value(),
+          current_status->side_left.has_value());
+        if (current_status->side_left.has_value()) {
+            EXPECT_NE(
+              old_status->side_left.value(), current_status->side_left.value());
+        }
+
+        ASSERT_EQ(old_status->side_right.has_value(),
+          current_status->side_right.has_value());
+        if (current_status->side_right.has_value()) {
+            EXPECT_NE(old_status->side_right.value(),
+              current_status->side_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_center.has_value(),
+          current_status->rear_center.has_value());
+        if (current_status->rear_center.has_value()) {
+            EXPECT_NE(old_status->rear_center.value(),
+              current_status->rear_center.value());
+        }
+
+        ASSERT_TRUE(control.toggle_playback_status().success());
+
+        // All channels of the current status should match the those of the
+        // original status after toggling twice.
+        current_status = control.get_playback_status();
+        ASSERT_TRUE(current_status.has_value());
+
+        ASSERT_EQ(old_status->front_left.has_value(),
+          current_status->front_left.has_value());
+        if (current_status->front_left.has_value()) {
+            EXPECT_EQ(old_status->front_left.value(),
+              current_status->front_left.value());
+        }
+
+        ASSERT_EQ(old_status->front_right.has_value(),
+          current_status->front_right.has_value());
+        if (current_status->front_right.has_value()) {
+            EXPECT_EQ(old_status->front_right.value(),
+              current_status->front_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_left.has_value(),
+          current_status->rear_left.has_value());
+        if (current_status->rear_left.has_value()) {
+            EXPECT_EQ(
+              old_status->rear_left.value(), current_status->rear_left.value());
+        }
+
+        ASSERT_EQ(old_status->rear_right.has_value(),
+          current_status->rear_right.has_value());
+        if (current_status->rear_right.has_value()) {
+            EXPECT_EQ(old_status->rear_right.value(),
+              current_status->rear_right.value());
+        }
+
+        ASSERT_EQ(old_status->front_center.has_value(),
+          current_status->front_center.has_value());
+        if (current_status->front_center.has_value()) {
+            EXPECT_EQ(old_status->front_center.value(),
+              current_status->front_center.value());
+        }
+
+        ASSERT_EQ(
+          old_status->woofer.has_value(), current_status->woofer.has_value());
+        if (current_status->woofer.has_value()) {
+            EXPECT_EQ(
+              old_status->woofer.value(), current_status->woofer.value());
+        }
+
+        ASSERT_EQ(old_status->side_left.has_value(),
+          current_status->side_left.has_value());
+        if (current_status->side_left.has_value()) {
+            EXPECT_EQ(
+              old_status->side_left.value(), current_status->side_left.value());
+        }
+
+        ASSERT_EQ(old_status->side_right.has_value(),
+          current_status->side_right.has_value());
+        if (current_status->side_right.has_value()) {
+            EXPECT_EQ(old_status->side_right.value(),
+              current_status->side_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_center.has_value(),
+          current_status->rear_center.has_value());
+        if (current_status->rear_center.has_value()) {
+            EXPECT_EQ(old_status->rear_center.value(),
+              current_status->rear_center.value());
+        }
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_playback_status(old_status.value()).success());
+    }
+
+    ASSERT_TRUE(has_playback_status);
+}
+
 TEST(sound_test, sound_control_set_playback_volume) {
     auto mixer = syst::sound_mixer_t::get();
     ASSERT_TRUE(mixer.has_value());
@@ -332,6 +502,48 @@ TEST(sound_test, sound_control_set_playback_volume) {
     ASSERT_TRUE(has_playback_volume);
 }
 
+TEST(sound_test, sound_control_set_playback_volume_all) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    const double too_low_volume = -1;
+    const double low_volume = 0;
+    const double high_volume = 100;
+    const double too_high_volume = 101;
+
+    bool has_playback_volume = false;
+
+    for (auto& control : controls) {
+        if (! control.has_playback_volume()) {
+            continue;
+        }
+
+        has_playback_volume = true;
+
+        auto old_volume = control.get_playback_volume();
+        ASSERT_TRUE(old_volume.has_value());
+        // Status can be any value.
+
+        EXPECT_FALSE(control.set_playback_volume_all(too_low_volume).success());
+        EXPECT_TRUE(control.set_playback_volume_all(low_volume).success());
+        EXPECT_TRUE(control.set_playback_volume_all(high_volume).success());
+        EXPECT_FALSE(
+          control.set_playback_volume_all(too_high_volume).success());
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_playback_volume(old_volume.value()).success());
+    }
+
+    ASSERT_TRUE(has_playback_volume);
+}
+
 TEST(sound_test, sound_control_set_capture_status) {
     auto mixer = syst::sound_mixer_t::get();
     ASSERT_TRUE(mixer.has_value());
@@ -365,6 +577,176 @@ TEST(sound_test, sound_control_set_capture_status) {
         // Status can be any value.
 
         ASSERT_TRUE(control.set_capture_status(new_status).success());
+
+        // For some reason, resetting the status too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_capture_status(old_status.value()).success());
+    }
+
+    ASSERT_TRUE(has_capture_status);
+}
+
+TEST(sound_test, sound_control_toggle_capture_status) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    bool has_capture_status = false;
+
+    for (auto& control : controls) {
+        if (! control.has_capture_status()) {
+            continue;
+        }
+
+        has_capture_status = true;
+
+        auto old_status = control.get_capture_status();
+        ASSERT_TRUE(old_status.has_value());
+
+        ASSERT_TRUE(control.toggle_capture_status().success());
+
+        // All channels of the current status should be different from those of
+        // the original status after toggling once.
+        auto current_status = control.get_capture_status();
+        ASSERT_TRUE(current_status.has_value());
+
+        ASSERT_EQ(old_status->front_left.has_value(),
+          current_status->front_left.has_value());
+        if (current_status->front_left.has_value()) {
+            EXPECT_NE(old_status->front_left.value(),
+              current_status->front_left.value());
+        }
+
+        ASSERT_EQ(old_status->front_right.has_value(),
+          current_status->front_right.has_value());
+        if (current_status->front_right.has_value()) {
+            EXPECT_NE(old_status->front_right.value(),
+              current_status->front_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_left.has_value(),
+          current_status->rear_left.has_value());
+        if (current_status->rear_left.has_value()) {
+            EXPECT_NE(
+              old_status->rear_left.value(), current_status->rear_left.value());
+        }
+
+        ASSERT_EQ(old_status->rear_right.has_value(),
+          current_status->rear_right.has_value());
+        if (current_status->rear_right.has_value()) {
+            EXPECT_NE(old_status->rear_right.value(),
+              current_status->rear_right.value());
+        }
+
+        ASSERT_EQ(old_status->front_center.has_value(),
+          current_status->front_center.has_value());
+        if (current_status->front_center.has_value()) {
+            EXPECT_NE(old_status->front_center.value(),
+              current_status->front_center.value());
+        }
+
+        ASSERT_EQ(
+          old_status->woofer.has_value(), current_status->woofer.has_value());
+        if (current_status->woofer.has_value()) {
+            EXPECT_NE(
+              old_status->woofer.value(), current_status->woofer.value());
+        }
+
+        ASSERT_EQ(old_status->side_left.has_value(),
+          current_status->side_left.has_value());
+        if (current_status->side_left.has_value()) {
+            EXPECT_NE(
+              old_status->side_left.value(), current_status->side_left.value());
+        }
+
+        ASSERT_EQ(old_status->side_right.has_value(),
+          current_status->side_right.has_value());
+        if (current_status->side_right.has_value()) {
+            EXPECT_NE(old_status->side_right.value(),
+              current_status->side_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_center.has_value(),
+          current_status->rear_center.has_value());
+        if (current_status->rear_center.has_value()) {
+            EXPECT_NE(old_status->rear_center.value(),
+              current_status->rear_center.value());
+        }
+
+        ASSERT_TRUE(control.toggle_capture_status().success());
+
+        // All channels of the current status should match the those of the
+        // original status after toggling twice.
+        current_status = control.get_capture_status();
+        ASSERT_TRUE(current_status.has_value());
+
+        ASSERT_EQ(old_status->front_left.has_value(),
+          current_status->front_left.has_value());
+        if (current_status->front_left.has_value()) {
+            EXPECT_EQ(old_status->front_left.value(),
+              current_status->front_left.value());
+        }
+
+        ASSERT_EQ(old_status->front_right.has_value(),
+          current_status->front_right.has_value());
+        if (current_status->front_right.has_value()) {
+            EXPECT_EQ(old_status->front_right.value(),
+              current_status->front_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_left.has_value(),
+          current_status->rear_left.has_value());
+        if (current_status->rear_left.has_value()) {
+            EXPECT_EQ(
+              old_status->rear_left.value(), current_status->rear_left.value());
+        }
+
+        ASSERT_EQ(old_status->rear_right.has_value(),
+          current_status->rear_right.has_value());
+        if (current_status->rear_right.has_value()) {
+            EXPECT_EQ(old_status->rear_right.value(),
+              current_status->rear_right.value());
+        }
+
+        ASSERT_EQ(old_status->front_center.has_value(),
+          current_status->front_center.has_value());
+        if (current_status->front_center.has_value()) {
+            EXPECT_EQ(old_status->front_center.value(),
+              current_status->front_center.value());
+        }
+
+        ASSERT_EQ(
+          old_status->woofer.has_value(), current_status->woofer.has_value());
+        if (current_status->woofer.has_value()) {
+            EXPECT_EQ(
+              old_status->woofer.value(), current_status->woofer.value());
+        }
+
+        ASSERT_EQ(old_status->side_left.has_value(),
+          current_status->side_left.has_value());
+        if (current_status->side_left.has_value()) {
+            EXPECT_EQ(
+              old_status->side_left.value(), current_status->side_left.value());
+        }
+
+        ASSERT_EQ(old_status->side_right.has_value(),
+          current_status->side_right.has_value());
+        if (current_status->side_right.has_value()) {
+            EXPECT_EQ(old_status->side_right.value(),
+              current_status->side_right.value());
+        }
+
+        ASSERT_EQ(old_status->rear_center.has_value(),
+          current_status->rear_center.has_value());
+        if (current_status->rear_center.has_value()) {
+            EXPECT_EQ(old_status->rear_center.value(),
+              current_status->rear_center.value());
+        }
 
         // For some reason, resetting the status too quickly fails but does
         // not provide a reason why.
@@ -445,6 +827,47 @@ TEST(sound_test, sound_control_set_capture_volume) {
         EXPECT_TRUE(control.set_capture_volume(low_volume).success());
         EXPECT_TRUE(control.set_capture_volume(high_volume).success());
         EXPECT_FALSE(control.set_capture_volume(too_high_volume).success());
+
+        // For some reason, resetting the volume too quickly fails but does
+        // not provide a reason why.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ASSERT_TRUE(control.set_capture_volume(old_volume.value()).success());
+    }
+
+    ASSERT_TRUE(has_capture_volume);
+}
+
+TEST(sound_test, sound_control_set_capture_volume_all) {
+    auto mixer = syst::sound_mixer_t::get();
+    ASSERT_TRUE(mixer.has_value());
+    auto controls = mixer->all_controls();
+
+    // For testing purposes, there must be at least one sound control element.
+    ASSERT_NE(controls.size(), 0);
+
+    const double too_low_volume = -1;
+    const double low_volume = 0;
+    const double high_volume = 100;
+    const double too_high_volume = 101;
+
+    bool has_capture_volume = false;
+
+    for (auto& control : controls) {
+        if (! control.has_capture_volume()) {
+            continue;
+        }
+
+        has_capture_volume = true;
+
+        auto old_volume = control.get_capture_volume();
+        ASSERT_TRUE(old_volume.has_value());
+        // Status can be any value.
+
+        EXPECT_FALSE(control.set_capture_volume_all(too_low_volume).success());
+        EXPECT_TRUE(control.set_capture_volume_all(low_volume).success());
+        EXPECT_TRUE(control.set_capture_volume_all(high_volume).success());
+        EXPECT_FALSE(control.set_capture_volume_all(too_high_volume).success());
 
         // For some reason, resetting the volume too quickly fails but does
         // not provide a reason why.

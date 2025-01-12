@@ -263,6 +263,16 @@ int set_sound() {
                 return 1;
             }
 
+            // For some reason, setting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.toggle_playback_status();
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
             // For some reason, resetting the status too quickly fails but does
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -286,7 +296,17 @@ int set_sound() {
                 return 1;
             }
 
-            // For some reason, resetting the status too quickly fails but does
+            // For some reason, setting the volume too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_playback_volume_all(0);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
+            // For some reason, resetting the volume too quickly fails but does
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -304,6 +324,16 @@ int set_sound() {
                 return 1;
             }
             auto result = control.set_capture_status(new_status);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
+            // For some reason, setting the status too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.toggle_capture_status();
             if (result.failure()) {
                 std::cerr << result.error() << std::endl;
                 return 1;
@@ -332,7 +362,17 @@ int set_sound() {
                 return 1;
             }
 
-            // For some reason, resetting the status too quickly fails but does
+            // For some reason, setting the volume too quickly fails but does
+            // not provide a reason why.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            result = control.set_capture_volume_all(0);
+            if (result.failure()) {
+                std::cerr << result.error() << std::endl;
+                return 1;
+            }
+
+            // For some reason, resetting the volume too quickly fails but does
             // not provide a reason why.
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 

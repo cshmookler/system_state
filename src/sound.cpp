@@ -576,7 +576,7 @@ result_t set_channel_playback_status(snd_mixer_elem_t* control,
     return syst::success;
 }
 
-result_t sound_control_t::set_playback_status(const status_t& status) const {
+result_t sound_control_t::set_playback_status(const status_t& status) {
     result_t result = set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
@@ -634,6 +634,65 @@ result_t sound_control_t::set_playback_status(const status_t& status) const {
     return syst::success;
 }
 
+[[nodiscard]] sound_control_t::status_t toggle_status(
+  const sound_control_t::status_t& status) {
+    sound_control_t::status_t new_status;
+
+    if (status.front_left.has_value()) {
+        new_status.front_left = ! status.front_left.value();
+    }
+
+    if (status.front_right.has_value()) {
+        new_status.front_right = ! status.front_right.value();
+    }
+
+    if (status.rear_left.has_value()) {
+        new_status.rear_left = ! status.rear_left.value();
+    }
+
+    if (status.rear_right.has_value()) {
+        new_status.rear_right = ! status.rear_right.value();
+    }
+
+    if (status.front_center.has_value()) {
+        new_status.front_center = ! status.front_center.value();
+    }
+
+    if (status.woofer.has_value()) {
+        new_status.woofer = ! status.woofer.value();
+    }
+
+    if (status.side_left.has_value()) {
+        new_status.side_left = ! status.side_left.value();
+    }
+
+    if (status.side_right.has_value()) {
+        new_status.side_right = ! status.side_right.value();
+    }
+
+    if (status.rear_center.has_value()) {
+        new_status.rear_center = ! status.rear_center.value();
+    }
+
+    return new_status;
+}
+
+result_t sound_control_t::toggle_playback_status() {
+    auto status = this->get_playback_status();
+    if (status.has_error()) {
+        return SYST_TRACE(status.error());
+    }
+
+    auto new_status = syst::toggle_status(status.value());
+
+    auto result = this->set_playback_status(new_status);
+    if (result.failure()) {
+        return SYST_TRACE(result.error());
+    }
+
+    return syst::success;
+}
+
 result_t set_channel_playback_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
@@ -667,7 +726,7 @@ result_t set_channel_playback_volume(snd_mixer_elem_t* control,
     return syst::success;
 }
 
-result_t sound_control_t::set_playback_volume(const volume_t& volume) const {
+result_t sound_control_t::set_playback_volume(const volume_t& volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_playback_volume_range(
@@ -763,6 +822,37 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) const {
     return syst::success;
 }
 
+result_t sound_control_t::set_playback_volume_all(double volume) {
+    long max_value = 0;
+    long min_value = 0;
+    int snd_errno = snd_mixer_selem_get_playback_volume_range(
+      this->impl_->elem, &min_value, &max_value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{
+            "ALSA error: snd_mixer_selem_get_playback_volume_range: " }
+          + snd_strerror(snd_errno));
+    }
+
+    if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
+        return SYST_NEW_ERROR(
+          "The new status given for the playback volume is out of "
+          "bounds.\nstatus: '"
+          + std::to_string(volume) + "'");
+    }
+
+    long value = percent_to_value(min_value, max_value, volume);
+    snd_errno =
+      snd_mixer_selem_set_playback_volume_all(this->impl_->elem, value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{ "ALSA error: snd_mixer_selem_set_playback_volume_all: " }
+          + snd_strerror(snd_errno));
+    }
+
+    return syst::success;
+}
+
 result_t set_channel_capture_status(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   const std::optional<bool>& status) {
@@ -789,7 +879,7 @@ result_t set_channel_capture_status(snd_mixer_elem_t* control,
     return syst::success;
 }
 
-result_t sound_control_t::set_capture_status(const status_t& status) const {
+result_t sound_control_t::set_capture_status(const status_t& status) {
     result_t result = set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
@@ -847,6 +937,22 @@ result_t sound_control_t::set_capture_status(const status_t& status) const {
     return syst::success;
 }
 
+result_t sound_control_t::toggle_capture_status() {
+    auto status = this->get_capture_status();
+    if (status.has_error()) {
+        return SYST_TRACE(status.error());
+    }
+
+    auto new_status = syst::toggle_status(status.value());
+
+    auto result = this->set_capture_status(new_status);
+    if (result.failure()) {
+        return SYST_TRACE(result.error());
+    }
+
+    return syst::success;
+}
+
 result_t set_channel_capture_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
@@ -879,7 +985,7 @@ result_t set_channel_capture_volume(snd_mixer_elem_t* control,
     return syst::success;
 }
 
-result_t sound_control_t::set_capture_volume(const volume_t& volume) const {
+result_t sound_control_t::set_capture_volume(const volume_t& volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_capture_volume_range(
@@ -970,6 +1076,37 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) const {
       volume.rear_center);
     if (result.failure()) {
         return SYST_TRACE(result.error());
+    }
+
+    return syst::success;
+}
+
+result_t sound_control_t::set_capture_volume_all(double volume) {
+    long max_value = 0;
+    long min_value = 0;
+    int snd_errno = snd_mixer_selem_get_capture_volume_range(
+      this->impl_->elem, &min_value, &max_value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{
+            "ALSA error: snd_mixer_selem_get_capture_volume_range: " }
+          + snd_strerror(snd_errno));
+    }
+
+    if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
+        return SYST_NEW_ERROR(
+          "The new status given for the capture volume is out of "
+          "bounds.\nstatus: '"
+          + std::to_string(volume) + "'");
+    }
+
+    long value = percent_to_value(min_value, max_value, volume);
+    snd_errno =
+      snd_mixer_selem_set_capture_volume_all(this->impl_->elem, value);
+    if (snd_errno != 0) {
+        return SYST_NEW_ERROR(
+          std::string{ "ALSA error: snd_mixer_selem_set_capture_volume_all: " }
+          + snd_strerror(snd_errno));
     }
 
     return syst::success;

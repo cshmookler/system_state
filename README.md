@@ -80,10 +80,12 @@ meson install
 - [ ] network interface SSID
 - [X] network interface statistics
 - [ ] network interface signal strength percentage
-- [X] volume mute
-- [X] volume percentage
+- [X] playback mute
+- [X] playback toggle
+- [X] playback volume percentage
 - [X] capture mute
-- [X] capture percentage
+- [X] capture toggle
+- [X] capture volume percentage
 - [ ] microphone status
 - [ ] camera status
 - [X] user name

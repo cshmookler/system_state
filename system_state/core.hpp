@@ -757,7 +757,15 @@ class sound_control_t {
      * @return true if the playback status was successfully changed and false
      * otherwise.
      */
-    result_t set_playback_status(const status_t& status) const;
+    result_t set_playback_status(const status_t& status);
+
+    /**
+     * @brief Attempt to toggle the playback status of each individual channel.
+     *
+     * @return true if the playback status was successfully toggled and false
+     * otherwise.
+     */
+    result_t toggle_playback_status();
 
     /**
      * @brief Attempt to set the playback volume.
@@ -766,7 +774,16 @@ class sound_control_t {
      * @return true if the playback volume was successfully changed and false
      * otherwise.
      */
-    result_t set_playback_volume(const volume_t& volume) const;
+    result_t set_playback_volume(const volume_t& volume);
+
+    /**
+     * @brief Attempt to set the playback volume for all channels.
+     *
+     * @param[in] volume - The new playback volume.
+     * @return true if the playback volume was successfully changed and false
+     * otherwise.
+     */
+    result_t set_playback_volume_all(double volume);
 
     /**
      * @brief Attempt to set the capture status.
@@ -775,7 +792,15 @@ class sound_control_t {
      * @return true if the capture status was successfully changed and false
      * otherwise.
      */
-    result_t set_capture_status(const status_t& status) const;
+    result_t set_capture_status(const status_t& status);
+
+    /**
+     * @brief Attempt to toggle the capture status of each individual channel.
+     *
+     * @return true if the capture status was successfully toggled and false
+     * otherwise.
+     */
+    result_t toggle_capture_status();
 
     /**
      * @brief Attempt to set the capture volume.
@@ -784,7 +809,16 @@ class sound_control_t {
      * @return true if the capture volume was successfully changed and false
      * otherwise.
      */
-    result_t set_capture_volume(const volume_t& volume) const;
+    result_t set_capture_volume(const volume_t& volume);
+
+    /**
+     * @brief Attempt to set the capture volume for all channels.
+     *
+     * @param[in] volume - The new capture volume.
+     * @return true if the capture volume was successfully changed and false
+     * otherwise.
+     */
+    result_t set_capture_volume_all(double volume);
 };
 
 /**
