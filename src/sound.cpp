@@ -727,7 +727,7 @@ result_t set_channel_playback_volume(snd_mixer_elem_t* control,
       || status.value() > static_cast<double>(100)) {
         return SYST_NEW_ERROR(
           "The new status given for the playback volume is out of "
-          "bounds.\nstatus: '"
+          "bounds.\n\tstatus: '"
           + std::to_string(status.value()) + "'");
     }
 
@@ -854,7 +854,7 @@ result_t sound_control_t::set_playback_volume_all(double volume) {
     if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
         return SYST_NEW_ERROR(
           "The new status given for the playback volume is out of "
-          "bounds.\nstatus: '"
+          "bounds.\n\tstatus: '"
           + std::to_string(volume) + "'");
     }
 
@@ -1004,7 +1004,7 @@ result_t set_channel_capture_volume(snd_mixer_elem_t* control,
       || status.value() > static_cast<double>(100)) {
         return SYST_NEW_ERROR(
           "The new status given for the capture volume is out of "
-          "bounds.\nstatus: '"
+          "bounds.\n\tstatus: '"
           + std::to_string(status.value()) + "'");
     }
 
@@ -1130,7 +1130,7 @@ result_t sound_control_t::set_capture_volume_all(double volume) {
     if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
         return SYST_NEW_ERROR(
           "The new status given for the capture volume is out of "
-          "bounds.\nstatus: '"
+          "bounds.\n\tstatus: '"
           + std::to_string(volume) + "'");
     }
 

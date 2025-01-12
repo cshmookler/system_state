@@ -65,6 +65,13 @@ syst::optional_t<double> backlight_t::get_brightness() const {
 }
 
 result_t backlight_t::set_brightness(double brightness) {
+    if (brightness < static_cast<double>(0)
+      || brightness > static_cast<double>(100)) {
+        return SYST_NEW_ERROR("The new brightness percentage given for the "
+                              "backlight is out of bounds.\n\tbrightness: '"
+          + std::to_string(brightness) + "'");
+    }
+
     auto max_brightness = syst::get_int(this->sysfs_path_ / "max_brightness");
     if (max_brightness.has_error()) {
         return SYST_ERROR(max_brightness.error(),
