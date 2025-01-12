@@ -561,7 +561,7 @@ result_t set_channel_playback_status(snd_mixer_elem_t* control,
     }
 
     int value = 0;
-    if (status) {
+    if (status.value()) {
         value = 1;
     }
 
@@ -775,7 +775,7 @@ result_t set_channel_capture_status(snd_mixer_elem_t* control,
     }
 
     int value = 0;
-    if (status) {
+    if (status.value()) {
         value = 1;
     }
 
