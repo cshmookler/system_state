@@ -337,8 +337,7 @@ class cpu_usage_t {
     /**
      * @brief Attempt to update the CPU usage statistics.
      *
-     * @return true if the statistics were successfully updated and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     [[nodiscard]] result_t update() const;
 
@@ -439,7 +438,7 @@ class cooling_device_t {
      * This function requires root privileges.
      *
      * @param[in] state - The new state in percents (0 - 100).
-     * @return true if the state was successfully changed and false otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_state(double state) const;
 };
@@ -474,7 +473,14 @@ class backlight_t {
      *
      * @return the brightness percentage or std::nullopt if an error occurred.
      */
-    [[nodiscard]] syst::optional_t<double> brightness() const;
+    [[nodiscard]] syst::optional_t<double> get_brightness() const;
+
+    /**
+     * @brief Attempt to set the brightness percentage of this backlight.
+     *
+     * @return a result indicating success or failure.
+     */
+    syst::result_t set_brightness(double brightness);
 };
 
 /**
@@ -754,8 +760,7 @@ class sound_control_t {
      * @brief Attempt to set the playback status.
      *
      * @param[in] status - The new playback status.
-     * @return true if the playback status was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_playback_status(const status_t& status);
 
@@ -763,16 +768,14 @@ class sound_control_t {
      * @brief Attempt to set the playback status for all channels.
      *
      * @param[in] status - The new playback status.
-     * @return true if the playback status was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_playback_status_all(bool status);
 
     /**
      * @brief Attempt to toggle the playback status of each individual channel.
      *
-     * @return true if the playback status was successfully toggled and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t toggle_playback_status();
 
@@ -780,8 +783,7 @@ class sound_control_t {
      * @brief Attempt to set the playback volume.
      *
      * @param[in] volume - The new playback volume.
-     * @return true if the playback volume was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_playback_volume(const volume_t& volume);
 
@@ -789,8 +791,7 @@ class sound_control_t {
      * @brief Attempt to set the playback volume for all channels.
      *
      * @param[in] volume - The new playback volume.
-     * @return true if the playback volume was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_playback_volume_all(double volume);
 
@@ -798,8 +799,7 @@ class sound_control_t {
      * @brief Attempt to set the capture status.
      *
      * @param[in] status - The new capture status.
-     * @return true if the capture status was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_capture_status(const status_t& status);
 
@@ -807,16 +807,14 @@ class sound_control_t {
      * @brief Attempt to set the capture status for all channels.
      *
      * @param[in] status - The new capture status.
-     * @return true if the capture status was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_capture_status_all(bool status);
 
     /**
      * @brief Attempt to toggle the capture status of each individual channel.
      *
-     * @return true if the capture status was successfully toggled and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t toggle_capture_status();
 
@@ -824,8 +822,7 @@ class sound_control_t {
      * @brief Attempt to set the capture volume.
      *
      * @param[in] volume - The new capture volume in percents.
-     * @return true if the capture volume was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_capture_volume(const volume_t& volume);
 
@@ -833,8 +830,7 @@ class sound_control_t {
      * @brief Attempt to set the capture volume for all channels.
      *
      * @param[in] volume - The new capture volume.
-     * @return true if the capture volume was successfully changed and false
-     * otherwise.
+     * @return a result indicating success or failure.
      */
     result_t set_capture_volume_all(double volume);
 };

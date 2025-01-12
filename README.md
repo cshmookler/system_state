@@ -47,6 +47,7 @@ meson install
 
 - [ ] Remove duplicate code in sound.cpp
 - [ ] Prefix all methods that fetch with "get_" and all methods that set with "set_"
+- [ ] Remove const qualifiers from all methods that modify system state.
 - [X] error handling
 - [X] make (partially) thread safe
 - [X] add traces to error messages
@@ -76,7 +77,8 @@ meson install
 - [X] battery percentage
 - [X] battery time remaining
 - [X] backlight name
-- [X] backlight percentage
+- [X] backlight set
+- [X] backlight get
 - [X] network interface name
 - [X] network interface status
 - [ ] network interface SSID
