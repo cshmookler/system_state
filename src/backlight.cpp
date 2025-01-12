@@ -1,3 +1,6 @@
+// Standard includes
+#include <algorithm>
+
 // Local includes
 #include "../system_state/core.hpp"
 #include "util.hpp"
@@ -83,6 +86,24 @@ result_t backlight_t::set_brightness(double brightness) {
       static_cast<uint64_t>(0), max_brightness.value(), brightness);
 
     auto result = syst::write_int(this->sysfs_path_ / "brightness", value);
+    if (result.failure()) {
+        return SYST_TRACE(result.error());
+    }
+
+    return syst::success;
+}
+
+syst::result_t backlight_t::set_brightness_relative(double brightness) {
+    auto old_brightness = this->get_brightness();
+    if (old_brightness.has_error()) {
+        return SYST_TRACE(old_brightness.error());
+    }
+
+    double new_brightness = std::clamp(old_brightness.value() + brightness,
+      static_cast<double>(0.F),
+      static_cast<double>(100.F));
+
+    auto result = this->set_brightness(new_brightness);
     if (result.failure()) {
         return SYST_TRACE(result.error());
     }

@@ -856,9 +856,9 @@ result_t sound_control_t::set_playback_volume_all(double volume) {
 void set_channel_volume_relative(
   std::optional<double>& volume, double relative_volume) {
     if (volume.has_value()) {
-        volume.value() += relative_volume;
-        volume.value() = std::clamp(
-          volume.value(), static_cast<double>(0.F), static_cast<double>(100.F));
+        volume.value() = std::clamp(volume.value() + relative_volume,
+          static_cast<double>(0.F),
+          static_cast<double>(100.F));
     }
 }
 

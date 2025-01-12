@@ -52,6 +52,12 @@ int set_backlight() {
             continue;
         }
 
+        result = device.set_brightness_relative(20);
+        if (result.failure()) {
+            std::cerr << result.error() << std::endl;
+            continue;
+        }
+
         result = device.set_brightness(old_brightness.value());
         if (result.failure()) {
             std::cerr << result.error() << std::endl;

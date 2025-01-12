@@ -77,8 +77,9 @@ meson install
 - [X] battery percentage
 - [X] battery time remaining
 - [X] backlight name
-- [X] backlight set
 - [X] backlight get
+- [X] backlight set
+- [X] backlight set relative
 - [X] network interface name
 - [X] network interface status
 - [ ] network interface SSID

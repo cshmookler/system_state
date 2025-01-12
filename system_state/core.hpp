@@ -478,9 +478,21 @@ class backlight_t {
     /**
      * @brief Attempt to set the brightness percentage of this backlight.
      *
+     * @param[in] brightness - The new brightness percentage of this backlight.
      * @return a result indicating success or failure.
      */
     syst::result_t set_brightness(double brightness);
+
+    /**
+     * @brief Attempt to increment the brightness of this backlight by a
+     * given percentage. A negative value decrements the brightness.
+     * Absolute brightness is clamped to between 0% and 100%.
+     *
+     * @param[in] brightness - The percentage to increment the brightness of
+     * this backlight by.
+     * @return a result indicating success or failure.
+     */
+    syst::result_t set_brightness_relative(double brightness);
 };
 
 /**
