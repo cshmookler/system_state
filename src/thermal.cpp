@@ -142,7 +142,7 @@ syst::optional_t<double> cooling_device_t::get_state() const {
     return ratio_to_percent(current_state.value(), maximum_state.value());
 }
 
-result_t cooling_device_t::set_state(double state) const {
+result_t cooling_device_t::set_state(double state) {
     auto maximum_state = get_int(this->sysfs_path_ / "max_state");
     if (maximum_state.has_error()) {
         return SYST_TRACE(maximum_state.error());

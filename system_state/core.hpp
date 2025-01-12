@@ -440,7 +440,7 @@ class cooling_device_t {
      * @param[in] state - The new state in percents (0 - 100).
      * @return a result indicating success or failure.
      */
-    result_t set_state(double state) const;
+    result_t set_state(double state);
 };
 
 class backlight_t {
