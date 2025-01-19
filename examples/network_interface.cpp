@@ -2,33 +2,33 @@
 #include <iostream>
 
 // External includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 int main() {
     auto network_interfaces = syst::network_interface_t::all();
     if (network_interfaces.has_error()) {
-        std::cerr << network_interfaces.error() << std::endl;
+        std::cerr << network_interfaces.error().string() << '\n';
         return 1;
     }
 
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     for (const auto& interface : network_interfaces.value()) {
-        std::cout << "sysfs path: " << interface.sysfs_path() << std::endl;
-        std::cout << "Name: " << interface.name() << std::endl;
+        std::cout << "sysfs path: " << interface.sysfs_path() << '\n';
+        std::cout << "Name: " << interface.name() << '\n';
 
         auto physical = interface.physical();
         if (physical.has_value()) {
-            std::cout << "Physical: " << physical.value() << std::endl;
+            std::cout << "Physical: " << physical.value() << '\n';
         } else {
-            std::cerr << physical.error() << std::endl;
+            std::cerr << physical.error().string() << '\n';
         }
 
         auto loopback = interface.loopback();
         if (loopback.has_value()) {
-            std::cout << "Loopback: " << loopback.value() << std::endl;
+            std::cout << "Loopback: " << loopback.value() << '\n';
         } else {
-            std::cerr << loopback.error() << std::endl;
+            std::cerr << loopback.error().string() << '\n';
         }
 
         auto status = interface.status();
@@ -48,21 +48,21 @@ int main() {
                     std::cout << "Down";
                     break;
             }
-            std::cout << std::endl;
+            std::cout << '\n';
         } else {
-            std::cerr << status.error() << std::endl;
+            std::cerr << status.error().string() << '\n';
         }
 
         auto stat = interface.stat();
         if (stat.has_value()) {
             std::cout << "Down: " << stat->bytes_down << " bytes ("
-                      << stat->packets_down << " packets)" << std::endl;
+                      << stat->packets_down << " packets)" << '\n';
             std::cout << "Up: " << stat->bytes_up << " bytes ("
-                      << stat->packets_up << " packets)" << std::endl;
+                      << stat->packets_up << " packets)" << '\n';
         } else {
-            std::cerr << stat.error() << std::endl;
+            std::cerr << stat.error().string() << '\n';
         }
 
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 }

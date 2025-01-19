@@ -5,27 +5,27 @@
 #include <sys/utsname.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 namespace syst {
 
-syst::optional_t<std::string> get_running_kernel() {
+res::optional_t<std::string> get_running_kernel() {
     utsname utsname_info{};
 
     if (uname(&utsname_info) != 0) {
         int err = errno;
-        return SYST_NEW_ERROR(std::string{ "uname(): " } + std::strerror(err));
+        return RES_NEW_ERROR(std::string{ "uname(): " } + std::strerror(err));
     }
 
     return std::string{ static_cast<char*>(utsname_info.release) };
 }
 
-syst::optional_t<std::list<std::string>> get_installed_kernels() {
+res::optional_t<std::list<std::string>> get_installed_kernels() {
     std::list<std::string> installed_kernels;
 
     const fs::path modules_path = "/usr/lib/modules";
     if (! fs::is_directory(modules_path)) {
-        return SYST_NEW_ERROR("The path is not a directory.\n\tpath: '"
+        return RES_NEW_ERROR("The path is not a directory.\n\tpath: '"
           + modules_path.string() + "'");
     }
 

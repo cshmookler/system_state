@@ -5,7 +5,7 @@
 #include <sys/sysinfo.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 #include "util.hpp"
 
 namespace syst {
@@ -26,11 +26,11 @@ template<typename integral_lhs_t, typename integral_rhs_t>
     return static_cast<uint64_t>(mem) * static_cast<uint64_t>(mem_unit);
 }
 
-syst::optional_t<system_info_t> system_info() {
-    struct sysinfo raw_info {};
+res::optional_t<system_info_t> system_info() {
+    struct sysinfo raw_info{};
     if (sysinfo(&raw_info) != 0) {
         int err = errno;
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           "Failed to get system information from 'sysinfo'.\n\treason: '"
           + std::string{ strerror(err) } + "'");
     }

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 TEST(thermal_test, thermal_zone_all) {
     auto thermal_zones = syst::thermal_zone_t::all();

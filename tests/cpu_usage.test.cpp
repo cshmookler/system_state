@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 TEST(cpu_usage_test, get_total_update_zero) {
     syst::cpu_usage_t cpu_usage;

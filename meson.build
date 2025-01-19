@@ -31,14 +31,12 @@ dep_alsa_main = dependency(
 
 lib_system_state_headers = files(
     build_dir / 'version.hpp',
-    include_dir / 'optional.hpp',
-    include_dir / 'core.hpp',
+    include_dir / 'system_state.hpp',
 )
 lib_system_state = library(
     'system_state',
     files(
         src_dir / 'version.cpp',
-        src_dir / 'optional.cpp',
         src_dir / 'util.cpp',
         src_dir / 'user.cpp',
         src_dir / 'system.cpp',

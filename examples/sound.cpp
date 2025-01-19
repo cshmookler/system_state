@@ -3,14 +3,14 @@
 #include <thread>
 
 // External includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 int get_sound() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     auto mixer = syst::sound_mixer_t::get();
     if (mixer.has_error()) {
-        std::cerr << mixer.error() << std::endl;
+        std::cerr << mixer.error().string() << '\n';
         return 1;
     }
 
@@ -18,7 +18,7 @@ int get_sound() {
 
     for (auto& control : controls) {
         std::string name = control.name();
-        std::cout << "Name: " << name << std::endl;
+        std::cout << "Name: " << name << '\n';
 
         if (control.has_playback_status()) {
             auto playback_status = control.get_playback_status();
@@ -60,9 +60,9 @@ int get_sound() {
                     std::cout << "\n\tRear Center: "
                               << playback_status->rear_center.value();
                 }
-                std::cout << std::endl;
+                std::cout << '\n';
             } else {
-                std::cerr << playback_status.error() << std::endl;
+                std::cerr << playback_status.error().string() << '\n';
             }
         }
 
@@ -109,9 +109,9 @@ int get_sound() {
                     std::cout << "\n\tRear Center: "
                               << playback_volume->rear_center.value() << "%";
                 }
-                std::cout << std::endl;
+                std::cout << '\n';
             } else {
-                std::cerr << playback_volume.error() << std::endl;
+                std::cerr << playback_volume.error().string() << '\n';
             }
         }
 
@@ -155,9 +155,9 @@ int get_sound() {
                     std::cout << "\n\tRear Center: "
                               << capture_status->rear_center.value();
                 }
-                std::cout << std::endl;
+                std::cout << '\n';
             } else {
-                std::cerr << capture_status.error() << std::endl;
+                std::cerr << capture_status.error().string() << '\n';
             }
         }
 
@@ -204,13 +204,13 @@ int get_sound() {
                     std::cout << "\n\tRear Center: "
                               << capture_volume->rear_center.value() << "%";
                 }
-                std::cout << std::endl;
+                std::cout << '\n';
             } else {
-                std::cerr << capture_volume.error() << std::endl;
+                std::cerr << capture_volume.error().string() << '\n';
             }
         }
 
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 
     return 0;
@@ -221,7 +221,7 @@ int set_sound() {
 
     auto mixer = syst::sound_mixer_t::get();
     if (mixer.has_error()) {
-        std::cerr << mixer.error() << std::endl;
+        std::cerr << mixer.error().string() << '\n';
         return 1;
     }
 
@@ -253,13 +253,13 @@ int set_sound() {
         if (control.has_playback_status()) {
             auto old_playback_status = control.get_playback_status();
             if (old_playback_status.has_error()) {
-                std::cerr << old_playback_status.error() << std::endl;
+                std::cerr << old_playback_status.error().string() << '\n';
                 return 1;
             }
 
             auto result = control.set_playback_status(new_status);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -269,7 +269,7 @@ int set_sound() {
 
             result = control.toggle_playback_status();
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -279,7 +279,7 @@ int set_sound() {
 
             result = control.set_playback_status_all(false);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -289,7 +289,7 @@ int set_sound() {
 
             result = control.set_playback_status(old_playback_status.value());
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
         }
@@ -297,12 +297,12 @@ int set_sound() {
         if (control.has_playback_volume()) {
             auto old_playback_volume = control.get_playback_volume();
             if (old_playback_volume.has_error()) {
-                std::cerr << old_playback_volume.error() << std::endl;
+                std::cerr << old_playback_volume.error().string() << '\n';
                 return 1;
             }
             auto result = control.set_playback_volume(new_volume);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -312,7 +312,7 @@ int set_sound() {
 
             result = control.set_playback_volume_all(0);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -322,7 +322,7 @@ int set_sound() {
 
             result = control.set_playback_volume_all_relative(20);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -332,7 +332,7 @@ int set_sound() {
 
             result = control.set_playback_volume(old_playback_volume.value());
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
         }
@@ -340,12 +340,12 @@ int set_sound() {
         if (control.has_capture_status()) {
             auto old_capture_status = control.get_capture_status();
             if (old_capture_status.has_error()) {
-                std::cerr << old_capture_status.error() << std::endl;
+                std::cerr << old_capture_status.error().string() << '\n';
                 return 1;
             }
             auto result = control.set_capture_status(new_status);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -355,7 +355,7 @@ int set_sound() {
 
             result = control.toggle_capture_status();
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -365,7 +365,7 @@ int set_sound() {
 
             result = control.set_capture_status_all(false);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -375,7 +375,7 @@ int set_sound() {
 
             result = control.set_capture_status(old_capture_status.value());
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
         }
@@ -383,12 +383,12 @@ int set_sound() {
         if (control.has_capture_volume()) {
             auto old_capture_volume = control.get_capture_volume();
             if (old_capture_volume.has_error()) {
-                std::cerr << old_capture_volume.error() << std::endl;
+                std::cerr << old_capture_volume.error().string() << '\n';
                 return 1;
             }
             auto result = control.set_capture_volume(new_volume);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -398,7 +398,7 @@ int set_sound() {
 
             result = control.set_capture_volume_all(0);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -408,7 +408,7 @@ int set_sound() {
 
             result = control.set_capture_volume_all_relative(20);
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
 
@@ -418,7 +418,7 @@ int set_sound() {
 
             result = control.set_capture_volume(old_capture_volume.value());
             if (result.failure()) {
-                std::cerr << result.error() << std::endl;
+                std::cerr << result.error().string() << '\n';
                 return 1;
             }
         }

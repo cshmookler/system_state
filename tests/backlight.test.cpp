@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 TEST(backlight_test, all) {
     auto backlights = syst::backlight_t::all();

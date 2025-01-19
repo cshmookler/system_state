@@ -6,7 +6,7 @@
 #include <alsa/mixer.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 #include "util.hpp"
 
 namespace syst {
@@ -38,7 +38,7 @@ sound_mixer_t::~sound_mixer_t() {
     snd_mixer_close(this->impl_->mixer);
 }
 
-syst::optional_t<sound_mixer_t> sound_mixer_t::get() {
+res::optional_t<sound_mixer_t> sound_mixer_t::get() {
     // This solution was derived from the first half of the answer to this Stack
     // Overflow post:
     // https://stackoverflow.com/questions/6787318/set-alsa-master-volume-from-c-code
@@ -54,7 +54,7 @@ syst::optional_t<sound_mixer_t> sound_mixer_t::get() {
 
     snd_errno = snd_mixer_open(&impl.mixer, mixer_mode);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(std::string{ "ALSA error: snd_mixer_open: " }
+        return RES_NEW_ERROR(std::string{ "ALSA error: snd_mixer_open: " }
           + snd_strerror(snd_errno));
     }
 
@@ -66,20 +66,20 @@ syst::optional_t<sound_mixer_t> sound_mixer_t::get() {
 
     snd_errno = snd_mixer_attach(impl.mixer, default_hctl_name.data());
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(std::string{ "ALSA error: snd_mixer_attach: " }
+        return RES_NEW_ERROR(std::string{ "ALSA error: snd_mixer_attach: " }
           + snd_strerror(snd_errno));
     }
 
     snd_errno = snd_mixer_selem_register(impl.mixer, nullptr, nullptr);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_register: " }
           + snd_strerror(snd_errno));
     }
 
     snd_errno = snd_mixer_load(impl.mixer);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(std::string{ "ALSA error: snd_mixer_load: " }
+        return RES_NEW_ERROR(std::string{ "ALSA error: snd_mixer_load: " }
           + snd_strerror(snd_errno));
     }
 
@@ -144,119 +144,119 @@ bool sound_control_t::has_capture_volume() const {
     return snd_mixer_selem_has_capture_volume(this->impl_->elem) != 0;
 }
 
-result_t get_channel_playback_status(snd_mixer_elem_t* control,
+res::result_t get_channel_playback_status(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   std::optional<bool>& status) {
     if (snd_mixer_selem_has_playback_channel(control, channel) == 0) {
         status = std::nullopt;
-        return syst::success;
+        return res::success;
     }
 
     int value = 0;
     int snd_errno =
       snd_mixer_selem_get_playback_switch(control, channel, &value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_get_playback_switch: " }
           + snd_strerror(snd_errno));
     }
 
     status = (value != 0);
-    return syst::success;
+    return res::success;
 }
 
-syst::optional_t<sound_control_t::status_t>
+res::optional_t<sound_control_t::status_t>
 sound_control_t::get_playback_status() const {
     status_t status{};
 
-    result_t result = syst::get_channel_playback_status(
+    res::result_t result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_RIGHT, status.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_LEFT, status.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_RIGHT, status.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_CENTER, status.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_WOOFER, status.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_LEFT, status.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_RIGHT, status.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_CENTER, status.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     return status;
 }
 
-result_t get_channel_playback_volume(snd_mixer_elem_t* control,
+res::result_t get_channel_playback_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
   long max_value,
   std::optional<double>& status) {
     if (snd_mixer_selem_has_playback_channel(control, channel) == 0) {
         status = std::nullopt;
-        return syst::success;
+        return res::success;
     }
 
     long value = 0;
     int snd_errno =
       snd_mixer_selem_get_playback_volume(control, channel, &value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_get_playback_switch: " }
           + snd_strerror(snd_errno));
     }
 
     status = syst::value_to_percent(min_value, max_value, value);
-    return syst::success;
+    return res::success;
 }
 
-syst::optional_t<sound_control_t::volume_t>
+res::optional_t<sound_control_t::volume_t>
 sound_control_t::get_playback_volume() const {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_playback_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_playback_volume_range: " }
           + snd_strerror(snd_errno));
@@ -264,13 +264,13 @@ sound_control_t::get_playback_volume() const {
 
     volume_t volume{};
 
-    result_t result = syst::get_channel_playback_volume(this->impl_->elem,
+    res::result_t result = syst::get_channel_playback_volume(this->impl_->elem,
       SND_MIXER_SCHN_FRONT_LEFT,
       min_value,
       max_value,
       volume.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -279,7 +279,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -288,7 +288,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -297,7 +297,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -306,7 +306,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -315,7 +315,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -324,7 +324,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -333,7 +333,7 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_playback_volume(this->impl_->elem,
@@ -342,125 +342,125 @@ sound_control_t::get_playback_volume() const {
       max_value,
       volume.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     return volume;
 }
 
-result_t get_channel_capture_status(snd_mixer_elem_t* control,
+res::result_t get_channel_capture_status(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   std::optional<bool>& status) {
     if (snd_mixer_selem_has_capture_channel(control, channel) == 0) {
         status = std::nullopt;
-        return syst::success;
+        return res::success;
     }
 
     int value = 0;
     int snd_errno =
       snd_mixer_selem_get_capture_switch(control, channel, &value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_get_capture_switch: " }
           + snd_strerror(snd_errno));
     }
 
     status = (value != 0);
-    return syst::success;
+    return res::success;
 }
 
-syst::optional_t<sound_control_t::status_t>
-sound_control_t::get_capture_status() const {
+res::optional_t<sound_control_t::status_t> sound_control_t::get_capture_status()
+  const {
     status_t status{};
 
-    result_t result = syst::get_channel_capture_status(
+    res::result_t result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_RIGHT, status.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_LEFT, status.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_RIGHT, status.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_CENTER, status.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_WOOFER, status.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_LEFT, status.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_RIGHT, status.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_CENTER, status.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     return status;
 }
 
-result_t get_channel_capture_volume(snd_mixer_elem_t* control,
+res::result_t get_channel_capture_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
   long max_value,
   std::optional<double>& status) {
     if (snd_mixer_selem_has_capture_channel(control, channel) == 0) {
         status = std::nullopt;
-        return syst::success;
+        return res::success;
     }
 
     long value = 0;
     int snd_errno =
       snd_mixer_selem_get_capture_volume(control, channel, &value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_get_capture_volume: " }
           + snd_strerror(snd_errno));
     }
 
     status = syst::value_to_percent(min_value, max_value, value);
-    return syst::success;
+    return res::success;
 }
 
-syst::optional_t<sound_control_t::volume_t>
-sound_control_t::get_capture_volume() const {
+res::optional_t<sound_control_t::volume_t> sound_control_t::get_capture_volume()
+  const {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_capture_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_capture_volume_range: " }
           + snd_strerror(snd_errno));
@@ -468,13 +468,13 @@ sound_control_t::get_capture_volume() const {
 
     volume_t volume{};
 
-    result_t result = syst::get_channel_capture_volume(this->impl_->elem,
+    res::result_t result = syst::get_channel_capture_volume(this->impl_->elem,
       SND_MIXER_SCHN_FRONT_LEFT,
       min_value,
       max_value,
       volume.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -483,7 +483,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -492,7 +492,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -501,7 +501,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -510,7 +510,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -519,7 +519,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -528,7 +528,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -537,7 +537,7 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::get_channel_capture_volume(this->impl_->elem,
@@ -546,21 +546,21 @@ sound_control_t::get_capture_volume() const {
       max_value,
       volume.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     return volume;
 }
 
-result_t set_channel_playback_status(snd_mixer_elem_t* control,
+res::result_t set_channel_playback_status(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   const std::optional<bool>& status) {
     if (! status.has_value()) {
-        return syst::success;
+        return res::success;
     }
 
     if (snd_mixer_selem_has_playback_channel(control, channel) == 0) {
-        return syst::success;
+        return res::success;
     }
 
     int value = 0;
@@ -571,73 +571,73 @@ result_t set_channel_playback_status(snd_mixer_elem_t* control,
     int snd_errno =
       snd_mixer_selem_set_playback_switch(control, channel, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_playback_switch: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_playback_status(const status_t& status) {
-    result_t result = syst::set_channel_playback_status(
+res::result_t sound_control_t::set_playback_status(const status_t& status) {
+    res::result_t result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_RIGHT, status.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_LEFT, status.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_RIGHT, status.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_CENTER, status.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_WOOFER, status.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_LEFT, status.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_RIGHT, status.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_CENTER, status.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_playback_status_all(bool status) {
+res::result_t sound_control_t::set_playback_status_all(bool status) {
     int value = 0;
     if (status) {
         value = 1;
@@ -646,12 +646,12 @@ result_t sound_control_t::set_playback_status_all(bool status) {
     int snd_errno =
       snd_mixer_selem_set_playback_switch_all(this->impl_->elem, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_playback_switch_all: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
 void toggle_channel_status(std::optional<bool>& channel_status) {
@@ -677,38 +677,38 @@ void toggle_channel_status(std::optional<bool>& channel_status) {
     return new_status;
 }
 
-result_t sound_control_t::toggle_playback_status() {
+res::result_t sound_control_t::toggle_playback_status() {
     auto status = this->get_playback_status();
     if (status.has_error()) {
-        return SYST_TRACE(status.error());
+        return RES_TRACE(status.error());
     }
 
     auto new_status = syst::toggle_status(status.value());
 
     auto result = this->set_playback_status(new_status);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t set_channel_playback_volume(snd_mixer_elem_t* control,
+res::result_t set_channel_playback_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
   long max_value,
   const std::optional<double>& status) {
     if (! status.has_value()) {
-        return syst::success;
+        return res::success;
     }
 
     if (snd_mixer_selem_has_playback_channel(control, channel) == 0) {
-        return syst::success;
+        return res::success;
     }
 
     if (status.value() < static_cast<double>(0)
       || status.value() > static_cast<double>(100)) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           "The new status given for the playback volume is out of "
           "bounds.\n\tstatus: '"
           + std::to_string(status.value()) + "'");
@@ -718,33 +718,33 @@ result_t set_channel_playback_volume(snd_mixer_elem_t* control,
     int snd_errno =
       snd_mixer_selem_set_playback_volume(control, channel, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_playback_volume: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_playback_volume(const volume_t& volume) {
+res::result_t sound_control_t::set_playback_volume(const volume_t& volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_playback_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_playback_volume_range: " }
           + snd_strerror(snd_errno));
     }
 
-    result_t result = syst::set_channel_playback_volume(this->impl_->elem,
+    res::result_t result = syst::set_channel_playback_volume(this->impl_->elem,
       SND_MIXER_SCHN_FRONT_LEFT,
       min_value,
       max_value,
       volume.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -753,7 +753,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -762,7 +762,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -771,7 +771,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -780,7 +780,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -789,7 +789,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -798,7 +798,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -807,7 +807,7 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_playback_volume(this->impl_->elem,
@@ -816,26 +816,26 @@ result_t sound_control_t::set_playback_volume(const volume_t& volume) {
       max_value,
       volume.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_playback_volume_all(double volume) {
+res::result_t sound_control_t::set_playback_volume_all(double volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_playback_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_playback_volume_range: " }
           + snd_strerror(snd_errno));
     }
 
     if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           "The new status given for the playback volume is out of "
           "bounds.\n\tstatus: '"
           + std::to_string(volume) + "'");
@@ -845,12 +845,12 @@ result_t sound_control_t::set_playback_volume_all(double volume) {
     snd_errno =
       snd_mixer_selem_set_playback_volume_all(this->impl_->elem, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_playback_volume_all: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
 void set_channel_volume_relative(
@@ -862,10 +862,10 @@ void set_channel_volume_relative(
     }
 }
 
-result_t sound_control_t::set_playback_volume_all_relative(double volume) {
+res::result_t sound_control_t::set_playback_volume_all_relative(double volume) {
     auto playback_volume = this->get_playback_volume();
     if (playback_volume.has_error()) {
-        return SYST_TRACE(playback_volume.error());
+        return RES_TRACE(playback_volume.error());
     }
 
     syst::set_channel_volume_relative(playback_volume->front_left, volume);
@@ -880,21 +880,21 @@ result_t sound_control_t::set_playback_volume_all_relative(double volume) {
 
     auto result = this->set_playback_volume(playback_volume.value());
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t set_channel_capture_status(snd_mixer_elem_t* control,
+res::result_t set_channel_capture_status(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   const std::optional<bool>& status) {
     if (! status.has_value()) {
-        return syst::success;
+        return res::success;
     }
 
     if (snd_mixer_selem_has_capture_channel(control, channel) == 0) {
-        return syst::success;
+        return res::success;
     }
 
     int value = 0;
@@ -904,73 +904,73 @@ result_t set_channel_capture_status(snd_mixer_elem_t* control,
 
     int snd_errno = snd_mixer_selem_set_capture_switch(control, channel, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_capture_switch: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_capture_status(const status_t& status) {
-    result_t result = syst::set_channel_capture_status(
+res::result_t sound_control_t::set_capture_status(const status_t& status) {
+    res::result_t result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_LEFT, status.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_RIGHT, status.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_LEFT, status.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_RIGHT, status.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_FRONT_CENTER, status.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_WOOFER, status.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_LEFT, status.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_SIDE_RIGHT, status.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_status(
       this->impl_->elem, SND_MIXER_SCHN_REAR_CENTER, status.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_capture_status_all(bool status) {
+res::result_t sound_control_t::set_capture_status_all(bool status) {
     int value = 0;
     if (status) {
         value = 1;
@@ -979,46 +979,46 @@ result_t sound_control_t::set_capture_status_all(bool status) {
     int snd_errno =
       snd_mixer_selem_set_capture_switch_all(this->impl_->elem, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_capture_switch_all: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::toggle_capture_status() {
+res::result_t sound_control_t::toggle_capture_status() {
     auto status = this->get_capture_status();
     if (status.has_error()) {
-        return SYST_TRACE(status.error());
+        return RES_TRACE(status.error());
     }
 
     auto new_status = syst::toggle_status(status.value());
 
     auto result = this->set_capture_status(new_status);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t set_channel_capture_volume(snd_mixer_elem_t* control,
+res::result_t set_channel_capture_volume(snd_mixer_elem_t* control,
   snd_mixer_selem_channel_id_t channel,
   long min_value,
   long max_value,
   const std::optional<double>& status) {
     if (! status.has_value()) {
-        return syst::success;
+        return res::success;
     }
 
     if (snd_mixer_selem_has_capture_channel(control, channel) == 0) {
-        return syst::success;
+        return res::success;
     }
 
     if (status.value() < static_cast<double>(0)
       || status.value() > static_cast<double>(100)) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           "The new status given for the capture volume is out of "
           "bounds.\n\tstatus: '"
           + std::to_string(status.value()) + "'");
@@ -1027,33 +1027,33 @@ result_t set_channel_capture_volume(snd_mixer_elem_t* control,
     long value = syst::percent_to_value(min_value, max_value, status.value());
     int snd_errno = snd_mixer_selem_set_capture_volume(control, channel, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_capture_volume: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_capture_volume(const volume_t& volume) {
+res::result_t sound_control_t::set_capture_volume(const volume_t& volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_capture_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_capture_volume_range: " }
           + snd_strerror(snd_errno));
     }
 
-    result_t result = syst::set_channel_capture_volume(this->impl_->elem,
+    res::result_t result = syst::set_channel_capture_volume(this->impl_->elem,
       SND_MIXER_SCHN_FRONT_LEFT,
       min_value,
       max_value,
       volume.front_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1062,7 +1062,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.front_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1071,7 +1071,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.rear_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1080,7 +1080,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.rear_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1089,7 +1089,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.front_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1098,7 +1098,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.woofer);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1107,7 +1107,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.side_left);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1116,7 +1116,7 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.side_right);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
     result = syst::set_channel_capture_volume(this->impl_->elem,
@@ -1125,26 +1125,26 @@ result_t sound_control_t::set_capture_volume(const volume_t& volume) {
       max_value,
       volume.rear_center);
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_capture_volume_all(double volume) {
+res::result_t sound_control_t::set_capture_volume_all(double volume) {
     long max_value = 0;
     long min_value = 0;
     int snd_errno = snd_mixer_selem_get_capture_volume_range(
       this->impl_->elem, &min_value, &max_value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{
             "ALSA error: snd_mixer_selem_get_capture_volume_range: " }
           + snd_strerror(snd_errno));
     }
 
     if (volume < static_cast<double>(0) || volume > static_cast<double>(100)) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           "The new status given for the capture volume is out of "
           "bounds.\n\tstatus: '"
           + std::to_string(volume) + "'");
@@ -1154,18 +1154,18 @@ result_t sound_control_t::set_capture_volume_all(double volume) {
     snd_errno =
       snd_mixer_selem_set_capture_volume_all(this->impl_->elem, value);
     if (snd_errno != 0) {
-        return SYST_NEW_ERROR(
+        return RES_NEW_ERROR(
           std::string{ "ALSA error: snd_mixer_selem_set_capture_volume_all: " }
           + snd_strerror(snd_errno));
     }
 
-    return syst::success;
+    return res::success;
 }
 
-result_t sound_control_t::set_capture_volume_all_relative(double volume) {
+res::result_t sound_control_t::set_capture_volume_all_relative(double volume) {
     auto capture_volume = this->get_capture_volume();
     if (capture_volume.has_error()) {
-        return SYST_TRACE(capture_volume.error());
+        return RES_TRACE(capture_volume.error());
     }
 
     syst::set_channel_volume_relative(capture_volume->front_left, volume);
@@ -1180,10 +1180,10 @@ result_t sound_control_t::set_capture_volume_all_relative(double volume) {
 
     auto result = this->set_capture_volume(capture_volume.value());
     if (result.failure()) {
-        return SYST_TRACE(result.error());
+        return RES_TRACE(result.error());
     }
 
-    return syst::success;
+    return res::success;
 }
 
 } // namespace syst

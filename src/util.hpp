@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-// Local includes
-#include "../system_state/optional.hpp"
+// External includes
+#include <cpp_result/all.hpp>
 
 namespace syst {
 
@@ -15,38 +15,37 @@ namespace syst {
  * @brief Extract all lines from the file at the given path.
  *
  * @param[in] path - The path to the file to extract all lines from.
- * @return an dynamic array of strings with each string corresponding to one
- * line or std::nullopt if an error occured.
+ * @return a dynamic array of string with each string corresponding to one line
+ * if the operation succeeded or an error otherwise.
  */
-[[nodiscard]] syst::optional_t<std::vector<std::string>> get_all_lines(
+[[nodiscard]] res::optional_t<std::vector<std::string>> get_all_lines(
   const std::filesystem::path& path);
 
 /**
  * @brief Extract the first line from the file at the given path.
  *
  * @param[in] path - The path to the file to extract the first line from.
- * @return a string or std::nullopt if an error occured.
+ * @return a string if the operation succeeded or an error otherwise.
  */
-[[nodiscard]] syst::optional_t<std::string> get_first_line(
+[[nodiscard]] res::optional_t<std::string> get_first_line(
   const std::filesystem::path& path);
 
 /**
  * @brief Extract an integer from the file at the given path.
  *
  * @param[in] path - The path to the file to extract an integer from.
- * @return an integer or std::nullopt if an error occurred.
+ * @return an integer if the operation succeeded or an error otherwise.
  */
-[[nodiscard]] syst::optional_t<uint64_t> get_int(
+[[nodiscard]] res::optional_t<uint64_t> get_int(
   const std::filesystem::path& path);
 
 /**
  * @brief Extract a boolean (0 or 1) from the file at the given path.
  *
  * @param[in] path - The path to the file to extract a boolean from.
- * @return a boolean or std::nullopt if an error occurred.
+ * @return a boolean if the operation succeeded or an error otherwise.
  */
-[[nodiscard]] syst::optional_t<bool> get_bool(
-  const std::filesystem::path& path);
+[[nodiscard]] res::optional_t<bool> get_bool(const std::filesystem::path& path);
 
 /**
  * @brief Write an integer to the file at the given path.
@@ -56,7 +55,7 @@ namespace syst {
  * @return success if the given integer was successfully written to the given
  * file and failure otherwise.
  */
-result_t write_int(const std::filesystem::path& path, uint64_t integer);
+res::result_t write_int(const std::filesystem::path& path, uint64_t integer);
 
 /**
  * @brief Check whether a target string has the given prefix.

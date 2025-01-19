@@ -6,12 +6,12 @@ C++ library for fetching and modifying the system state on [MOOS](https://github
 
 ## Build from Source
 
-### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), and ALSA libraries.
+### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), ALSA libraries, and [cpp_result](https://github.com/cshmookler/cpp_result)
 
 #### Linux (MOOS):
 
 ```bash
-sudo pacman -S base-devel meson gtest alsa-lib
+sudo pacman -S base-devel meson gtest alsa-lib moos-cpp-result
 ```
 
 ### 2.&nbsp; Clone this project.
@@ -47,6 +47,7 @@ meson install
 
 - [ ] Remove duplicate code in sound.cpp
 - [ ] Prefix all methods that fetch with "get_" and all methods that set with "set_"
+- [X] Move error_t, result_t, optional_t, and all related utilities to a distinct library
 - [X] Remove const qualifiers from all methods that modify system state.
 - [X] error handling
 - [X] make (partially) thread safe

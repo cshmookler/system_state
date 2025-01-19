@@ -3,18 +3,18 @@
 #include <iostream>
 
 // External includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 int main() {
     auto batteries = syst::battery_t::all();
     if (batteries.has_error()) {
-        std::cerr << batteries.error() << std::endl;
+        std::cerr << batteries.error().string() << '\n';
         return 1;
     }
 
     for (const auto& device : batteries.value()) {
-        std::cout << "sysfs path: " << device.sysfs_path() << std::endl;
-        std::cout << "Name: " << device.name() << std::endl;
+        std::cout << "sysfs path: " << device.sysfs_path() << '\n';
+        std::cout << "Name: " << device.name() << '\n';
 
         auto status = device.status();
         if (status.has_value()) {
@@ -36,37 +36,37 @@ int main() {
                     std::cout << "Full";
                     break;
             }
-            std::cout << std::endl;
+            std::cout << '\n';
         } else {
-            std::cerr << status.error() << std::endl;
+            std::cerr << status.error().string() << '\n';
         }
 
         auto current = device.current();
         if (current.has_value()) {
-            std::cout << "Current: " << current.value() << " A" << std::endl;
+            std::cout << "Current: " << current.value() << " A" << '\n';
         } else {
-            std::cerr << current.error() << std::endl;
+            std::cerr << current.error().string() << '\n';
         }
 
         auto power = device.power();
         if (power.has_value()) {
-            std::cout << "Power: " << power.value() << " W" << std::endl;
+            std::cout << "Power: " << power.value() << " W" << '\n';
         } else {
-            std::cerr << power.error() << std::endl;
+            std::cerr << power.error().string() << '\n';
         }
 
         auto charge = device.charge();
         if (charge.has_value()) {
-            std::cout << "Charge: " << charge.value() << "%" << std::endl;
+            std::cout << "Charge: " << charge.value() << "%" << '\n';
         } else {
-            std::cerr << charge.error() << std::endl;
+            std::cerr << charge.error().string() << '\n';
         }
 
         auto capacity = device.capacity();
         if (capacity.has_value()) {
-            std::cout << "Capacity: " << capacity.value() << "%" << std::endl;
+            std::cout << "Capacity: " << capacity.value() << "%" << '\n';
         } else {
-            std::cerr << capacity.error() << std::endl;
+            std::cerr << capacity.error().string() << '\n';
         }
 
         auto time_remaining = device.time_remaining();
@@ -78,12 +78,12 @@ int main() {
             std::cout << std::setfill('0');
             std::cout << "Time Remaining: " << std::setw(2) << hours << ":"
                       << std::setw(2) << minutes << ":" << std::setw(2)
-                      << seconds << std::endl;
+                      << seconds << '\n';
             std::cout << std::setfill(' ');
         } else {
-            std::cerr << time_remaining.error() << std::endl;
+            std::cerr << time_remaining.error().string() << '\n';
         }
 
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 }

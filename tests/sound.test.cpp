@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 // Local includes
-#include "../system_state/core.hpp"
+#include "../system_state/system_state.hpp"
 
 TEST(sound_test, sound_mixer_get) {
     auto mixer = syst::sound_mixer_t::get();
