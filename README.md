@@ -6,7 +6,7 @@ C++ library for fetching and modifying the system state on [MOOS](https://github
 
 ## Build from Source
 
-### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), ALSA libraries, and [cpp_result](https://github.com/cshmookler/cpp_result)
+### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), ALSA libraries, and [cpp_result](https://github.com/cshmookler/cpp_result).
 
 #### Linux (MOOS):
 
