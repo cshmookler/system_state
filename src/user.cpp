@@ -8,7 +8,7 @@
 
 namespace syst {
 
-res::optional_t<std::string> username() {
+res::optional_t<std::string> get_username() {
     auto uid = geteuid();
     struct passwd* passwd_info = getpwuid(uid);
 

@@ -1,3 +1,6 @@
+// Standard includes
+#include <algorithm>
+
 // Local includes
 #include "../system_state/system_state.hpp"
 #include "util.hpp"
@@ -8,7 +11,7 @@ thermal_zone_t::thermal_zone_t(const fs::path& sysfs_path)
 : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<thermal_zone_t>> thermal_zone_t::all() {
+res::optional_t<std::list<thermal_zone_t>> get_thermal_zones() {
     // documentation for /sys/class/thermal
     //     https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-thermal
     //     https://www.kernel.org/doc/html/latest/driver-api/thermal/sysfs-api.html
@@ -45,11 +48,11 @@ res::optional_t<std::list<thermal_zone_t>> thermal_zone_t::all() {
     return thermal_zones;
 }
 
-fs::path thermal_zone_t::sysfs_path() const {
+fs::path thermal_zone_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-res::optional_t<std::string> thermal_zone_t::type() const {
+res::optional_t<std::string> thermal_zone_t::get_type() const {
     auto type = syst::get_first_line(this->sysfs_path_ / "type");
 
     if (type.has_error()) {
@@ -59,7 +62,7 @@ res::optional_t<std::string> thermal_zone_t::type() const {
     return type;
 }
 
-res::optional_t<double> thermal_zone_t::temperature() const {
+res::optional_t<double> thermal_zone_t::get_temperature() const {
     auto temp_millicelsius = syst::get_int(this->sysfs_path_ / "temp");
     if (temp_millicelsius.has_error()) {
         return RES_TRACE(temp_millicelsius.error());
@@ -76,7 +79,7 @@ cooling_device_t::cooling_device_t(const fs::path& sysfs_path)
 : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<cooling_device_t>> cooling_device_t::all() {
+res::optional_t<std::list<cooling_device_t>> get_cooling_devices() {
     // documentation for /sys/class/thermal
     //     https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-thermal
     //     https://www.kernel.org/doc/html/latest/driver-api/thermal/sysfs-api.html
@@ -114,11 +117,11 @@ res::optional_t<std::list<cooling_device_t>> cooling_device_t::all() {
     return cooling_devices;
 }
 
-fs::path cooling_device_t::sysfs_path() const {
+fs::path cooling_device_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-res::optional_t<std::string> cooling_device_t::type() const {
+res::optional_t<std::string> cooling_device_t::get_type() const {
     auto type = syst::get_first_line(this->sysfs_path_ / "type");
 
     if (type.has_error()) {
@@ -143,21 +146,16 @@ res::optional_t<double> cooling_device_t::get_state() const {
 }
 
 res::result_t cooling_device_t::set_state(double state) {
+    double clamped_state =
+      std::clamp(state, static_cast<double>(0.F), static_cast<double>(100.F));
+
     auto maximum_state = get_int(this->sysfs_path_ / "max_state");
     if (maximum_state.has_error()) {
         return RES_TRACE(maximum_state.error());
     }
 
-    if (state < static_cast<double>(0) || state > static_cast<double>(100)) {
-        return RES_NEW_ERROR(
-          "The new state given for a cooling device is out of "
-          "bounds.\n\tdevice path: '"
-          + this->sysfs_path_.string() + "'\n\tstate: '" + std::to_string(state)
-          + "'");
-    }
-
-    const uint64_t current_state =
-      percent_to_value(static_cast<uint64_t>(0), maximum_state.value(), state);
+    const uint64_t current_state = percent_to_value(
+      static_cast<uint64_t>(0), maximum_state.value(), clamped_state);
 
     res::result_t result =
       write_int(this->sysfs_path_ / "cur_state", current_state);

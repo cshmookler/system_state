@@ -46,7 +46,8 @@ meson install
 ## **TODO**
 
 - [ ] Remove duplicate code in sound.cpp
-- [ ] Prefix all methods that fetch with "get_" and all methods that set with "set_"
+- [X] Prefix all methods that fetch with "get_" and all methods that set with "set_"
+- [X] Replace all static methods with global functions.
 - [X] Move error_t, result_t, optional_t, and all related utilities to a distinct library
 - [X] Remove const qualifiers from all methods that modify system state.
 - [X] error handling

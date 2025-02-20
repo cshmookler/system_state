@@ -26,7 +26,7 @@ template<typename integral_lhs_t, typename integral_rhs_t>
     return static_cast<uint64_t>(mem) * static_cast<uint64_t>(mem_unit);
 }
 
-res::optional_t<system_info_t> system_info() {
+res::optional_t<system_info_t> get_system_info() {
     struct sysinfo raw_info{};
     if (sysinfo(&raw_info) != 0) {
         int err = errno;

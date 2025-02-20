@@ -10,7 +10,7 @@ namespace syst {
 backlight_t::backlight_t(const fs::path& sysfs_path) : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<backlight_t>> backlight_t::all() {
+res::optional_t<std::list<backlight_t>> get_backlights() {
     // documentation for /sys/class/backlight
     //     https://www.kernel.org/doc/html/latest/gpu/backlight.html
 
@@ -40,11 +40,11 @@ res::optional_t<std::list<backlight_t>> backlight_t::all() {
     return backlights;
 }
 
-fs::path backlight_t::sysfs_path() const {
+fs::path backlight_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-std::string backlight_t::name() const {
+std::string backlight_t::get_name() const {
     return this->sysfs_path_.filename();
 }
 
@@ -68,12 +68,8 @@ res::optional_t<double> backlight_t::get_brightness() const {
 }
 
 res::result_t backlight_t::set_brightness(double brightness) {
-    if (brightness < static_cast<double>(0)
-      || brightness > static_cast<double>(100)) {
-        return RES_NEW_ERROR("The new brightness percentage given for the "
-                             "backlight is out of bounds.\n\tbrightness: '"
-          + std::to_string(brightness) + "'");
-    }
+    double clamped_brightness = std::clamp(
+      brightness, static_cast<double>(0.F), static_cast<double>(100.F));
 
     auto max_brightness = syst::get_int(this->sysfs_path_ / "max_brightness");
     if (max_brightness.has_error()) {
@@ -83,7 +79,7 @@ res::result_t backlight_t::set_brightness(double brightness) {
     }
 
     uint64_t value = syst::percent_to_value(
-      static_cast<uint64_t>(0), max_brightness.value(), brightness);
+      static_cast<uint64_t>(0), max_brightness.value(), clamped_brightness);
 
     auto result = syst::write_int(this->sysfs_path_ / "brightness", value);
     if (result.failure()) {
@@ -99,11 +95,7 @@ res::result_t backlight_t::set_brightness_relative(double brightness) {
         return RES_TRACE(old_brightness.error());
     }
 
-    double new_brightness = std::clamp(old_brightness.value() + brightness,
-      static_cast<double>(0.F),
-      static_cast<double>(100.F));
-
-    auto result = this->set_brightness(new_brightness);
+    auto result = this->set_brightness(old_brightness.value() + brightness);
     if (result.failure()) {
         return RES_TRACE(result.error());
     }

@@ -6,7 +6,7 @@
 #include "../system_state/system_state.hpp"
 
 int main() {
-    auto disks = syst::disk_t::all();
+    auto disks = syst::get_disks();
     if (disks.has_error()) {
         std::cerr << disks.error().string() << '\n';
         return 1;
@@ -15,39 +15,39 @@ int main() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     for (const auto& disk : disks.value()) {
-        std::cout << "sysfs path: " << disk.sysfs_path() << '\n';
-        std::cout << "devfs path: " << disk.devfs_path() << '\n';
-        std::cout << "Name: " << disk.name() << '\n';
+        std::cout << "sysfs path: " << disk.get_sysfs_path() << '\n';
+        std::cout << "devfs path: " << disk.get_devfs_path() << '\n';
+        std::cout << "Name: " << disk.get_name() << '\n';
 
-        auto size = disk.size();
+        auto size = disk.get_size();
         if (size.has_value()) {
             std::cout << "Size: " << size.value() << " bytes" << '\n';
         } else {
             std::cerr << size.error().string() << '\n';
         }
 
-        auto removable = disk.removable();
+        auto removable = disk.is_removable();
         if (removable.has_value()) {
             std::cout << "Removable: " << removable.value() << '\n';
         } else {
             std::cerr << removable.error().string() << '\n';
         }
 
-        auto read_only = disk.read_only();
+        auto read_only = disk.is_read_only();
         if (read_only.has_value()) {
             std::cout << "Read-only: " << read_only.value() << '\n';
         } else {
             std::cerr << read_only.error().string() << '\n';
         }
 
-        auto rotational = disk.rotational();
+        auto rotational = disk.is_rotational();
         if (rotational.has_value()) {
             std::cout << "Rotational: " << rotational.value() << '\n';
         } else {
             std::cerr << rotational.error().string() << '\n';
         }
 
-        auto inflight_stat = disk.inflight_stat();
+        auto inflight_stat = disk.get_inflight_stat();
         if (inflight_stat.has_value()) {
             std::cout << "In-Flight Reads: " << inflight_stat->reads << '\n';
             std::cout << "In-Flight Writes: " << inflight_stat->writes << '\n';
@@ -55,7 +55,7 @@ int main() {
             std::cerr << inflight_stat.error().string() << '\n';
         }
 
-        auto io_stat = disk.io_stat();
+        auto io_stat = disk.get_io_stat();
         if (io_stat.has_value()) {
             std::cout << "Reads Completed: " << io_stat->reads_completed
                       << '\n';
@@ -89,26 +89,26 @@ int main() {
 
         std::cout << '\n';
 
-        auto parts = disk.parts();
+        auto parts = disk.get_parts();
         if (parts.has_error()) {
             std::cerr << parts.error().string() << '\n';
             continue;
         }
 
         for (const auto& part : parts.value()) {
-            std::cout << "sysfs path: " << part.sysfs_path() << '\n';
-            std::cout << "devfs path: " << part.devfs_path() << '\n';
-            std::cout << "Name: " << part.name() << '\n';
-            std::cout << "Disk Name: " << part.disk().name() << '\n';
+            std::cout << "sysfs path: " << part.get_sysfs_path() << '\n';
+            std::cout << "devfs path: " << part.get_devfs_path() << '\n';
+            std::cout << "Name: " << part.get_name() << '\n';
+            std::cout << "Disk Name: " << part.get_disk().get_name() << '\n';
 
-            auto part_size = part.size();
+            auto part_size = part.get_size();
             if (part_size.has_value()) {
                 std::cout << "Size: " << part_size.value() << " bytes" << '\n';
             } else {
                 std::cerr << part_size.error().string() << '\n';
             }
 
-            auto part_start = part.start();
+            auto part_start = part.get_start_position();
             if (part_start.has_value()) {
                 std::cout << "Start: " << part_start.value() << " bytes"
                           << '\n';
@@ -116,14 +116,14 @@ int main() {
                 std::cerr << part_start.error().string() << '\n';
             }
 
-            auto part_read_only = part.read_only();
+            auto part_read_only = part.is_read_only();
             if (part_read_only.has_value()) {
                 std::cout << "Read-only: " << part_read_only.value() << '\n';
             } else {
                 std::cerr << part_read_only.error().string() << '\n';
             }
 
-            auto part_inflight_stat = part.inflight_stat();
+            auto part_inflight_stat = part.get_inflight_stat();
             if (part_inflight_stat.has_value()) {
                 std::cout << "In-Flight Reads: " << part_inflight_stat->reads
                           << '\n';
@@ -133,7 +133,7 @@ int main() {
                 std::cerr << part_inflight_stat.error().string() << '\n';
             }
 
-            auto part_io_stat = disk.io_stat();
+            auto part_io_stat = disk.get_io_stat();
             if (part_io_stat.has_value()) {
                 std::cout << "Reads Completed: "
                           << part_io_stat->reads_completed << '\n';

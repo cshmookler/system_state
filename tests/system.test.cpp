@@ -5,7 +5,7 @@
 #include "../system_state/system_state.hpp"
 
 TEST(system_test, system_info) {
-    auto system_info = syst::system_info();
+    auto system_info = syst::get_system_info();
     ASSERT_TRUE(system_info.has_value());
 
     // Uptime should (almost) never be zero.

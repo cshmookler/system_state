@@ -5,12 +5,12 @@
 #include "../system_state/system_state.hpp"
 
 TEST(backlight_test, all) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 }
 
 TEST(backlight_test, all_one_backlight) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
@@ -18,20 +18,20 @@ TEST(backlight_test, all_one_backlight) {
 }
 
 TEST(backlight_test, sysfs_path) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
 
     for (const syst::backlight_t& backlight : backlights.value()) {
-        std::filesystem::path sysfs_path = backlight.sysfs_path();
+        std::filesystem::path sysfs_path = backlight.get_sysfs_path();
         ASSERT_TRUE(std::filesystem::is_directory(sysfs_path));
     }
 }
 
 TEST(backlight_test, get_brightness) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
@@ -47,7 +47,7 @@ TEST(backlight_test, get_brightness) {
 }
 
 TEST(backlight_test, set_brightness) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.
@@ -69,7 +69,7 @@ TEST(backlight_test, set_brightness) {
 }
 
 TEST(backlight_test, set_brightness_relative) {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     ASSERT_TRUE(backlights.has_value());
 
     // For testing purposes, there must be at least one backlight.

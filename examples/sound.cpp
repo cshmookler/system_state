@@ -8,16 +8,16 @@
 int get_sound() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     if (mixer.has_error()) {
         std::cerr << mixer.error().string() << '\n';
         return 1;
     }
 
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     for (auto& control : controls) {
-        std::string name = control.name();
+        std::string name = control.get_name();
         std::cout << "Name: " << name << '\n';
 
         if (control.has_playback_status()) {
@@ -219,13 +219,13 @@ int get_sound() {
 int set_sound() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     if (mixer.has_error()) {
         std::cerr << mixer.error().string() << '\n';
         return 1;
     }
 
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     syst::sound_control_t::status_t new_status;
     new_status.front_left = false;

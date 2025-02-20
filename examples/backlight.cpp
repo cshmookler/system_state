@@ -5,15 +5,15 @@
 #include "../system_state/system_state.hpp"
 
 int get_backlight() {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     if (backlights.has_error()) {
         std::cerr << backlights.error().string() << '\n';
         return 1;
     }
 
     for (const auto& device : backlights.value()) {
-        std::cout << "sysfs path: " << device.sysfs_path() << '\n';
-        std::cout << "Name: " << device.name() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
+        std::cout << "Name: " << device.get_name() << '\n';
 
         auto brightness = device.get_brightness();
         if (brightness.has_value()) {
@@ -29,15 +29,15 @@ int get_backlight() {
 }
 
 int set_backlight() {
-    auto backlights = syst::backlight_t::all();
+    auto backlights = syst::get_backlights();
     if (backlights.has_error()) {
         std::cerr << backlights.error().string() << '\n';
         return 1;
     }
 
     for (auto& device : backlights.value()) {
-        std::cout << "sysfs path: " << device.sysfs_path() << '\n';
-        std::cout << "Name: " << device.name() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
+        std::cout << "Name: " << device.get_name() << '\n';
 
         auto old_brightness = device.get_brightness();
         if (old_brightness.has_error()) {

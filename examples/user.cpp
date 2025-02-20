@@ -5,7 +5,7 @@
 #include "../system_state/system_state.hpp"
 
 int main() {
-    auto username = syst::username();
+    auto username = syst::get_username();
     if (username.has_error()) {
         std::cerr << username.error().string() << '\n';
         return 1;

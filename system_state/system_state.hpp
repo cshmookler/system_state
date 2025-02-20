@@ -48,7 +48,7 @@ namespace ch = std::chrono;
  * @return the username of the owner of this process or std::nullopt if an error
  * occurred.
  */
-res::optional_t<std::string> username();
+res::optional_t<std::string> get_username();
 
 struct system_info_t {
     // The number of seconds since the system booted.
@@ -97,7 +97,7 @@ struct system_info_t {
 /**
  * @return system information from sysinfo or std::nullopt if an error occurred.
  */
-[[nodiscard]] res::optional_t<system_info_t> system_info();
+[[nodiscard]] res::optional_t<system_info_t> get_system_info();
 
 struct inflight_stat_t {
     // The number of in-flight read requests for this device.
@@ -163,6 +163,14 @@ struct io_stat_t {
     ch::milliseconds time_by_discards;
 };
 
+class disk_t;
+
+/**
+ * @return all disk block devices on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<disk_t>> get_disks();
+
 class part_t;
 
 /**
@@ -178,71 +186,68 @@ class disk_t {
     // not all classes need access.
     friend part_t;
 
-  public:
-    /**
-     * @return all disk block devices on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<disk_t>> all();
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<disk_t>> get_disks();
 
+  public:
     /**
      * @return all partitions associated with this disk block device or
      * std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<std::list<part_t>> parts() const;
+    [[nodiscard]] res::optional_t<std::list<part_t>> get_parts() const;
 
     /**
      * @return the path to this device in /sys. This provides access to various
      * device-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the path to this device in /dev. This provides access to the
      * device itself.
      */
-    [[nodiscard]] fs::path devfs_path() const;
+    [[nodiscard]] fs::path get_devfs_path() const;
 
     /**
      * @return the name of this device.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @return the size of this device in bytes or std::nullopt if the size
      * could not be determined.
      */
-    [[nodiscard]] res::optional_t<uint64_t> size() const;
+    [[nodiscard]] res::optional_t<uint64_t> get_size() const;
 
     /**
      * @return true if this device is removable, false if it is not, and
      * std::nullopt if the removable status could not be determined.
      */
-    [[nodiscard]] res::optional_t<bool> removable() const;
+    [[nodiscard]] res::optional_t<bool> is_removable() const;
 
     /**
      * @return true if this device is read-only, false if it is not, and
      * std::nullopt if the read-only status could not be determined.
      */
-    [[nodiscard]] res::optional_t<bool> read_only() const;
+    [[nodiscard]] res::optional_t<bool> is_read_only() const;
 
     /**
      * @return true if this device is rotational (HDD), false if it is not
      * (SSD), and std::nullopt if the rotational type could not be determined.
      */
-    [[nodiscard]] res::optional_t<bool> rotational() const;
+    [[nodiscard]] res::optional_t<bool> is_rotational() const;
 
     /**
      * @return in-flight statistics for this device or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] res::optional_t<inflight_stat_t> inflight_stat() const;
+    [[nodiscard]] res::optional_t<inflight_stat_t> get_inflight_stat() const;
 
     /**
      * @return I/O statistics for this device or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] res::optional_t<io_stat_t> io_stat() const;
+    [[nodiscard]] res::optional_t<io_stat_t> get_io_stat() const;
 };
 
 /**
@@ -268,53 +273,53 @@ class part_t {
      * @return the path to this partition in /sys. This provides access to
      * various partition-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the path to this partition in /dev. This provides access to the
      * partition itself.
      */
-    [[nodiscard]] fs::path devfs_path() const;
+    [[nodiscard]] fs::path get_devfs_path() const;
 
     /**
      * @return the name of this partition.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @return the disk corresponding to this partition.
      */
-    [[nodiscard]] disk_t disk() const;
+    [[nodiscard]] disk_t get_disk() const;
 
     /**
      * @return the size of this partition in bytes or std::nullopt if the size
      * could not be determined.
      */
-    [[nodiscard]] res::optional_t<uint64_t> size() const;
+    [[nodiscard]] res::optional_t<uint64_t> get_size() const;
 
     /**
      * @return the start position of this partition on the disk corresponding to
      * this partition in bytes or std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<uint64_t> start() const;
+    [[nodiscard]] res::optional_t<uint64_t> get_start_position() const;
 
     /*
      * @return true if this partition is read-only, false if it is not, and
      * std::nullopt if the read-only status could not be determined.
      */
-    [[nodiscard]] res::optional_t<bool> read_only() const;
+    [[nodiscard]] res::optional_t<bool> is_read_only() const;
 
     /**
      * @return in-flight statistics for this device or std::nullopt if an
      * error occurred.
      */
-    [[nodiscard]] res::optional_t<inflight_stat_t> inflight_stat() const;
+    [[nodiscard]] res::optional_t<inflight_stat_t> get_inflight_stat() const;
 
     /**
      * @return I/O statistics for this partition or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] res::optional_t<io_stat_t> io_stat() const;
+    [[nodiscard]] res::optional_t<io_stat_t> get_io_stat() const;
 };
 
 /**
@@ -364,6 +369,14 @@ class cpu_usage_t {
     [[nodiscard]] res::optional_t<std::list<double>> get_per_core() const;
 };
 
+class thermal_zone_t;
+
+/**
+ * @return all thermal zones on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<thermal_zone_t>> get_thermal_zones();
+
 /**
  * @brief Represents a device with thermal information, such as a temperature
  * sensor.
@@ -373,31 +386,37 @@ class thermal_zone_t {
 
     thermal_zone_t(const fs::path& sysfs_path);
 
-  public:
-    /**
-     * @return all thermal zones on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<thermal_zone_t>> all();
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<thermal_zone_t>> get_thermal_zones();
 
+  public:
     /**
      * @return the path to this thermal zone in /sys. This provides access to
      * various zone-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the type of this thermal zone represented as a string or
      * std::nullopt if the type could not be determined.
      */
-    [[nodiscard]] res::optional_t<std::string> type() const;
+    [[nodiscard]] res::optional_t<std::string> get_type() const;
 
     /**
      * @return the temperature at this thermal zone in degrees Celsius or
      * std::nullopt if the temperature could not be determined.
      */
-    [[nodiscard]] res::optional_t<double> temperature() const;
+    [[nodiscard]] res::optional_t<double> get_temperature() const;
 };
+
+class cooling_device_t;
+
+/**
+ * @return all cooling devices on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<cooling_device_t>>
+get_cooling_devices();
 
 /**
  * @brief Represents a thermal management device, such as a fan.
@@ -407,24 +426,21 @@ class cooling_device_t {
 
     cooling_device_t(const fs::path& sysfs_path);
 
-  public:
-    /**
-     * @return all cooling devices on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<cooling_device_t>> all();
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<cooling_device_t>> get_cooling_devices();
 
+  public:
     /**
      * @return the path to this cooling device in /sys. This provides access to
      * various zone-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the type of this cooling device represented as a string or
      * std::nullopt if the type could not be determined.
      */
-    [[nodiscard]] res::optional_t<std::string> type() const;
+    [[nodiscard]] res::optional_t<std::string> get_type() const;
 
     /**
      * @return get the current state of this cooling device as a percentage (0 -
@@ -434,6 +450,7 @@ class cooling_device_t {
 
     /**
      * @brief Attempt to set the state of this cooling device.
+     * State is clamped to between 0% and 100%.
      *
      * This function requires root privileges.
      *
@@ -443,28 +460,33 @@ class cooling_device_t {
     res::result_t set_state(double state);
 };
 
+class backlight_t;
+
+/**
+ * @return all backlights on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<backlight_t>> get_backlights();
+
 class backlight_t {
     fs::path sysfs_path_;
 
     backlight_t(const fs::path& sysfs_path);
 
-  public:
-    /**
-     * @return all backlights on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<backlight_t>> all();
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<backlight_t>> get_backlights();
 
+  public:
     /**
      * @return the path to this backlight in /sys. This provides access to
      * various backlight-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the name of this backlight.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @brief Attempt to calculate the brightness percentage of this backlight.
@@ -477,6 +499,7 @@ class backlight_t {
 
     /**
      * @brief Attempt to set the brightness percentage of this backlight.
+     * Brightness is clamped to between 0% and 100%.
      *
      * @param[in] brightness - The new brightness percentage of this backlight.
      * @return a result indicating success or failure.
@@ -495,6 +518,14 @@ class backlight_t {
     res::result_t set_brightness_relative(double brightness);
 };
 
+class battery_t;
+
+/**
+ * @return all batteries on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<battery_t>> get_batteries();
+
 /**
  * @brief Represents a battery connected to this system.
  */
@@ -502,6 +533,9 @@ class battery_t {
     fs::path sysfs_path_;
 
     battery_t(const fs::path& sysfs_path);
+
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<battery_t>> get_batteries();
 
   public:
     enum class status_t {
@@ -513,39 +547,33 @@ class battery_t {
     };
 
     /**
-     * @return all batteries on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<battery_t>> all();
-
-    /**
      * @return the path to this battery in /sys. This provides access to
      * various battery-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the name of this battery.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @return the current status of this battery or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] res::optional_t<status_t> status() const;
+    [[nodiscard]] res::optional_t<status_t> get_status() const;
 
     /**
      * @return the amount of current (in amperes) being drawn from this battery
      * or std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<double> current() const;
+    [[nodiscard]] res::optional_t<double> get_current() const;
 
     /**
      * @return the amount of power (in watts) being drawn from this battery or
      * std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<double> power() const;
+    [[nodiscard]] res::optional_t<double> get_power() const;
 
     /**
      * @brief Attempt to calculate the current energy percentage of this
@@ -555,7 +583,7 @@ class battery_t {
      * @return the current energy percentage or std::nullopt if an error
      * occurred.
      */
-    [[nodiscard]] res::optional_t<double> charge() const;
+    [[nodiscard]] res::optional_t<double> get_charge() const;
 
     /**
      * @brief Attempt to calculate the percentage of energy still storable
@@ -566,7 +594,7 @@ class battery_t {
      *
      * @return the capacity percentage or std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<double> capacity() const;
+    [[nodiscard]] res::optional_t<double> get_capacity() const;
 
     /**
      * @brief If this battery is discharging, attempt to calculate the number of
@@ -577,8 +605,17 @@ class battery_t {
      * (depending on charge status) or std::nullopt if the time remaining could
      * not be determined.
      */
-    [[nodiscard]] res::optional_t<ch::seconds> time_remaining() const;
+    [[nodiscard]] res::optional_t<ch::seconds> get_time_remaining() const;
 };
+
+class network_interface_t;
+
+/**
+ * @return all network interfaces on this system or std::nullopt if an error
+ * occurred.
+ */
+[[nodiscard]] res::optional_t<std::list<network_interface_t>>
+get_network_interfaces();
 
 /**
  * @brief Represents a network interface (either physical and virtual) on this
@@ -588,6 +625,10 @@ class network_interface_t {
     fs::path sysfs_path_;
 
     network_interface_t(const fs::path& sysfs_path);
+
+    // Some functions require access to private members.
+    friend res::optional_t<std::list<network_interface_t>>
+    get_network_interfaces();
 
   public:
     enum class status_t {
@@ -605,40 +646,34 @@ class network_interface_t {
     };
 
     /**
-     * @return all network interfaces on this system or std::nullopt if an error
-     * occurred.
-     */
-    [[nodiscard]] static res::optional_t<std::list<network_interface_t>> all();
-
-    /**
      * @return the path to this network interface in /sys. This provides access
      * to various interface-specific information exposed by the kernel.
      */
-    [[nodiscard]] fs::path sysfs_path() const;
+    [[nodiscard]] fs::path get_sysfs_path() const;
 
     /**
      * @return the name of this network interface.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @return true if this network interface represents a physical device,
      * false if it is virtual, and std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<bool> physical() const;
+    [[nodiscard]] res::optional_t<bool> is_physical() const;
 
     /**
      * @return true if this network interface is a loopback device, false
      * otherwise, and std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<bool> loopback() const;
+    [[nodiscard]] res::optional_t<bool> is_loopback() const;
 
     /**
      * @brief Attempt to get the current status of this network interface.
      *
      * @return the current status or std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<status_t> status() const;
+    [[nodiscard]] res::optional_t<status_t> get_status() const;
 
     /**
      * @brief Attempt to get the statistics for transmitted and received data
@@ -646,8 +681,15 @@ class network_interface_t {
      *
      * @return the interface statistics or std::nullopt if an error occurred.
      */
-    [[nodiscard]] res::optional_t<stat_t> stat() const;
+    [[nodiscard]] res::optional_t<stat_t> get_stat() const;
 };
+
+class sound_mixer_t;
+
+/**
+ * @return a new sound mixer object or std::nullopt if an error occurred.
+ */
+[[nodiscard]] res::optional_t<sound_mixer_t> get_sound_mixer();
 
 class sound_control_t;
 
@@ -661,6 +703,9 @@ class sound_mixer_t {
 
     sound_mixer_t(const impl_t& impl);
 
+    // Some functions require access to private members.
+    friend res::optional_t<sound_mixer_t> get_sound_mixer();
+
   public:
     sound_mixer_t(const sound_mixer_t&) = delete;
     // Classes with custom destructors must also have custom move constructors.
@@ -671,14 +716,9 @@ class sound_mixer_t {
     ~sound_mixer_t();
 
     /**
-     * @return a new sound mixer object or std::nullopt if an error occurred.
-     */
-    [[nodiscard]] static res::optional_t<sound_mixer_t> get();
-
-    /**
      * @return all active sound control elements.
      */
-    [[nodiscard]] std::list<sound_control_t> all_controls() const;
+    [[nodiscard]] std::list<sound_control_t> get_controls() const;
 };
 
 /**
@@ -722,7 +762,7 @@ class sound_control_t {
     /**
      * @return the name of this sound control element.
      */
-    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::string get_name() const;
 
     /**
      * @return true if this control has a playback status and false otherwise.

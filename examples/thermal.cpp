@@ -5,7 +5,7 @@
 #include "../system_state/system_state.hpp"
 
 int get_thermal() {
-    auto thermal_zones = syst::thermal_zone_t::all();
+    auto thermal_zones = syst::get_thermal_zones();
     if (thermal_zones.has_error()) {
         std::cerr << thermal_zones.error().string() << '\n';
         return 1;
@@ -13,16 +13,16 @@ int get_thermal() {
 
     std::cout << "Thermal Zones:" << '\n';
     for (auto& zone : thermal_zones.value()) {
-        std::cout << "sysfs path: " << zone.sysfs_path() << '\n';
+        std::cout << "sysfs path: " << zone.get_sysfs_path() << '\n';
 
-        auto type = zone.type();
+        auto type = zone.get_type();
         if (type.has_value()) {
             std::cout << "\tType: " << type.value() << '\n';
         } else {
             std::cerr << type.error().string() << '\n';
         }
 
-        auto temperature = zone.temperature();
+        auto temperature = zone.get_temperature();
         if (temperature.has_value()) {
             std::cout << "\tTemperature: " << temperature.value() << "°C"
                       << '\n';
@@ -33,7 +33,7 @@ int get_thermal() {
 
     std::cout << '\n';
 
-    auto cooling_devices = syst::cooling_device_t::all();
+    auto cooling_devices = syst::get_cooling_devices();
     if (cooling_devices.has_error()) {
         std::cerr << cooling_devices.error().string() << '\n';
         return 1;
@@ -41,9 +41,9 @@ int get_thermal() {
 
     std::cout << "Cooling Devices:" << '\n';
     for (auto& device : cooling_devices.value()) {
-        std::cout << "sysfs path: " << device.sysfs_path() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
 
-        auto type = device.type();
+        auto type = device.get_type();
         if (type.has_value()) {
             std::cout << "\tType: " << type.value() << '\n';
         } else {
@@ -62,7 +62,7 @@ int get_thermal() {
 }
 
 int set_thermal() {
-    auto cooling_devices = syst::cooling_device_t::all();
+    auto cooling_devices = syst::get_cooling_devices();
     if (cooling_devices.has_error()) {
         std::cerr << cooling_devices.error().string() << '\n';
         return 1;

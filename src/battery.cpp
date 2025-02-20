@@ -123,7 +123,7 @@ namespace syst {
 battery_t::battery_t(const fs::path& sysfs_path) : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<battery_t>> battery_t::all() {
+res::optional_t<std::list<battery_t>> get_batteries() {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -163,15 +163,15 @@ res::optional_t<std::list<battery_t>> battery_t::all() {
     return batteries;
 }
 
-fs::path battery_t::sysfs_path() const {
+fs::path battery_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-std::string battery_t::name() const {
+std::string battery_t::get_name() const {
     return this->sysfs_path_.filename();
 }
 
-res::optional_t<battery_t::status_t> battery_t::status() const {
+res::optional_t<battery_t::status_t> battery_t::get_status() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -203,7 +203,7 @@ res::optional_t<battery_t::status_t> battery_t::status() const {
       + status.value() + "'\n\tfile: '" + status_path.string() + "'");
 }
 
-res::optional_t<double> battery_t::current() const {
+res::optional_t<double> battery_t::get_current() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -235,7 +235,7 @@ res::optional_t<double> battery_t::current() const {
     return approx_current_now;
 }
 
-res::optional_t<double> battery_t::power() const {
+res::optional_t<double> battery_t::get_power() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -269,7 +269,7 @@ res::optional_t<double> battery_t::power() const {
     return approx_power_now;
 }
 
-res::optional_t<double> battery_t::charge() const {
+res::optional_t<double> battery_t::get_charge() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -301,7 +301,7 @@ res::optional_t<double> battery_t::charge() const {
     return error;
 }
 
-res::optional_t<double> battery_t::capacity() const {
+res::optional_t<double> battery_t::get_capacity() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -418,7 +418,7 @@ ch::seconds hours_to_seconds(double hours) {
     return ch::seconds{ seconds };
 }
 
-res::optional_t<ch::seconds> battery_t::time_remaining() const {
+res::optional_t<ch::seconds> battery_t::get_time_remaining() const {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -465,7 +465,7 @@ res::optional_t<ch::seconds> battery_t::time_remaining() const {
     // If one of power_now, current_now, or voltage_now is missing, the other
     // two can be used to calculate the missing one (P = I * V).
 
-    auto status = this->status();
+    auto status = this->get_status();
     if (status.has_error()) {
         return RES_TRACE(status.error());
     }
@@ -481,7 +481,7 @@ res::optional_t<ch::seconds> battery_t::time_remaining() const {
         // Method #2 for discharging
         auto energy = syst::energy_stored(this->sysfs_path_);
         if (energy.has_value()) {
-            auto power = this->power();
+            auto power = this->get_power();
             if (power.has_value()) {
                 return syst::hours_to_seconds(energy.value() / power.value());
             }
@@ -491,7 +491,7 @@ res::optional_t<ch::seconds> battery_t::time_remaining() const {
         // Method #3 for discharging
         auto charge = syst::charge_stored(this->sysfs_path_);
         if (charge.has_value()) {
-            auto current = this->current();
+            auto current = this->get_current();
             if (current.has_value()) {
                 return syst::hours_to_seconds(charge.value() / current.value());
             }
@@ -512,7 +512,7 @@ res::optional_t<ch::seconds> battery_t::time_remaining() const {
         // Method #2 for charging
         auto energy = syst::energy_missing(this->sysfs_path_);
         if (energy.has_value()) {
-            auto power = this->power();
+            auto power = this->get_power();
             if (power.has_value()) {
                 return syst::hours_to_seconds(energy.value() / power.value());
             }
@@ -522,7 +522,7 @@ res::optional_t<ch::seconds> battery_t::time_remaining() const {
         // Method #3 for charging
         auto charge = syst::charge_missing(this->sysfs_path_);
         if (charge.has_value()) {
-            auto current = this->current();
+            auto current = this->get_current();
             if (current.has_value()) {
                 return syst::hours_to_seconds(charge.value() / current.value());
             }

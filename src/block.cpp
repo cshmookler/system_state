@@ -218,7 +218,7 @@ disk_t::disk_t(const fs::path& sysfs_path, const fs::path& devfs_path)
 : sysfs_path_(sysfs_path), devfs_path_(devfs_path) {
 }
 
-res::optional_t<std::list<disk_t>> disk_t::all() {
+res::optional_t<std::list<disk_t>> get_disks() {
     // documentation for /sys/block/
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/types.h
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/blk_types.h
@@ -257,7 +257,7 @@ res::optional_t<std::list<disk_t>> disk_t::all() {
     return disks;
 }
 
-res::optional_t<std::list<part_t>> disk_t::parts() const {
+res::optional_t<std::list<part_t>> disk_t::get_parts() const {
     std::list<part_t> parts;
 
     const std::string blocks_path = "/sys/class/block";
@@ -308,19 +308,19 @@ res::optional_t<std::list<part_t>> disk_t::parts() const {
     return parts;
 }
 
-fs::path disk_t::sysfs_path() const {
+fs::path disk_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-fs::path disk_t::devfs_path() const {
+fs::path disk_t::get_devfs_path() const {
     return this->devfs_path_;
 }
 
-std::string disk_t::name() const {
+std::string disk_t::get_name() const {
     return this->sysfs_path_.filename();
 }
 
-res::optional_t<uint64_t> disk_t::size() const {
+res::optional_t<uint64_t> disk_t::get_size() const {
     auto size = syst::size(this->sysfs_path_);
 
     if (size.has_error()) {
@@ -330,7 +330,7 @@ res::optional_t<uint64_t> disk_t::size() const {
     return size;
 }
 
-res::optional_t<bool> disk_t::removable() const {
+res::optional_t<bool> disk_t::is_removable() const {
     auto removable = syst::get_bool(this->sysfs_path_ / "removable");
 
     if (removable.has_error()) {
@@ -340,7 +340,7 @@ res::optional_t<bool> disk_t::removable() const {
     return removable;
 }
 
-res::optional_t<bool> disk_t::read_only() const {
+res::optional_t<bool> disk_t::is_read_only() const {
     auto read_only = syst::read_only(this->sysfs_path_);
 
     if (read_only.has_error()) {
@@ -350,7 +350,7 @@ res::optional_t<bool> disk_t::read_only() const {
     return read_only;
 }
 
-res::optional_t<bool> disk_t::rotational() const {
+res::optional_t<bool> disk_t::is_rotational() const {
     auto rotational = syst::get_bool(this->sysfs_path_ / "queue/rotational");
 
     if (rotational.has_error()) {
@@ -360,7 +360,7 @@ res::optional_t<bool> disk_t::rotational() const {
     return rotational;
 }
 
-res::optional_t<inflight_stat_t> disk_t::inflight_stat() const {
+res::optional_t<inflight_stat_t> disk_t::get_inflight_stat() const {
     auto inflight_stat = syst::inflight_stat(this->sysfs_path_);
 
     if (inflight_stat.has_error()) {
@@ -370,7 +370,7 @@ res::optional_t<inflight_stat_t> disk_t::inflight_stat() const {
     return inflight_stat;
 }
 
-res::optional_t<io_stat_t> disk_t::io_stat() const {
+res::optional_t<io_stat_t> disk_t::get_io_stat() const {
     auto io_stat = syst::io_stat(this->sysfs_path_, this->sysfs_path_);
 
     if (io_stat.has_error()) {
@@ -390,23 +390,23 @@ part_t::part_t(const fs::path& sysfs_path,
 , disk_devfs_path_(disk_devfs_path) {
 }
 
-fs::path part_t::sysfs_path() const {
+fs::path part_t::get_sysfs_path() const {
     return this->sysfs_path_;
 }
 
-fs::path part_t::devfs_path() const {
+fs::path part_t::get_devfs_path() const {
     return this->devfs_path_;
 }
 
-std::string part_t::name() const {
+std::string part_t::get_name() const {
     return this->sysfs_path_.filename();
 }
 
-disk_t part_t::disk() const {
+disk_t part_t::get_disk() const {
     return disk_t{ this->disk_sysfs_path_, this->disk_devfs_path_ };
 }
 
-res::optional_t<uint64_t> part_t::size() const {
+res::optional_t<uint64_t> part_t::get_size() const {
     auto size = syst::size(this->sysfs_path_);
 
     if (size.has_error()) {
@@ -416,7 +416,7 @@ res::optional_t<uint64_t> part_t::size() const {
     return size;
 }
 
-res::optional_t<uint64_t> part_t::start() const {
+res::optional_t<uint64_t> part_t::get_start_position() const {
     auto start = syst::start(this->sysfs_path_);
 
     if (start.has_error()) {
@@ -426,7 +426,7 @@ res::optional_t<uint64_t> part_t::start() const {
     return start;
 }
 
-res::optional_t<bool> part_t::read_only() const {
+res::optional_t<bool> part_t::is_read_only() const {
     auto read_only = syst::read_only(this->sysfs_path_);
 
     if (read_only.has_error()) {
@@ -436,7 +436,7 @@ res::optional_t<bool> part_t::read_only() const {
     return read_only;
 }
 
-res::optional_t<inflight_stat_t> part_t::inflight_stat() const {
+res::optional_t<inflight_stat_t> part_t::get_inflight_stat() const {
     auto inflight_stat = syst::inflight_stat(this->sysfs_path_);
 
     if (inflight_stat.has_error()) {
@@ -446,7 +446,7 @@ res::optional_t<inflight_stat_t> part_t::inflight_stat() const {
     return inflight_stat;
 }
 
-res::optional_t<io_stat_t> part_t::io_stat() const {
+res::optional_t<io_stat_t> part_t::get_io_stat() const {
     auto io_stat = syst::io_stat(this->sysfs_path_, this->disk_sysfs_path_);
 
     if (io_stat.has_error()) {

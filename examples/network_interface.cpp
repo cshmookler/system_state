@@ -5,7 +5,7 @@
 #include "../system_state/system_state.hpp"
 
 int main() {
-    auto network_interfaces = syst::network_interface_t::all();
+    auto network_interfaces = syst::get_network_interfaces();
     if (network_interfaces.has_error()) {
         std::cerr << network_interfaces.error().string() << '\n';
         return 1;
@@ -14,24 +14,24 @@ int main() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     for (const auto& interface : network_interfaces.value()) {
-        std::cout << "sysfs path: " << interface.sysfs_path() << '\n';
-        std::cout << "Name: " << interface.name() << '\n';
+        std::cout << "sysfs path: " << interface.get_sysfs_path() << '\n';
+        std::cout << "Name: " << interface.get_name() << '\n';
 
-        auto physical = interface.physical();
+        auto physical = interface.is_physical();
         if (physical.has_value()) {
             std::cout << "Physical: " << physical.value() << '\n';
         } else {
             std::cerr << physical.error().string() << '\n';
         }
 
-        auto loopback = interface.loopback();
+        auto loopback = interface.is_loopback();
         if (loopback.has_value()) {
             std::cout << "Loopback: " << loopback.value() << '\n';
         } else {
             std::cerr << loopback.error().string() << '\n';
         }
 
-        auto status = interface.status();
+        auto status = interface.get_status();
         if (status.has_value()) {
             std::cout << "Status: ";
             switch (status.value()) {
@@ -53,7 +53,7 @@ int main() {
             std::cerr << status.error().string() << '\n';
         }
 
-        auto stat = interface.stat();
+        auto stat = interface.get_stat();
         if (stat.has_value()) {
             std::cout << "Down: " << stat->bytes_down << " bytes ("
                       << stat->packets_down << " packets)" << '\n';

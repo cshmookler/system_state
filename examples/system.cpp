@@ -5,7 +5,7 @@
 #include "../system_state/system_state.hpp"
 
 int main() {
-    auto system_info = syst::system_info();
+    auto system_info = syst::get_system_info();
     if (system_info.has_error()) {
         std::cerr << system_info.error().string() << '\n';
         return 1;

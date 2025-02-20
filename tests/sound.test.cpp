@@ -8,38 +8,38 @@
 #include "../system_state/system_state.hpp"
 
 TEST(sound_test, sound_mixer_get) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
 }
 
 TEST(sound_test, sound_mixer_all_controls) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
 }
 
 TEST(sound_test, sound_control_name) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
 
     for (auto& control : controls) {
-        std::string name = control.name();
+        std::string name = control.get_name();
         // All sound control element names must be at least one character long.
         ASSERT_NE(name.size(), 0);
     }
 }
 
 TEST(sound_test, sound_control_get_playback_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -62,9 +62,9 @@ TEST(sound_test, sound_control_get_playback_status) {
 }
 
 TEST(sound_test, sound_control_get_playback_volume) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -123,9 +123,9 @@ TEST(sound_test, sound_control_get_playback_volume) {
 }
 
 TEST(sound_test, sound_control_get_capture_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -148,9 +148,9 @@ TEST(sound_test, sound_control_get_capture_status) {
 }
 
 TEST(sound_test, sound_control_get_capture_volume) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -209,9 +209,9 @@ TEST(sound_test, sound_control_get_capture_volume) {
 }
 
 TEST(sound_test, sound_control_set_playback_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -253,9 +253,9 @@ TEST(sound_test, sound_control_set_playback_status) {
 }
 
 TEST(sound_test, sound_control_set_playback_status_all) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -286,9 +286,9 @@ TEST(sound_test, sound_control_set_playback_status_all) {
 }
 
 TEST(sound_test, sound_control_toggle_playback_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -464,9 +464,9 @@ TEST(sound_test, sound_control_toggle_playback_status) {
 }
 
 TEST(sound_test, sound_control_set_playback_volume) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -544,9 +544,9 @@ TEST(sound_test, sound_control_set_playback_volume) {
 }
 
 TEST(sound_test, sound_control_set_playback_volume_all) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -586,9 +586,9 @@ TEST(sound_test, sound_control_set_playback_volume_all) {
 }
 
 TEST(sound_test, sound_control_set_playback_volume_all_relative) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -624,9 +624,9 @@ TEST(sound_test, sound_control_set_playback_volume_all_relative) {
 }
 
 TEST(sound_test, sound_control_set_capture_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -668,9 +668,9 @@ TEST(sound_test, sound_control_set_capture_status) {
 }
 
 TEST(sound_test, sound_control_set_capture_status_all) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -701,9 +701,9 @@ TEST(sound_test, sound_control_set_capture_status_all) {
 }
 
 TEST(sound_test, sound_control_toggle_capture_status) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -879,9 +879,9 @@ TEST(sound_test, sound_control_toggle_capture_status) {
 }
 
 TEST(sound_test, sound_control_set_capture_volume) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -959,9 +959,9 @@ TEST(sound_test, sound_control_set_capture_volume) {
 }
 
 TEST(sound_test, sound_control_set_capture_volume_all) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);
@@ -1000,9 +1000,9 @@ TEST(sound_test, sound_control_set_capture_volume_all) {
 }
 
 TEST(sound_test, sound_control_set_capture_volume_all_relative) {
-    auto mixer = syst::sound_mixer_t::get();
+    auto mixer = syst::get_sound_mixer();
     ASSERT_TRUE(mixer.has_value());
-    auto controls = mixer->all_controls();
+    auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
     ASSERT_NE(controls.size(), 0);

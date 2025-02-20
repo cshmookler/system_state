@@ -38,14 +38,14 @@ sound_mixer_t::~sound_mixer_t() {
     snd_mixer_close(this->impl_->mixer);
 }
 
-res::optional_t<sound_mixer_t> sound_mixer_t::get() {
+res::optional_t<sound_mixer_t> get_sound_mixer() {
     // This solution was derived from the first half of the answer to this Stack
     // Overflow post:
     // https://stackoverflow.com/questions/6787318/set-alsa-master-volume-from-c-code
 
     int snd_errno = 0;
 
-    impl_t impl;
+    sound_mixer_t::impl_t impl;
 
     // NOTE: Mixer mode is an unused attribute and can be any value.
     // https://stackoverflow.com/questions/45716092/alsa-snd-mixer-open-open-mode
@@ -90,7 +90,7 @@ struct sound_control_t::impl_t {
     snd_mixer_elem_t* elem = nullptr;
 };
 
-std::list<sound_control_t> sound_mixer_t::all_controls() const {
+std::list<sound_control_t> sound_mixer_t::get_controls() const {
     snd_mixer_elem_t* first_elem = snd_mixer_first_elem(this->impl_->mixer);
     snd_mixer_elem_t* last_elem = snd_mixer_last_elem(this->impl_->mixer);
 
@@ -124,7 +124,7 @@ sound_control_t::sound_control_t(const impl_t& impl)
 sound_control_t::~sound_control_t() {
 }
 
-std::string sound_control_t::name() const {
+std::string sound_control_t::get_name() const {
     return snd_mixer_selem_get_name(this->impl_->elem);
 }
 
