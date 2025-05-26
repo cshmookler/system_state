@@ -543,7 +543,7 @@ res::optional_t<mount_info_t> part_t::get_mount_info() const {
 
         mount_info_t mount_info{};
 
-        mount_info.options = mount_info_str.substr(mount_options_pos);
+        mount_info.options = mount_info_str.substr(mount_options_pos + 1);
         mount_info_str = mount_info_str.substr(0, mount_options_pos);
 
         auto fs_type_pos = mount_info_str.rfind(space);
@@ -555,7 +555,7 @@ res::optional_t<mount_info_t> part_t::get_mount_info() const {
               + "'\n\tmount_info_str: '" + mount_info_str + "'");
         }
 
-        mount_info.fs_type = mount_info_str.substr(fs_type_pos);
+        mount_info.fs_type = mount_info_str.substr(fs_type_pos + 1);
         mount_info.mount_path = mount_info_str.substr(0, fs_type_pos);
 
         return mount_info;

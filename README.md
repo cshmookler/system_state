@@ -58,7 +58,8 @@ meson install
 - [X] disks
 - [X] disk partitions
 - [X] disk name
-- [X] disk space (and other related information)
+- [X] disk total space
+- [ ] disk used space
 - [ ] disk partition schemes
 - [X] partition name
 - [X] partition start position
