@@ -6,12 +6,12 @@
 
 TEST(block_test, disk_get_disks) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 }
 
 TEST(block_test, disk_get_disks_one_disk) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -19,7 +19,7 @@ TEST(block_test, disk_get_disks_one_disk) {
 
 TEST(block_test, disk_sysfs_path) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -32,7 +32,7 @@ TEST(block_test, disk_sysfs_path) {
 
 TEST(block_test, disk_devfs_path) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -45,7 +45,7 @@ TEST(block_test, disk_devfs_path) {
 
 TEST(block_test, disk_name) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -58,91 +58,92 @@ TEST(block_test, disk_name) {
 
 TEST(block_test, disk_size) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto size = disk.get_size();
-        ASSERT_TRUE(size.has_value());
+        ASSERT_TRUE(size.has_value()) << RES_TRACE(size.error());
         // Partition size can be any value.
     }
 }
 
 TEST(block_test, disk_removable) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto removable = disk.is_removable();
-        ASSERT_TRUE(removable.has_value());
+        ASSERT_TRUE(removable.has_value()) << RES_TRACE(removable.error());
         // The removable flag can be any value.
     }
 }
 
 TEST(block_test, disk_read_only) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto read_only = disk.is_read_only();
-        ASSERT_TRUE(read_only.has_value());
+        ASSERT_TRUE(read_only.has_value()) << RES_TRACE(read_only.error());
         // The read-only flag can be any value.
     }
 }
 
 TEST(block_test, disk_rotational) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto rotational = disk.is_rotational();
-        ASSERT_TRUE(rotational.has_value());
+        ASSERT_TRUE(rotational.has_value()) << RES_TRACE(rotational.error());
         // The rotational flag can be any value.
     }
 }
 
 TEST(block_test, disk_inflight_stat) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto inflight_stat = disk.get_inflight_stat();
-        ASSERT_TRUE(inflight_stat.has_value());
+        ASSERT_TRUE(inflight_stat.has_value())
+          << RES_TRACE(inflight_stat.error());
         // All in-flight statistics can be any value.
     }
 }
 
 TEST(block_test, disk_io_stat) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
 
     for (const syst::disk_t& disk : disks.value()) {
         auto io_stat = disk.get_io_stat();
-        ASSERT_TRUE(io_stat.has_value());
+        ASSERT_TRUE(io_stat.has_value()) << RES_TRACE(io_stat.error());
         // All I/O statistics can be any value.
     }
 }
 
 TEST(block_test, disk_get_parts) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -151,7 +152,7 @@ TEST(block_test, disk_get_parts) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -166,7 +167,7 @@ TEST(block_test, disk_get_parts) {
 
 TEST(block_test, part_sysfs_path) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -175,7 +176,7 @@ TEST(block_test, part_sysfs_path) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -195,7 +196,7 @@ TEST(block_test, part_sysfs_path) {
 
 TEST(block_test, part_devfs_path) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -204,7 +205,7 @@ TEST(block_test, part_devfs_path) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -224,7 +225,7 @@ TEST(block_test, part_devfs_path) {
 
 TEST(block_test, part_disk) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -233,7 +234,7 @@ TEST(block_test, part_disk) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -256,7 +257,7 @@ TEST(block_test, part_disk) {
 
 TEST(block_test, part_name) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -265,7 +266,7 @@ TEST(block_test, part_name) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -285,7 +286,7 @@ TEST(block_test, part_name) {
 
 TEST(block_test, part_size) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -294,7 +295,7 @@ TEST(block_test, part_size) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -305,7 +306,7 @@ TEST(block_test, part_size) {
 
         for (const syst::part_t& part : parts.value()) {
             auto size = part.get_size();
-            ASSERT_TRUE(size.has_value());
+            ASSERT_TRUE(size.has_value()) << RES_TRACE(size.error());
             // Partition size can be any value.
         }
     }
@@ -315,7 +316,7 @@ TEST(block_test, part_size) {
 
 TEST(block_test, part_start) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -324,7 +325,7 @@ TEST(block_test, part_start) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -335,7 +336,7 @@ TEST(block_test, part_start) {
 
         for (const syst::part_t& part : parts.value()) {
             auto start = part.get_start_position();
-            ASSERT_TRUE(start.has_value());
+            ASSERT_TRUE(start.has_value()) << RES_TRACE(start.error());
             // Partition size can be any value.
         }
     }
@@ -345,7 +346,7 @@ TEST(block_test, part_start) {
 
 TEST(block_test, part_read_only) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -354,7 +355,7 @@ TEST(block_test, part_read_only) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -365,7 +366,7 @@ TEST(block_test, part_read_only) {
 
         for (const syst::part_t& part : parts.value()) {
             auto read_only = part.is_read_only();
-            ASSERT_TRUE(read_only.has_value());
+            ASSERT_TRUE(read_only.has_value()) << RES_TRACE(read_only.error());
             // The read-only flag can be any value.
         }
     }
@@ -375,7 +376,7 @@ TEST(block_test, part_read_only) {
 
 TEST(block_test, part_inflight_stat) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -384,7 +385,7 @@ TEST(block_test, part_inflight_stat) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -395,7 +396,8 @@ TEST(block_test, part_inflight_stat) {
 
         for (const syst::part_t& part : parts.value()) {
             auto inflight_stat = part.get_inflight_stat();
-            ASSERT_TRUE(inflight_stat.has_value());
+            ASSERT_TRUE(inflight_stat.has_value())
+              << RES_TRACE(inflight_stat.error());
             // All in-flight statistics can be any value.
         }
     }
@@ -405,7 +407,7 @@ TEST(block_test, part_inflight_stat) {
 
 TEST(block_test, part_io_stat) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -414,7 +416,7 @@ TEST(block_test, part_io_stat) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -425,7 +427,7 @@ TEST(block_test, part_io_stat) {
 
         for (const syst::part_t& part : parts.value()) {
             auto io_stat = part.get_io_stat();
-            ASSERT_TRUE(io_stat.has_value());
+            ASSERT_TRUE(io_stat.has_value()) << RES_TRACE(io_stat.error());
             // All I/O statistics can be any value.
         }
     }
@@ -435,7 +437,7 @@ TEST(block_test, part_io_stat) {
 
 TEST(block_test, part_is_mounted) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -444,7 +446,7 @@ TEST(block_test, part_is_mounted) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -455,7 +457,8 @@ TEST(block_test, part_is_mounted) {
 
         for (const syst::part_t& part : parts.value()) {
             auto is_mounted = part.is_mounted();
-            ASSERT_TRUE(is_mounted.has_value());
+            ASSERT_TRUE(is_mounted.has_value())
+              << RES_TRACE(is_mounted.error());
             // The is_mounted flag can be any value.
         }
     }
@@ -465,7 +468,7 @@ TEST(block_test, part_is_mounted) {
 
 TEST(block_test, part_mount_info) {
     auto disks = syst::get_disks();
-    ASSERT_TRUE(disks.has_value());
+    ASSERT_TRUE(disks.has_value()) << RES_TRACE(disks.error());
 
     // For testing purposes, there must be at least one disk.
     ASSERT_GE(disks->size(), 1);
@@ -474,7 +477,7 @@ TEST(block_test, part_mount_info) {
 
     for (const syst::disk_t& disk : disks.value()) {
         auto parts = disk.get_parts();
-        ASSERT_TRUE(parts.has_value());
+        ASSERT_TRUE(parts.has_value()) << RES_TRACE(parts.error());
 
         // For testing purposes, one of the identified disks must contain at
         // least one partition.
@@ -485,7 +488,8 @@ TEST(block_test, part_mount_info) {
 
         for (const syst::part_t& part : parts.value()) {
             auto mount_info = part.get_mount_info();
-            ASSERT_TRUE(mount_info.has_value());
+            ASSERT_TRUE(mount_info.has_value())
+              << RES_TRACE(mount_info.error());
             ASSERT_TRUE(mount_info->mount_path.string().size() > 0);
             ASSERT_TRUE(mount_info->fs_type.size() > 0);
             ASSERT_TRUE(mount_info->options.size() > 0);

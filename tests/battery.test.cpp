@@ -6,12 +6,12 @@
 
 TEST(battery_test, all) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 }
 
 TEST(battery_test, all_one_battery) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -19,7 +19,7 @@ TEST(battery_test, all_one_battery) {
 
 TEST(battery_test, sysfs_path) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -32,7 +32,7 @@ TEST(battery_test, sysfs_path) {
 
 TEST(battery_test, name) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -45,28 +45,28 @@ TEST(battery_test, name) {
 
 TEST(battery_test, status) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
 
     for (const syst::battery_t& battery : batteries.value()) {
         auto status = battery.get_status();
-        ASSERT_TRUE(status.has_value());
+        ASSERT_TRUE(status.has_value()) << RES_TRACE(status.error());
         // The status can be any value.
     }
 }
 
 TEST(battery_test, current) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
 
     for (const syst::battery_t& battery : batteries.value()) {
         auto current = battery.get_current();
-        ASSERT_TRUE(current.has_value());
+        ASSERT_TRUE(current.has_value()) << RES_TRACE(current.error());
         // The current must be a positive number.
         ASSERT_GE(current.value(), 0);
     }
@@ -74,14 +74,14 @@ TEST(battery_test, current) {
 
 TEST(battery_test, power) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
 
     for (const syst::battery_t& battery : batteries.value()) {
         auto power = battery.get_power();
-        ASSERT_TRUE(power.has_value());
+        ASSERT_TRUE(power.has_value()) << RES_TRACE(power.error());
         // The power must be a positive number.
         ASSERT_GE(power.value(), 0);
     }
@@ -89,7 +89,7 @@ TEST(battery_test, power) {
 
 TEST(battery_test, charge) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -113,7 +113,7 @@ TEST(battery_test, charge) {
 
 TEST(battery_test, capacity) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -137,7 +137,7 @@ TEST(battery_test, capacity) {
 
 TEST(battery_test, time_remaining) {
     auto batteries = syst::get_batteries();
-    ASSERT_TRUE(batteries.has_value());
+    ASSERT_TRUE(batteries.has_value()) << RES_TRACE(batteries.error());
 
     // For testing purposes, there must be at least one battery.
     ASSERT_GE(batteries->size(), 1);
@@ -146,7 +146,7 @@ TEST(battery_test, time_remaining) {
 
     for (const syst::battery_t& battery : batteries.value()) {
         auto status = battery.get_status();
-        ASSERT_TRUE(status.has_value());
+        ASSERT_TRUE(status.has_value()) << RES_TRACE(status.error());
         if (status.value() != syst::battery_t::status_t::discharging
           && status.value() != syst::battery_t::status_t::charging) {
             continue;
@@ -157,7 +157,8 @@ TEST(battery_test, time_remaining) {
         time_remaining_found = true;
 
         auto time_remaining = battery.get_time_remaining();
-        ASSERT_TRUE(time_remaining.has_value());
+        ASSERT_TRUE(time_remaining.has_value())
+          << RES_TRACE(time_remaining.error());
         // The time_remaining must be a positive number.
         ASSERT_GE(time_remaining.value().count(), 0);
     }

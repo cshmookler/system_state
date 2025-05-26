@@ -9,12 +9,12 @@
 
 TEST(sound_test, sound_mixer_get) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
 }
 
 TEST(sound_test, sound_mixer_all_controls) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -23,7 +23,7 @@ TEST(sound_test, sound_mixer_all_controls) {
 
 TEST(sound_test, sound_control_name) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -38,7 +38,7 @@ TEST(sound_test, sound_control_name) {
 
 TEST(sound_test, sound_control_get_playback_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -54,7 +54,7 @@ TEST(sound_test, sound_control_get_playback_status) {
         has_playback_status = true;
 
         auto status = control.get_playback_status();
-        ASSERT_TRUE(status.has_value());
+        ASSERT_TRUE(status.has_value()) << RES_TRACE(status.error());
         // Status can be any value.
     }
 
@@ -63,7 +63,7 @@ TEST(sound_test, sound_control_get_playback_status) {
 
 TEST(sound_test, sound_control_get_playback_volume) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -79,7 +79,7 @@ TEST(sound_test, sound_control_get_playback_volume) {
         has_playback_volume = true;
 
         auto volume = control.get_playback_volume();
-        ASSERT_TRUE(volume.has_value());
+        ASSERT_TRUE(volume.has_value()) << RES_TRACE(volume.error());
         // Volume values must be between 0 and 100.
         if (volume->front_left.has_value()) {
             ASSERT_GE(volume->front_left.value(), 0);
@@ -124,7 +124,7 @@ TEST(sound_test, sound_control_get_playback_volume) {
 
 TEST(sound_test, sound_control_get_capture_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -140,7 +140,7 @@ TEST(sound_test, sound_control_get_capture_status) {
         has_capture_status = true;
 
         auto status = control.get_capture_status();
-        ASSERT_TRUE(status.has_value());
+        ASSERT_TRUE(status.has_value()) << RES_TRACE(status.error());
         // Status can be any value.
     }
 
@@ -149,7 +149,7 @@ TEST(sound_test, sound_control_get_capture_status) {
 
 TEST(sound_test, sound_control_get_capture_volume) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -165,7 +165,7 @@ TEST(sound_test, sound_control_get_capture_volume) {
         has_capture_volume = true;
 
         auto volume = control.get_capture_volume();
-        ASSERT_TRUE(volume.has_value());
+        ASSERT_TRUE(volume.has_value()) << RES_TRACE(volume.error());
         // Volume values must be between 0 and 100.
         if (volume->front_left.has_value()) {
             ASSERT_GE(volume->front_left.value(), 0);
@@ -210,7 +210,7 @@ TEST(sound_test, sound_control_get_capture_volume) {
 
 TEST(sound_test, sound_control_set_playback_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -237,7 +237,7 @@ TEST(sound_test, sound_control_set_playback_status) {
         has_playback_status = true;
 
         auto old_status = control.get_playback_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
         // Status can be any value.
 
         ASSERT_TRUE(control.set_playback_status(new_status).success());
@@ -254,7 +254,7 @@ TEST(sound_test, sound_control_set_playback_status) {
 
 TEST(sound_test, sound_control_set_playback_status_all) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -270,7 +270,7 @@ TEST(sound_test, sound_control_set_playback_status_all) {
         has_playback_status = true;
 
         auto old_status = control.get_playback_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
         // Status can be any value.
 
         ASSERT_TRUE(control.set_playback_status_all(0).success());
@@ -287,7 +287,7 @@ TEST(sound_test, sound_control_set_playback_status_all) {
 
 TEST(sound_test, sound_control_toggle_playback_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -303,7 +303,7 @@ TEST(sound_test, sound_control_toggle_playback_status) {
         has_playback_status = true;
 
         auto old_status = control.get_playback_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
 
         ASSERT_TRUE(control.toggle_playback_status().success());
 
@@ -314,7 +314,8 @@ TEST(sound_test, sound_control_toggle_playback_status) {
         // All channels of the current status should be different from those of
         // the original status after toggling once.
         auto current_status = control.get_playback_status();
-        ASSERT_TRUE(current_status.has_value());
+        ASSERT_TRUE(current_status.has_value())
+          << RES_TRACE(current_status.error());
 
         ASSERT_EQ(old_status->front_left.has_value(),
           current_status->front_left.has_value());
@@ -388,7 +389,8 @@ TEST(sound_test, sound_control_toggle_playback_status) {
         // All channels of the current status should match the those of the
         // original status after toggling twice.
         current_status = control.get_playback_status();
-        ASSERT_TRUE(current_status.has_value());
+        ASSERT_TRUE(current_status.has_value())
+          << RES_TRACE(current_status.error());
 
         ASSERT_EQ(old_status->front_left.has_value(),
           current_status->front_left.has_value());
@@ -465,7 +467,7 @@ TEST(sound_test, sound_control_toggle_playback_status) {
 
 TEST(sound_test, sound_control_set_playback_volume) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -525,7 +527,7 @@ TEST(sound_test, sound_control_set_playback_volume) {
         has_playback_volume = true;
 
         auto old_volume = control.get_playback_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_FALSE(control.set_playback_volume(too_low_volume).success());
@@ -545,7 +547,7 @@ TEST(sound_test, sound_control_set_playback_volume) {
 
 TEST(sound_test, sound_control_set_playback_volume_all) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -566,7 +568,7 @@ TEST(sound_test, sound_control_set_playback_volume_all) {
         has_playback_volume = true;
 
         auto old_volume = control.get_playback_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_FALSE(control.set_playback_volume_all(too_low_volume).success());
@@ -587,7 +589,7 @@ TEST(sound_test, sound_control_set_playback_volume_all) {
 
 TEST(sound_test, sound_control_set_playback_volume_all_relative) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -603,7 +605,7 @@ TEST(sound_test, sound_control_set_playback_volume_all_relative) {
         has_playback_volume = true;
 
         auto old_volume = control.get_playback_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_TRUE(control.set_playback_volume_all(0).success());
@@ -625,7 +627,7 @@ TEST(sound_test, sound_control_set_playback_volume_all_relative) {
 
 TEST(sound_test, sound_control_set_capture_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -652,7 +654,7 @@ TEST(sound_test, sound_control_set_capture_status) {
         has_capture_status = true;
 
         auto old_status = control.get_capture_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
         // Status can be any value.
 
         ASSERT_TRUE(control.set_capture_status(new_status).success());
@@ -669,7 +671,7 @@ TEST(sound_test, sound_control_set_capture_status) {
 
 TEST(sound_test, sound_control_set_capture_status_all) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -685,7 +687,7 @@ TEST(sound_test, sound_control_set_capture_status_all) {
         has_capture_status = true;
 
         auto old_status = control.get_capture_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
         // Status can be any value.
 
         ASSERT_TRUE(control.set_capture_status_all(0).success());
@@ -702,7 +704,7 @@ TEST(sound_test, sound_control_set_capture_status_all) {
 
 TEST(sound_test, sound_control_toggle_capture_status) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -718,7 +720,7 @@ TEST(sound_test, sound_control_toggle_capture_status) {
         has_capture_status = true;
 
         auto old_status = control.get_capture_status();
-        ASSERT_TRUE(old_status.has_value());
+        ASSERT_TRUE(old_status.has_value()) << RES_TRACE(old_status.error());
 
         ASSERT_TRUE(control.toggle_capture_status().success());
 
@@ -729,7 +731,8 @@ TEST(sound_test, sound_control_toggle_capture_status) {
         // All channels of the current status should be different from those of
         // the original status after toggling once.
         auto current_status = control.get_capture_status();
-        ASSERT_TRUE(current_status.has_value());
+        ASSERT_TRUE(current_status.has_value())
+          << RES_TRACE(current_status.error());
 
         ASSERT_EQ(old_status->front_left.has_value(),
           current_status->front_left.has_value());
@@ -803,7 +806,8 @@ TEST(sound_test, sound_control_toggle_capture_status) {
         // All channels of the current status should match the those of the
         // original status after toggling twice.
         current_status = control.get_capture_status();
-        ASSERT_TRUE(current_status.has_value());
+        ASSERT_TRUE(current_status.has_value())
+          << RES_TRACE(current_status.error());
 
         ASSERT_EQ(old_status->front_left.has_value(),
           current_status->front_left.has_value());
@@ -880,7 +884,7 @@ TEST(sound_test, sound_control_toggle_capture_status) {
 
 TEST(sound_test, sound_control_set_capture_volume) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -940,7 +944,7 @@ TEST(sound_test, sound_control_set_capture_volume) {
         has_capture_volume = true;
 
         auto old_volume = control.get_capture_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_FALSE(control.set_capture_volume(too_low_volume).success());
@@ -960,7 +964,7 @@ TEST(sound_test, sound_control_set_capture_volume) {
 
 TEST(sound_test, sound_control_set_capture_volume_all) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -981,7 +985,7 @@ TEST(sound_test, sound_control_set_capture_volume_all) {
         has_capture_volume = true;
 
         auto old_volume = control.get_capture_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_FALSE(control.set_capture_volume_all(too_low_volume).success());
@@ -1001,7 +1005,7 @@ TEST(sound_test, sound_control_set_capture_volume_all) {
 
 TEST(sound_test, sound_control_set_capture_volume_all_relative) {
     auto mixer = syst::get_sound_mixer();
-    ASSERT_TRUE(mixer.has_value());
+    ASSERT_TRUE(mixer.has_value()) << RES_TRACE(mixer.error());
     auto controls = mixer->get_controls();
 
     // For testing purposes, there must be at least one sound control element.
@@ -1017,7 +1021,7 @@ TEST(sound_test, sound_control_set_capture_volume_all_relative) {
         has_capture_volume = true;
 
         auto old_volume = control.get_capture_volume();
-        ASSERT_TRUE(old_volume.has_value());
+        ASSERT_TRUE(old_volume.has_value()) << RES_TRACE(old_volume.error());
         // Status can be any value.
 
         EXPECT_TRUE(control.set_capture_volume_all(0).success());

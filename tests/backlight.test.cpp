@@ -6,12 +6,12 @@
 
 TEST(backlight_test, all) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 }
 
 TEST(backlight_test, all_one_backlight) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
@@ -19,7 +19,7 @@ TEST(backlight_test, all_one_backlight) {
 
 TEST(backlight_test, sysfs_path) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
@@ -32,14 +32,14 @@ TEST(backlight_test, sysfs_path) {
 
 TEST(backlight_test, get_brightness) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
 
     for (const syst::backlight_t& backlight : backlights.value()) {
         auto brightness = backlight.get_brightness();
-        ASSERT_TRUE(brightness.has_value());
+        ASSERT_TRUE(brightness.has_value()) << RES_TRACE(brightness.error());
         // Backlight brightness must always be between 0 and 100.
         ASSERT_GE(brightness.value(), 0.F);
         ASSERT_LE(brightness.value(), 100.F);
@@ -48,14 +48,14 @@ TEST(backlight_test, get_brightness) {
 
 TEST(backlight_test, set_brightness) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
 
     for (syst::backlight_t& backlight : backlights.value()) {
         auto brightness = backlight.get_brightness();
-        ASSERT_TRUE(brightness.has_value());
+        ASSERT_TRUE(brightness.has_value()) << RES_TRACE(brightness.error());
         // Backlight brightness must always be between 0 and 100.
         ASSERT_GE(brightness.value(), 0.F);
         ASSERT_LE(brightness.value(), 100.F);
@@ -70,14 +70,14 @@ TEST(backlight_test, set_brightness) {
 
 TEST(backlight_test, set_brightness_relative) {
     auto backlights = syst::get_backlights();
-    ASSERT_TRUE(backlights.has_value());
+    ASSERT_TRUE(backlights.has_value()) << RES_TRACE(backlights.error());
 
     // For testing purposes, there must be at least one backlight.
     ASSERT_GE(backlights->size(), 1);
 
     for (syst::backlight_t& backlight : backlights.value()) {
         auto brightness = backlight.get_brightness();
-        ASSERT_TRUE(brightness.has_value());
+        ASSERT_TRUE(brightness.has_value()) << RES_TRACE(brightness.error());
         // Backlight brightness must always be between 0 and 100.
         ASSERT_GE(brightness.value(), 0.F);
         ASSERT_LE(brightness.value(), 100.F);

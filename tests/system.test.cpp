@@ -6,7 +6,7 @@
 
 TEST(system_test, system_info) {
     auto system_info = syst::get_system_info();
-    ASSERT_TRUE(system_info.has_value());
+    ASSERT_TRUE(system_info.has_value()) << RES_TRACE(system_info.error());
 
     // Uptime should (almost) never be zero.
     EXPECT_GT(system_info->uptime.count(), 0UL);
