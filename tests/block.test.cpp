@@ -432,3 +432,65 @@ TEST(block_test, part_io_stat) {
 
     ASSERT_TRUE(partition_found);
 }
+
+TEST(block_test, part_is_mounted) {
+    auto disks = syst::get_disks();
+    ASSERT_TRUE(disks.has_value());
+
+    // For testing purposes, there must be at least one disk.
+    ASSERT_GE(disks->size(), 1);
+
+    bool partition_found = false;
+
+    for (const syst::disk_t& disk : disks.value()) {
+        auto parts = disk.get_parts();
+        ASSERT_TRUE(parts.has_value());
+
+        // For testing purposes, one of the identified disks must contain at
+        // least one partition.
+        if (parts->size() == 0) {
+            continue;
+        }
+        partition_found = true;
+
+        for (const syst::part_t& part : parts.value()) {
+            auto is_mounted = part.is_mounted();
+            ASSERT_TRUE(is_mounted.has_value());
+            // The is_mounted flag can be any value.
+        }
+    }
+
+    ASSERT_TRUE(partition_found);
+}
+
+TEST(block_test, part_mount_info) {
+    auto disks = syst::get_disks();
+    ASSERT_TRUE(disks.has_value());
+
+    // For testing purposes, there must be at least one disk.
+    ASSERT_GE(disks->size(), 1);
+
+    bool partition_found = false;
+
+    for (const syst::disk_t& disk : disks.value()) {
+        auto parts = disk.get_parts();
+        ASSERT_TRUE(parts.has_value());
+
+        // For testing purposes, one of the identified disks must contain at
+        // least one partition.
+        if (parts->size() == 0) {
+            continue;
+        }
+        partition_found = true;
+
+        for (const syst::part_t& part : parts.value()) {
+            auto mount_info = part.get_mount_info();
+            ASSERT_TRUE(mount_info.has_value());
+            ASSERT_TRUE(mount_info->mount_path.string().size() > 0);
+            ASSERT_TRUE(mount_info->fs_type.size() > 0);
+            ASSERT_TRUE(mount_info->options.size() > 0);
+        }
+    }
+
+    ASSERT_TRUE(partition_found);
+}

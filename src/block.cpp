@@ -456,4 +456,115 @@ res::optional_t<io_stat_t> part_t::get_io_stat() const {
     return io_stat;
 }
 
+res::optional_t<bool> part_t::is_mounted() const {
+    // documentation for /proc/mounts
+    //     man proc_pid_mounts
+    //     https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/4/html-single/introduction_to_system_administration/index#s4-storage-mounting-proc
+
+    std::string proc_mounts = "/proc/mounts";
+
+    auto mounts = syst::get_all_lines(proc_mounts);
+    if (! mounts.has_value()) {
+        return RES_TRACE(mounts.error());
+    }
+
+    // Search for the devfs path of this partition in the mounts flie.
+    // All paths in the mounts file end with a space ' '.
+    auto devfs_path = this->devfs_path_.string() + ' ';
+
+    for (const std::string& mount : mounts.value()) {
+        if (! syst::has_prefix(mount, devfs_path)) {
+            continue;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+res::optional_t<mount_info_t> part_t::get_mount_info() const {
+    // documentation for /proc/mounts
+    //     man proc_pid_mounts
+    //     https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/4/html-single/introduction_to_system_administration/index#s4-storage-mounting-proc
+
+    std::string proc_mounts = "/proc/mounts";
+
+    auto mounts = syst::get_all_lines(proc_mounts);
+    if (! mounts.has_value()) {
+        return RES_TRACE(mounts.error());
+    }
+
+    char space = ' ';
+
+    // Search for the devfs path of this partition in the mounts flie.
+    // All paths in the mounts file end with a space.
+    std::string buffered_devfs_path = this->devfs_path_.string() + space;
+
+    for (const std::string& mount : mounts.value()) {
+        if (! syst::has_prefix(mount, buffered_devfs_path)) {
+            continue;
+        }
+
+        std::string mount_info_str = mount.substr(buffered_devfs_path.size());
+
+        // Isolate all fields by looking for spaces in reverse order.
+
+        auto unused_2_pos = mount_info_str.rfind(space);
+        if (unused_2_pos >= mount_info_str.size()) {
+            return RES_NEW_ERROR(
+              "Failed to find the 2nd unused field for a partition in '"
+              + proc_mounts + "'.\n\tdevfs: '" + this->devfs_path_.string()
+              + "'\n\tsysfs: '" + this->sysfs_path_.string()
+              + "'\n\tmount_info_str: '" + mount_info_str + "'");
+        }
+
+        mount_info_str = mount_info_str.substr(0, unused_2_pos);
+
+        auto unused_1_pos = mount_info_str.rfind(space);
+        if (unused_1_pos >= mount_info_str.size()) {
+            return RES_NEW_ERROR(
+              "Failed to find the 1st unused field for a partition in '"
+              + proc_mounts + "'.\n\tdevfs: '" + this->devfs_path_.string()
+              + "'\n\tsysfs: '" + this->sysfs_path_.string()
+              + "'\n\tmount_info_str: '" + mount_info_str + "'");
+        }
+
+        mount_info_str = mount_info_str.substr(0, unused_1_pos);
+
+        auto mount_options_pos = mount_info_str.rfind(space);
+        if (mount_options_pos >= mount_info_str.size()) {
+            return RES_NEW_ERROR(
+              "Failed to find the mount options for a partition in '"
+              + proc_mounts + "'.\n\tdevfs: '" + this->devfs_path_.string()
+              + "'\n\tsysfs: '" + this->sysfs_path_.string()
+              + "'\n\tmount_info_str: '" + mount_info_str + "'");
+        }
+
+        mount_info_t mount_info{};
+
+        mount_info.options = mount_info_str.substr(mount_options_pos);
+        mount_info_str = mount_info_str.substr(0, mount_options_pos);
+
+        auto fs_type_pos = mount_info_str.rfind(space);
+        if (fs_type_pos >= mount_info_str.size()) {
+            return RES_NEW_ERROR(
+              "Failed to find the filesystem type for a partition in '"
+              + proc_mounts + "'.\n\tdevfs: '" + this->devfs_path_.string()
+              + "'\n\tsysfs: '" + this->sysfs_path_.string()
+              + "'\n\tmount_info_str: '" + mount_info_str + "'");
+        }
+
+        mount_info.fs_type = mount_info_str.substr(fs_type_pos);
+        mount_info.mount_path = mount_info_str.substr(0, fs_type_pos);
+
+        return mount_info;
+    }
+
+    return RES_NEW_ERROR("Failed to get the mount path of a partition because "
+                         "it is not mounted to the filesystem.\n\tdevfs: '"
+      + this->devfs_path_.string() + "'\n\tsysfs: '"
+      + this->sysfs_path_.string() + "'");
+}
+
 } // namespace syst

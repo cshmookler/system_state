@@ -104,7 +104,7 @@ res::result_t write_int(const std::filesystem::path& path, uint64_t integer) {
 }
 
 bool has_prefix(const std::string& target, const std::string& prefix) {
-    return target.rfind(prefix, 0) == 0;
+    return target.find(prefix, 0) == 0;
 }
 
 std::string remove_prefix(

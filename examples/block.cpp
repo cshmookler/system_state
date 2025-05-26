@@ -174,6 +174,24 @@ int main() {
                 std::cerr << part_io_stat.error().string() << '\n';
             }
 
+            auto part_is_mounted = part.is_mounted();
+            if (part_is_mounted.has_value()) {
+                std::cout << "Mounted: " << part_is_mounted.value() << '\n';
+            } else {
+                std::cerr << part_is_mounted.error().string() << '\n';
+            }
+
+            auto part_mount_info = part.get_mount_info();
+            if (part_mount_info.has_value()) {
+                std::cout << "Mount Path: " << part_mount_info->mount_path
+                          << '\n';
+                std::cout << "Filesystem Type: " << part_mount_info->fs_type
+                          << '\n';
+                std::cout << "Options: " << part_mount_info->options << '\n';
+            } else {
+                std::cerr << part_mount_info.error().string() << '\n';
+            }
+
             std::cout << '\n';
         }
     }

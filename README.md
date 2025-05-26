@@ -62,8 +62,9 @@ meson install
 - [ ] disk partition schemes
 - [X] partition name
 - [X] partition start position
-- [ ] partition filesystems
-- [ ] partition mount points
+- [X] partition mount points
+- [X] partition filesystems
+- [X] partition mount options
 - [X] swap
 - [X] memory
 - [X] total cpu usage
