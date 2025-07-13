@@ -216,7 +216,9 @@ class disk_t {
     [[nodiscard]] res::optional_t<uint64_t> get_size() const;
 
     /**
-     * @return true if this device is removable or false if it is not.
+     * @return true if this device is removable without shutting down the system
+     * (USB flash drive, SD card, ...) or false if it is not (NVMe drive, SSDs,
+     * HDDs, ...).
      */
     [[nodiscard]] res::optional_t<bool> is_removable() const;
 
