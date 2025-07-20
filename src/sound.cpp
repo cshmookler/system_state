@@ -90,11 +90,11 @@ struct sound_control_t::impl_t {
     snd_mixer_elem_t* elem = nullptr;
 };
 
-std::list<sound_control_t> sound_mixer_t::get_controls() const {
+std::vector<sound_control_t> sound_mixer_t::get_controls() const {
     snd_mixer_elem_t* first_elem = snd_mixer_first_elem(this->impl_->mixer);
     snd_mixer_elem_t* last_elem = snd_mixer_last_elem(this->impl_->mixer);
 
-    std::list<sound_control_t> controls;
+    std::vector<sound_control_t> controls;
 
     if (first_elem == nullptr || snd_mixer_selem_is_active(first_elem) == 0) {
         return controls;

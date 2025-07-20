@@ -13,7 +13,7 @@ int get_thermal() {
 
     std::cout << "Thermal Zones:" << '\n';
     for (auto& zone : thermal_zones.value()) {
-        std::cout << "sysfs path: " << zone.get_sysfs_path() << '\n';
+        std::cout << "sysfs path: " << zone.get_sysfs_path().string() << '\n';
 
         auto type = zone.get_type();
         if (type.has_value()) {

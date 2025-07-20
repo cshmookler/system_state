@@ -14,7 +14,8 @@ int main() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     for (const auto& interface : network_interfaces.value()) {
-        std::cout << "sysfs path: " << interface.get_sysfs_path() << '\n';
+        std::cout << "sysfs path: " << interface.get_sysfs_path().string()
+                  << '\n';
         std::cout << "Name: " << interface.get_name() << '\n';
 
         auto physical = interface.is_physical();

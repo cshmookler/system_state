@@ -123,7 +123,7 @@ namespace syst {
 battery_t::battery_t(const fs::path& sysfs_path) : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<battery_t>> get_batteries() {
+res::optional_t<std::vector<battery_t>> get_batteries() {
     // documentation for /sys/class/power_supply
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/power_supply.h
     //     https://www.kernel.org/doc/html/latest/power/power_supply_class.html
@@ -135,7 +135,7 @@ res::optional_t<std::list<battery_t>> get_batteries() {
           "The path is not a directory.\n\tpath: '" + power_supply_path + "'");
     }
 
-    std::list<battery_t> batteries;
+    std::vector<battery_t> batteries;
 
     for (const fs::directory_entry& battery :
       fs::directory_iterator(power_supply_path)) {

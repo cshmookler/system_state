@@ -1,7 +1,5 @@
-#pragma once
-
 /*****************************************************************************/
-/*  Copyright (c) 2024 Caden Shmookler                                       */
+/*  Copyright (c) 2024-2025 Caden Shmookler                                  */
 /*                                                                           */
 /*  This software is provided 'as-is', without any express or implied        */
 /*  warranty. In no event will the authors be held liable for any damages    */
@@ -25,14 +23,15 @@
  * @file system_state.hpp
  * @author Caden Shmookler (cshmookler@gmail.com)
  * @brief Core utilities for fetching and modifying the system state.
- * @date 2024-11-27
  */
+
+#pragma once
 
 // Standard includes
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
-#include <list>
+#include <vector>
 #include <string>
 #include <optional>
 
@@ -167,7 +166,7 @@ class disk_t;
 /**
  * @return all disk block devices on this system.
  */
-[[nodiscard]] res::optional_t<std::list<disk_t>> get_disks();
+[[nodiscard]] res::optional_t<std::vector<disk_t>> get_disks();
 
 class part_t;
 
@@ -185,13 +184,13 @@ class disk_t {
     friend part_t;
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<disk_t>> get_disks();
+    friend res::optional_t<std::vector<disk_t>> get_disks();
 
   public:
     /**
      * @return all partitions associated with this disk block device.
      */
-    [[nodiscard]] res::optional_t<std::list<part_t>> get_parts() const;
+    [[nodiscard]] res::optional_t<std::vector<part_t>> get_parts() const;
 
     /**
      * @return the path to this device in /sys. This provides access to various
@@ -251,7 +250,7 @@ struct mount_info_t {
     // The type of the filesystem (dos, ntfs, ext4, ...).
     std::string fs_type;
 
-    // The comma-separated list of mount options.
+    // The comma-separated vector of mount options.
     std::string options;
 };
 
@@ -378,7 +377,7 @@ class cpu_usage_t {
      * @return a dynamic array of doubles with each double representing the CPU
      * usage percentage of a specific core or.
      */
-    [[nodiscard]] res::optional_t<std::list<double>> get_per_core() const;
+    [[nodiscard]] res::optional_t<std::vector<double>> get_per_core() const;
 };
 
 class thermal_zone_t;
@@ -386,7 +385,7 @@ class thermal_zone_t;
 /**
  * @return all thermal zones on this system.
  */
-[[nodiscard]] res::optional_t<std::list<thermal_zone_t>> get_thermal_zones();
+[[nodiscard]] res::optional_t<std::vector<thermal_zone_t>> get_thermal_zones();
 
 /**
  * @brief Represents a device with thermal information, such as a temperature
@@ -398,7 +397,7 @@ class thermal_zone_t {
     thermal_zone_t(const fs::path& sysfs_path);
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<thermal_zone_t>> get_thermal_zones();
+    friend res::optional_t<std::vector<thermal_zone_t>> get_thermal_zones();
 
   public:
     /**
@@ -423,7 +422,7 @@ class cooling_device_t;
 /**
  * @return all cooling devices on this system.
  */
-[[nodiscard]] res::optional_t<std::list<cooling_device_t>>
+[[nodiscard]] res::optional_t<std::vector<cooling_device_t>>
 get_cooling_devices();
 
 /**
@@ -435,7 +434,7 @@ class cooling_device_t {
     cooling_device_t(const fs::path& sysfs_path);
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<cooling_device_t>> get_cooling_devices();
+    friend res::optional_t<std::vector<cooling_device_t>> get_cooling_devices();
 
   public:
     /**
@@ -472,7 +471,7 @@ class backlight_t;
 /**
  * @return all backlights on this system.
  */
-[[nodiscard]] res::optional_t<std::list<backlight_t>> get_backlights();
+[[nodiscard]] res::optional_t<std::vector<backlight_t>> get_backlights();
 
 class backlight_t {
     fs::path sysfs_path_;
@@ -480,7 +479,7 @@ class backlight_t {
     backlight_t(const fs::path& sysfs_path);
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<backlight_t>> get_backlights();
+    friend res::optional_t<std::vector<backlight_t>> get_backlights();
 
   public:
     /**
@@ -529,7 +528,7 @@ class battery_t;
 /**
  * @return all batteries on this system.
  */
-[[nodiscard]] res::optional_t<std::list<battery_t>> get_batteries();
+[[nodiscard]] res::optional_t<std::vector<battery_t>> get_batteries();
 
 /**
  * @brief Represents a battery connected to this system.
@@ -540,7 +539,7 @@ class battery_t {
     battery_t(const fs::path& sysfs_path);
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<battery_t>> get_batteries();
+    friend res::optional_t<std::vector<battery_t>> get_batteries();
 
   public:
     enum class status_t {
@@ -613,7 +612,7 @@ class network_interface_t;
 /**
  * @return all network interfaces on this system.
  */
-[[nodiscard]] res::optional_t<std::list<network_interface_t>>
+[[nodiscard]] res::optional_t<std::vector<network_interface_t>>
 get_network_interfaces();
 
 /**
@@ -626,7 +625,7 @@ class network_interface_t {
     network_interface_t(const fs::path& sysfs_path);
 
     // Some functions require access to private members.
-    friend res::optional_t<std::list<network_interface_t>>
+    friend res::optional_t<std::vector<network_interface_t>>
     get_network_interfaces();
 
   public:
@@ -717,7 +716,7 @@ class sound_mixer_t {
     /**
      * @return all active sound control elements.
      */
-    [[nodiscard]] std::list<sound_control_t> get_controls() const;
+    [[nodiscard]] std::vector<sound_control_t> get_controls() const;
 };
 
 /**
@@ -912,6 +911,6 @@ class sound_control_t {
 /**
  * @return the release versions of all installed kernels.
  */
-[[nodiscard]] res::optional_t<std::list<std::string>> get_installed_kernels();
+[[nodiscard]] res::optional_t<std::vector<std::string>> get_installed_kernels();
 
 } // namespace syst

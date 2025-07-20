@@ -2,9 +2,9 @@
 #include <iostream>
 
 // External includes
-#include "../build/version.hpp"
+#include "../build/version.h"
 
 int main() {
-    std::cout << "Compile-time version: " << syst::compiletime_version << '\n';
-    std::cout << "Runtime version: " << syst::get_runtime_version() << '\n';
+    std::cout << "Compile-time version: " << syst_compiletime_version << '\n';
+    std::cout << "Runtime version: " << syst_get_runtime_version() << '\n';
 }

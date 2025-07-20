@@ -12,7 +12,7 @@ int get_backlight() {
     }
 
     for (const auto& device : backlights.value()) {
-        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path().string() << '\n';
         std::cout << "Name: " << device.get_name() << '\n';
 
         auto brightness = device.get_brightness();
@@ -36,7 +36,7 @@ int set_backlight() {
     }
 
     for (auto& device : backlights.value()) {
-        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path().string() << '\n';
         std::cout << "Name: " << device.get_name() << '\n';
 
         auto old_brightness = device.get_brightness();

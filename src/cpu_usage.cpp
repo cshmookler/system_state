@@ -1,6 +1,7 @@
 // Standard includes
 #include <memory>
 #include <sstream>
+#include <vector>
 
 // Local includes
 #include "../system_state/system_state.hpp"
@@ -199,7 +200,7 @@ res::optional_t<double> cpu_usage_t::get_total() const {
     return syst::get_usage_percentage(old_stat, new_stat);
 }
 
-res::optional_t<std::list<double>> cpu_usage_t::get_per_core() const {
+res::optional_t<std::vector<double>> cpu_usage_t::get_per_core() const {
     if (! this->impl_->new_stat.has_value()) {
         return RES_NEW_ERROR(
           "No statistics samples are stored. Call the 'update' "
@@ -219,7 +220,7 @@ res::optional_t<std::list<double>> cpu_usage_t::get_per_core() const {
           + std::to_string(this->impl_->old_stat->size()) + "'");
     }
 
-    std::list<double> cores;
+    std::vector<double> cores;
 
     // The first values in old_stat and new_stat represent the total CPU usage
     // across all cores. This method only returns the usage for individual cores

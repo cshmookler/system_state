@@ -15,8 +15,8 @@ int main() {
     std::cout << std::boolalpha; // Pretty print boolean values.
 
     for (const auto& disk : disks.value()) {
-        std::cout << "sysfs path: " << disk.get_sysfs_path() << '\n';
-        std::cout << "devfs path: " << disk.get_devfs_path() << '\n';
+        std::cout << "sysfs path: " << disk.get_sysfs_path().string() << '\n';
+        std::cout << "devfs path: " << disk.get_devfs_path().string() << '\n';
         std::cout << "Name: " << disk.get_name() << '\n';
 
         auto size = disk.get_size();
@@ -96,8 +96,10 @@ int main() {
         }
 
         for (const auto& part : parts.value()) {
-            std::cout << "sysfs path: " << part.get_sysfs_path() << '\n';
-            std::cout << "devfs path: " << part.get_devfs_path() << '\n';
+            std::cout << "sysfs path: " << part.get_sysfs_path().string()
+                      << '\n';
+            std::cout << "devfs path: " << part.get_devfs_path().string()
+                      << '\n';
             std::cout << "Name: " << part.get_name() << '\n';
             std::cout << "Disk Name: " << part.get_disk().get_name() << '\n';
 
@@ -183,8 +185,8 @@ int main() {
 
             auto part_mount_info = part.get_mount_info();
             if (part_mount_info.has_value()) {
-                std::cout << "Mount Path: " << part_mount_info->mount_path
-                          << '\n';
+                std::cout << "Mount Path: "
+                          << part_mount_info->mount_path.string() << '\n';
                 std::cout << "Filesystem Type: " << part_mount_info->fs_type
                           << '\n';
                 std::cout << "Options: " << part_mount_info->options << '\n';

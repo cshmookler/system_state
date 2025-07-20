@@ -8,7 +8,7 @@ network_interface_t::network_interface_t(const fs::path& sysfs_path)
 : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<network_interface_t>> get_network_interfaces() {
+res::optional_t<std::vector<network_interface_t>> get_network_interfaces() {
     const std::string net_path = "/sys/class/net";
 
     if (! fs::is_directory(net_path)) {
@@ -16,7 +16,7 @@ res::optional_t<std::list<network_interface_t>> get_network_interfaces() {
           "The path is not a directory.\n\tpath: '" + net_path + "'");
     }
 
-    std::list<network_interface_t> network_interfaces;
+    std::vector<network_interface_t> network_interfaces;
 
     for (const fs::directory_entry& interface :
       fs::directory_iterator(net_path)) {

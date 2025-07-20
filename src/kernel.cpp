@@ -20,8 +20,8 @@ res::optional_t<std::string> get_running_kernel() {
     return std::string{ static_cast<char*>(utsname_info.release) };
 }
 
-res::optional_t<std::list<std::string>> get_installed_kernels() {
-    std::list<std::string> installed_kernels;
+res::optional_t<std::vector<std::string>> get_installed_kernels() {
+    std::vector<std::string> installed_kernels;
 
     const fs::path modules_path = "/usr/lib/modules";
     if (! fs::is_directory(modules_path)) {

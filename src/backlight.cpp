@@ -10,7 +10,7 @@ namespace syst {
 backlight_t::backlight_t(const fs::path& sysfs_path) : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<backlight_t>> get_backlights() {
+res::optional_t<std::vector<backlight_t>> get_backlights() {
     // documentation for /sys/class/backlight
     //     https://www.kernel.org/doc/html/latest/gpu/backlight.html
 
@@ -21,7 +21,7 @@ res::optional_t<std::list<backlight_t>> get_backlights() {
           "The path is not a directory.\n\tpath: '" + backlights_path + "'");
     }
 
-    std::list<backlight_t> backlights;
+    std::vector<backlight_t> backlights;
 
     for (const fs::directory_entry& backlight :
       fs::directory_iterator(backlights_path)) {

@@ -1,9 +1,9 @@
 # Declare project information
 project(
     'system_state',
-    'cpp',
+    ['cpp', 'c'],
     version : files('VERSION'),
-    default_options : [ 'cpp_std=c++17' ],
+    default_options : [ 'cpp_std=c++17', 'c_std=c17' ],
 )
 
 # Project root and build directories
@@ -11,16 +11,18 @@ root_dir = meson.project_source_root()
 build_dir = meson.project_build_root()
 include_dir = root_dir / 'system_state'
 src_dir = root_dir / 'src'
+src_c_dir = src_dir / 'c'
 tests_dir = root_dir / 'tests'
 examples_dir = root_dir / 'examples'
+examples_c_dir = examples_dir / 'c'
 
 # Insert the project version into the version header file
 conf_data = configuration_data()
 conf_data.set('version', meson.project_version())
 configure_file(
     configuration : conf_data,
-    input : 'system_state' / 'version.hpp.in',
-    output : 'version.hpp',
+    input : 'system_state' / 'version.h.in',
+    output : 'version.h',
 )
 
 dep_alsa_main = dependency(
@@ -30,8 +32,9 @@ dep_alsa_main = dependency(
 )
 
 lib_system_state_headers = files(
-    build_dir / 'version.hpp',
+    build_dir / 'version.h',
     include_dir / 'system_state.hpp',
+    include_dir / 'system_state.h',
 )
 lib_system_state = library(
     'system_state',
@@ -48,6 +51,9 @@ lib_system_state = library(
         src_dir / 'network_interface.cpp',
         src_dir / 'sound.cpp',
         src_dir / 'kernel.cpp',
+        src_c_dir / 'string_c.cpp',
+        src_c_dir / 'backlight_c.cpp',
+        src_c_dir / 'sound_c.cpp',
     ),
     version : meson.project_version(),
     dependencies : [dep_alsa_main],
@@ -110,6 +116,21 @@ foreach example_name : examples
         'example_' + example_name,
         files(
             examples_dir / (example_name + '.cpp'),
+        ),
+        link_with : lib_system_state,
+    )
+endforeach
+
+examples_c = [
+    'backlight',
+    'sound',
+]
+
+foreach example_name : examples_c
+    executable(
+        'example_' + example_name + '_c',
+        files(
+            examples_c_dir / (example_name + '.c'),
         ),
         link_with : lib_system_state,
     )

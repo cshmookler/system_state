@@ -13,7 +13,7 @@ int main() {
     }
 
     for (const auto& device : batteries.value()) {
-        std::cout << "sysfs path: " << device.get_sysfs_path() << '\n';
+        std::cout << "sysfs path: " << device.get_sysfs_path().string() << '\n';
         std::cout << "Name: " << device.get_name() << '\n';
 
         auto status = device.get_status();

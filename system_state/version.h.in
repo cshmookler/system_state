@@ -1,7 +1,5 @@
-#pragma once
-
 /*****************************************************************************/
-/*  Copyright (c) 2024 Caden Shmookler                                       */
+/*  Copyright (c) 2024-2025 Caden Shmookler                                  */
 /*                                                                           */
 /*  This software is provided 'as-is', without any express or implied        */
 /*  warranty. In no event will the authors be held liable for any damages    */
@@ -22,15 +20,15 @@
 /*****************************************************************************/
 
 /**
- * @file version.hpp
+ * @file version.h
  * @author Caden Shmookler (cshmookler@gmail.com)
  * @brief Compiletime and runtime versions of this library.
- * @date 2024-11-27
  */
 
-namespace syst {
+#ifndef SYST_VERSION_H
+#define SYST_VERSION_H
 
-constexpr const char* compiletime_version = "@version@";
-const char* get_runtime_version();
+constexpr const char* syst_compiletime_version = "@version@";
+const char* syst_get_runtime_version();
 
-} // namespace syst
+#endif // SYST_VERSION_H

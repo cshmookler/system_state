@@ -218,14 +218,14 @@ disk_t::disk_t(const fs::path& sysfs_path, const fs::path& devfs_path)
 : sysfs_path_(sysfs_path), devfs_path_(devfs_path) {
 }
 
-res::optional_t<std::list<disk_t>> get_disks() {
+res::optional_t<std::vector<disk_t>> get_disks() {
     // documentation for /sys/block/
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/types.h
     //     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/blk_types.h
     //     https://docs.kernel.org/block/index.html
     //     https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-block
 
-    std::list<disk_t> disks;
+    std::vector<disk_t> disks;
 
     const std::string blocks_path = "/sys/block";
 
@@ -257,8 +257,8 @@ res::optional_t<std::list<disk_t>> get_disks() {
     return disks;
 }
 
-res::optional_t<std::list<part_t>> disk_t::get_parts() const {
-    std::list<part_t> parts;
+res::optional_t<std::vector<part_t>> disk_t::get_parts() const {
+    std::vector<part_t> parts;
 
     const std::string blocks_path = "/sys/class/block";
     if (! fs::is_directory(blocks_path)) {

@@ -11,7 +11,7 @@ thermal_zone_t::thermal_zone_t(const fs::path& sysfs_path)
 : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<thermal_zone_t>> get_thermal_zones() {
+res::optional_t<std::vector<thermal_zone_t>> get_thermal_zones() {
     // documentation for /sys/class/thermal
     //     https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-thermal
     //     https://www.kernel.org/doc/html/latest/driver-api/thermal/sysfs-api.html
@@ -23,7 +23,7 @@ res::optional_t<std::list<thermal_zone_t>> get_thermal_zones() {
           "The path is not a directory.\n\tpath: '" + thermal_path + "'");
     }
 
-    std::list<thermal_zone_t> thermal_zones;
+    std::vector<thermal_zone_t> thermal_zones;
 
     for (const fs::directory_entry& zone :
       fs::directory_iterator(thermal_path)) {
@@ -79,7 +79,7 @@ cooling_device_t::cooling_device_t(const fs::path& sysfs_path)
 : sysfs_path_(sysfs_path) {
 }
 
-res::optional_t<std::list<cooling_device_t>> get_cooling_devices() {
+res::optional_t<std::vector<cooling_device_t>> get_cooling_devices() {
     // documentation for /sys/class/thermal
     //     https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-thermal
     //     https://www.kernel.org/doc/html/latest/driver-api/thermal/sysfs-api.html
@@ -91,7 +91,7 @@ res::optional_t<std::list<cooling_device_t>> get_cooling_devices() {
           "The path is not a directory.\n\tpath: '" + thermal_path + "'");
     }
 
-    std::list<cooling_device_t> cooling_devices;
+    std::vector<cooling_device_t> cooling_devices;
 
     for (const fs::directory_entry& device :
       fs::directory_iterator(thermal_path)) {
