@@ -1,23 +1,36 @@
 #pragma once
 
-#define ASSERT_NOT_NULL(arg)                                                   \
+#define ASSERT_NOT_NULL(arg, return_val)                                       \
     if (arg == NULL) {                                                         \
-        return strdup(                                                         \
-          RES_NEW_ERROR("A required argument is null.").string().c_str());     \
+        if (error != NULL) {                                                   \
+            *error = strdup(                                                   \
+              RES_NEW_ERROR("A required argument is null.").string().c_str()); \
+        }                                                                      \
+        return return_val;                                                     \
     }
 
-#define ASSERT_SUCCESS(call)                                                   \
+#define ASSERT_SUCCESS(call, return_val)                                       \
     auto result = call;                                                        \
     if (result.failure()) {                                                    \
-        return strdup(result.error().string().c_str());                        \
+        if (error != NULL) {                                                   \
+            *error = strdup(result.error().string().c_str());                  \
+        }                                                                      \
+        return return_val;                                                     \
     }
 
-#define ASSERT_HAS_VALUE(result)                                               \
+#define ASSERT_HAS_VALUE(result, return_val)                                   \
     if (result.has_error()) {                                                  \
-        return strdup(result.error().string().c_str());                        \
+        if (error != NULL) {                                                   \
+            *error = strdup(result.error().string().c_str());                  \
+        }                                                                      \
+        return return_val;                                                     \
     }
 
-#define ASSERT_HAS_INDEX(list, index)                                          \
+#define ASSERT_HAS_INDEX(list, index, return_val)                              \
     if (index >= list->size()) {                                               \
-        return strdup(RES_NEW_ERROR("Index out of range.").string().c_str());  \
+        if (error != NULL) {                                                   \
+            *error =                                                           \
+              strdup(RES_NEW_ERROR("Index out of range.").string().c_str());   \
+        }                                                                      \
+        return return_val;                                                     \
     }
