@@ -57,7 +57,7 @@ void syst_backlight_set_brightness(
 void syst_backlight_set_brightness_relative(
   syst_backlight_t* backlight, double brightness, char** error) {
     ASSERT_NOT_NULL(backlight, );
-    ASSERT_SUCCESS(backlight->set_brightness(brightness), );
+    ASSERT_SUCCESS(backlight->set_brightness_relative(brightness), );
 }
 
 } // extern "C"
