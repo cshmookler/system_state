@@ -11,8 +11,11 @@
 
 namespace syst {
 
-const char* strerror(int errnum) {
-    int strerror_errnum = strerror_r(errnum, nullptr, 0);
+char* strerror(int errnum) {
+    const size_t max_len = 100;
+    char* buffer = nullptr;
+    strerror_r(errnum, buffer, max_len);
+    return buffer;
 }
 
 } // namespace syst

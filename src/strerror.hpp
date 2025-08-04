@@ -15,6 +15,6 @@ namespace syst {
  * @param[in] errnum - A POSIX error code (usually from errno).
  * @return a string describing the error corresponding to the given error code.
  */
-const char* strerror(int errnum);
+char* strerror(int errnum);
 
 } // namespace syst

@@ -5,6 +5,7 @@
 
 // Local includes
 #include "../system_state/system_state.hpp"
+#include "strerror.hpp"
 
 namespace syst {
 
@@ -16,7 +17,7 @@ res::optional_t<std::string> get_username() {
         int err = errno;
         return RES_NEW_ERROR(
           "Failed to get passwd information from 'getpwuid'.\nreason: '"
-          + std::string{ strerror(err) } + "'");
+          + std::string{ syst::strerror(err) } + "'");
     }
 
     return std::string{ passwd_info->pw_name };

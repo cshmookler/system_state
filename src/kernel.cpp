@@ -6,6 +6,7 @@
 
 // Local includes
 #include "../system_state/system_state.hpp"
+#include "strerror.hpp"
 
 namespace syst {
 
@@ -14,7 +15,7 @@ res::optional_t<std::string> get_running_kernel() {
 
     if (uname(&utsname_info) != 0) {
         int err = errno;
-        return RES_NEW_ERROR(std::string{ "uname(): " } + std::strerror(err));
+        return RES_NEW_ERROR(std::string{ "uname(): " } + syst::strerror(err));
     }
 
     return std::string{ static_cast<char*>(utsname_info.release) };

@@ -41,6 +41,7 @@ lib_system_state = library(
     files(
         src_dir / 'version.cpp',
         src_dir / 'util.cpp',
+        src_dir / 'strerror.cpp',
         src_dir / 'user.cpp',
         src_dir / 'system.cpp',
         src_dir / 'block.cpp',

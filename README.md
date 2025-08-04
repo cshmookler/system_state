@@ -2,8 +2,6 @@
 
 C++ library for fetching and modifying the system state on [MOOS](https://github.com/cshmookler/moos). Provides functions for volume control, networking, power management, backlight, thermal, resource usage, and more (see the README).
 
-> NOTE: Features are not guaranteed to be thread safe!
-
 ## Build from Source
 
 ### 1.&nbsp; Install a C++ compiler, Meson, GoogleTest (optional), ALSA libraries, and [cpp_result](https://github.com/cshmookler/cpp_result).
@@ -51,7 +49,7 @@ meson install
 - [X] Move error_t, result_t, optional_t, and all related utilities to a distinct library
 - [X] Remove const qualifiers from all methods that modify system state.
 - [X] error handling
-- [X] make (partially) thread safe
+- [X] make (mostly) thread safe
 - [X] add traces to error messages
 - [X] examples
 - [X] uptime

@@ -7,6 +7,7 @@
 // Local includes
 #include "../system_state/system_state.hpp"
 #include "util.hpp"
+#include "strerror.hpp"
 
 namespace syst {
 
@@ -32,7 +33,7 @@ res::optional_t<system_info_t> get_system_info() {
         int err = errno;
         return RES_NEW_ERROR(
           "Failed to get system information from 'sysinfo'.\n\treason: '"
-          + std::string{ strerror(err) } + "'");
+          + std::string{ syst::strerror(err) } + "'");
     }
 
     system_info_t system_info{};
