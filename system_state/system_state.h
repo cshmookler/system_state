@@ -19,12 +19,6 @@
 /*     distribution.                                                         */
 /*****************************************************************************/
 
-/**
- * @file system_state.h
- * @author Caden Shmookler (cshmookler@gmail.com)
- * @brief Core utilities for fetching and modifying the system state.
- */
-
 #ifndef SYST_SYSTEM_STATE_H
 #define SYST_SYSTEM_STATE_H
 
