@@ -123,6 +123,7 @@ foreach example_name : examples
 endforeach
 
 examples_c = [
+    'version',
     'backlight',
     'sound',
 ]

@@ -22,7 +22,15 @@
 #ifndef SYST_VERSION_H
 #define SYST_VERSION_H
 
-constexpr const char* syst_compiletime_version = "@version@";
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+const char* const syst_compiletime_version = "@version@";
 const char* syst_get_runtime_version();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif // SYST_VERSION_H
