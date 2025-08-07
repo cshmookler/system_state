@@ -19,12 +19,6 @@
 /*     distribution.                                                         */
 /*****************************************************************************/
 
-/**
- * @file version.h
- * @author Caden Shmookler (cshmookler@gmail.com)
- * @brief Compiletime and runtime versions of this library.
- */
-
 #ifndef SYST_VERSION_H
 #define SYST_VERSION_H
 
