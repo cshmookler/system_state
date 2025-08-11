@@ -54,6 +54,37 @@ void syst_backlight_set_brightness_relative(
   syst_backlight_t* backlight, double brightness, char** error);
 
 #ifdef __cplusplus
+using syst_battery_t = syst::battery_t;
+using syst_battery_list_t = std::vector<syst_battery_t>;
+#else
+typedef struct syst_battery_t syst_battery_t;
+typedef struct syst_battery_list_t syst_battery_list_t;
+#endif
+syst_battery_list_t* syst_get_batteries(char** error);
+typedef enum syst_battery_status_t {
+    syst_battery_status_unknown,
+    syst_battery_status_charging,
+    syst_battery_status_discharging,
+    syst_battery_status_not_charging,
+    syst_battery_status_full,
+} syst_battery_status_t;
+unsigned long syst_battery_list_get_size(
+  syst_battery_list_t* battery_list, char** error);
+syst_battery_t* syst_battery_list_get(
+  syst_battery_list_t* battery_list, unsigned long index, char** error);
+void syst_battery_list_free(syst_battery_list_t* battery_list);
+char* syst_battery_get_sysfs_path(syst_battery_t* battery, char** error);
+char* syst_battery_get_name(syst_battery_t* battery, char** error);
+syst_battery_status_t syst_battery_get_status(
+  syst_battery_t* battery, char** error);
+double syst_battery_get_current(syst_battery_t* battery, char** error);
+double syst_battery_get_power(syst_battery_t* battery, char** error);
+double syst_battery_get_charge(syst_battery_t* battery, char** error);
+double syst_battery_get_capacity(syst_battery_t* battery, char** error);
+unsigned long syst_battery_get_time_remaining(
+  syst_battery_t* battery, char** error);
+
+#ifdef __cplusplus
 using syst_sound_mixer_t = syst::sound_mixer_t;
 #else
 typedef struct syst_sound_mixer_t syst_sound_mixer_t;

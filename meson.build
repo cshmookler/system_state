@@ -54,6 +54,7 @@ lib_system_state = library(
         src_dir / 'kernel.cpp',
         src_c_dir / 'string_c.cpp',
         src_c_dir / 'backlight_c.cpp',
+        src_c_dir / 'battery_c.cpp',
         src_c_dir / 'sound_c.cpp',
     ),
     version : meson.project_version(),
@@ -125,6 +126,7 @@ endforeach
 examples_c = [
     'version',
     'backlight',
+    'battery',
     'sound',
 ]
 
